@@ -56,7 +56,7 @@ public:
 		
 	bool InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_);
 	void SetMode(int width_, int height_, bool fullscreen_);
-	void InitDX11::DrawScene();
+	void DrawScene();
 
 	~InitDX11();
 
