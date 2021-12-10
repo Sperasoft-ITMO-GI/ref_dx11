@@ -111,6 +111,19 @@ typedef struct image_s
 	qboolean paletted;
 } image_t;
 
+
+
+
+
+bool R_SetMode(int* width, int* height);
+
+
+
+
+
+
+
+
 qboolean 	R_Init(void* hinstance, void* hWnd);
 void		R_Shutdown(void);
 

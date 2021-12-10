@@ -55,7 +55,7 @@ class InitDX11
 public:
 		
 	bool InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_);
-	void SetWindowSize(int width_, int height_);
+	void SetMode(int width_, int height_, bool fullscreen_);
 	void InitDX11::DrawScene();
 
 	~InitDX11();
@@ -63,7 +63,6 @@ public:
 private:
 
 	bool InitializeWindow(HINSTANCE hinstance_, WNDPROC wndProc_);
-	void OnResize();
 
 	bool					mEnable4xMsaa;
 	UINT					m4xMsaaQuality;
@@ -84,6 +83,8 @@ private:
 
 	int width;
 	int height;
+
+	bool fullscreen;
 
 	char* windowName = "Quake 2 DX12";
 	char* windowClassName = "Quake 2";

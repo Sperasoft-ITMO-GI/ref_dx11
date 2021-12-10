@@ -24,6 +24,40 @@ void R_Register(void)
 	vid_ref = ri.Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
 }
 
+bool R_SetMode(int* width, int* height)
+{
+	// can call before setting mode (width, height)
+	// getting width and height regarding the installed mod
+	if (!ri.Vid_GetModeInfo(width, height, dx11_mode->value))
+	{
+		ri.Con_Printf(PRINT_ALL, " invalid mode\n");
+		printf("invalid mode\n");
+		return false;
+	}
+
+	bool fullscreen;
+
+	if (vid_fullscreen->modified)
+	{
+		ri.Cvar_SetValue("vid_fullscreen", vid_fullscreen->value);
+		vid_fullscreen->modified = False;
+	}
+
+	fullscreen = vid_fullscreen->value;
+
+	vid_fullscreen->modified = False;
+	dx11_mode->modified = False;
+
+	// set width and height in vid
+	vid.height = *height;
+	vid.width = *width;
+
+	// setting size of our window
+	dx11App.SetMode(*width, *height, fullscreen);
+
+	return true;
+}
+
 /*
 ===============
 R_Init
@@ -31,22 +65,16 @@ R_Init
 */
 qboolean R_Init(void* hinstance, void* hWnd)
 {
-	R_Register();
 	int width = 1280, height = 720;
 
-	// can call before setting mode (width, height)
-	// getting width and height regarding the installed mod
-	if (!ri.Vid_GetModeInfo(&width, &height, dx11_mode->value))
+	// register the cvar variables
+	R_Register();
+
+	// setting width, height and full-screen modes
+	if (!R_SetMode(&width, &height))
 	{
-		ri.Con_Printf(PRINT_ALL, " invalid mode\n");
-		//return rserr_invalid_mode;
+		return False;
 	}
-
-	vid.height = height;
-	vid.width = width;
-
-	// setting size of our window
-	dx11App.SetWindowSize(width, height);
 
 	// initialize DX11 context
 	if (!dx11App.InitializeDX11((HINSTANCE)hinstance, (WNDPROC)hWnd)) 
@@ -296,7 +324,6 @@ void R_BeginFrame(float camera_separation)
 	//try {
 	//	dxApp.Update();
 	//	dxApp.Draw();
-	//	//dxApp.OnResize();
 	//}
 	//catch (DxException& dxE) {
 	//	printf("%s", dxE.ToString());
