@@ -12,9 +12,12 @@
 #include "../win32/winquake.h"
 
 
+#include "dx11_init.h"
+
+
 #define	REF_VERSION	"DX11 0.01"
 
-unsigned	d_8to24table[256];
+//unsigned	d_8to24table[256];
 
 typedef struct
 {
@@ -28,6 +31,8 @@ extern cvar_t* dx11_mode;
 extern cvar_t* vid_fullscreen;
 extern cvar_t* vid_gamma;
 extern cvar_t* vid_ref;
+
+extern InitDX11 dx11App;
 
 typedef struct
 {

@@ -1,4 +1,4 @@
-// dx12r_main.c
+// dx11r_main.c
 
 #include "dx11_local.h"
 
@@ -11,6 +11,8 @@ cvar_t* dx11_mode;
 cvar_t* vid_fullscreen;
 cvar_t* vid_gamma;
 cvar_t* vid_ref;
+
+InitDX11 dx11App = {};
 
 // reading param from config.txt
 void R_Register(void)
@@ -42,10 +44,15 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 	vid.height = height;
 	vid.width = width;
-	/*dxApp.SetWindowSize(vid.width, vid.height);
-	if (!dxApp.Initialize((HINSTANCE)hinstance, (WNDPROC)hWnd)) {
-		return qboolean::False;
-	}*/
+
+	// setting size of our window
+	dx11App.SetWindowSize(width, height);
+
+	// initialize DX11 context
+	if (!dx11App.InitializeDX11((HINSTANCE)hinstance, (WNDPROC)hWnd)) 
+	{
+		return False;
+	}
 
 	// let the sound and input subsystems know about the new window
 	// can be call after creating windows and its context
@@ -54,7 +61,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	// can be call after creating context and Vid_NewWindow()
 	ri.Vid_MenuInit();
 
-	return qboolean::True;
+	return True;
 }
 
 /*
@@ -69,6 +76,7 @@ void R_Shutdown(void)
 	ri.Cmd_RemoveCommand((char*)"imagelist");
 	ri.Cmd_RemoveCommand((char*)"gl_strings");
 
+
 	// free models
 	//Mod_FreeAll();
 
@@ -78,7 +86,7 @@ void R_Shutdown(void)
 	/*
 	** shut down OS specific DX12 stuff like contexts, etc.
 	*/
-	//dxApp.~InitDxApp();
+	dx11App.~InitDX11();
 }
 
 // ==================================================================================================================================
@@ -234,7 +242,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 	if ((unsigned)c > 255)
 		ri.Sys_Error(ERR_FATAL, "Draw_Fill: bad color");
 
-	color.c = d_8to24table[c];
+	//color.c = d_8to24table[c];
 
 	/*MenuResource menu_resource;
 	menu_resource.SetVertexes(x, y, w, h);
@@ -293,6 +301,8 @@ void R_BeginFrame(float camera_separation)
 	//catch (DxException& dxE) {
 	//	printf("%s", dxE.ToString());
 	//}
+
+	dx11App.DrawScene();
 }
 
 /*
