@@ -64,17 +64,17 @@ private:
 
 	bool InitializeWindow(HINSTANCE hinstance_, WNDPROC wndProc_);
 
-	bool					mEnable4xMsaa;
-	UINT					m4xMsaaQuality;
+	bool					enable4xMsaa;
+	UINT					msaaQuality;
 
-	ID3D11Device*			md3dDevice;
-	ID3D11DeviceContext*	md3dImmediateContext;
-	IDXGISwapChain*			mSwapChain;
-	ID3D11Texture2D*		mDepthStencilBuffer;
-	ID3D11RenderTargetView* mRenderTargetView;
-	ID3D11DepthStencilView* mDepthStencilView;
-	D3D11_VIEWPORT			mScreenViewport;
-	D3D_DRIVER_TYPE			md3dDriverType;
+	ID3D11Device*			d3dDevice;
+	ID3D11DeviceContext*	d3dImmediateContext;
+	IDXGISwapChain*			swapChain;
+	ID3D11Texture2D*		depthStencilBuffer;
+	ID3D11RenderTargetView* renderTargetView;
+	ID3D11DepthStencilView* depthStencilView;
+	D3D11_VIEWPORT			screenViewport;
+	D3D_DRIVER_TYPE			d3dDriverType;
 
 	HWND					mainWindow;
 
@@ -86,6 +86,6 @@ private:
 
 	bool fullscreen;
 
-	char* windowName = "Quake 2 DX12";
+	char* windowName = "Quake 2 DX11";
 	char* windowClassName = "Quake 2";
 };

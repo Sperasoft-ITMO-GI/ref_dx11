@@ -59,11 +59,11 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	// Create the device and device context.
 
 	// setting default values (in further may be changed)
-	md3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
-	mEnable4xMsaa = false;
-	m4xMsaaQuality = 0;
+	d3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
+	enable4xMsaa = false;
+	msaaQuality = 0;
 
-	ZeroMemory(&mScreenViewport, sizeof(D3D11_VIEWPORT));
+	ZeroMemory(&screenViewport, sizeof(D3D11_VIEWPORT));
 
 	UINT createDeviceFlags = 0;
 #if defined(DEBUG) || defined(_DEBUG)  
@@ -76,14 +76,14 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	D3D_FEATURE_LEVEL featureLevel;
 	HRESULT hr = D3D11CreateDevice(
 		0,                 // default adapter
-		md3dDriverType,
+		d3dDriverType,
 		0,                 // no software device
 		createDeviceFlags,
 		0, 0,              // default feature level array
 		D3D11_SDK_VERSION,
-		&md3dDevice,
+		&d3dDevice,
 		&featureLevel,
-		&md3dImmediateContext);
+		&d3dImmediateContext);
 
 	if (FAILED(hr))
 	{
@@ -105,8 +105,8 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	// All Direct3D 11 capable devices support 4X MSAA for all render 
 	// target formats, so we only need to check quality support.
 
-	HR(md3dDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m4xMsaaQuality));
-	assert(m4xMsaaQuality > 0);
+	HR(d3dDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &msaaQuality));
+	assert(msaaQuality > 0);
 
 	// 3. Describe SWAP_CHAIN
 
@@ -124,8 +124,8 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
-	sd.SampleDesc.Count = mEnable4xMsaa ? 4 : 1;
-	sd.SampleDesc.Quality = mEnable4xMsaa ? (m4xMsaaQuality - 1) : 0;
+	sd.SampleDesc.Count = enable4xMsaa ? 4 : 1;
+	sd.SampleDesc.Quality = enable4xMsaa ? (msaaQuality - 1) : 0;
 
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount = 1;
@@ -142,7 +142,7 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	// This function is being called with a device from a different IDXGIFactory."
 
 	IDXGIDevice* dxgiDevice = 0;
-	HR(md3dDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice));
+	HR(d3dDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice));
 
 	IDXGIAdapter* dxgiAdapter = 0;
 	HR(dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgiAdapter));
@@ -150,20 +150,20 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	IDXGIFactory* dxgiFactory = 0;
 	HR(dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&dxgiFactory));
 
-	HR(dxgiFactory->CreateSwapChain(md3dDevice, &sd, &mSwapChain));
+	HR(dxgiFactory->CreateSwapChain(d3dDevice, &sd, &swapChain));
 
 	ReleaseCOM(dxgiDevice);
 	ReleaseCOM(dxgiAdapter);
 	ReleaseCOM(dxgiFactory);
 
-	assert(md3dImmediateContext);
-	assert(md3dDevice);
-	assert(mSwapChain);
+	assert(d3dImmediateContext);
+	assert(d3dDevice);
+	assert(swapChain);
 
 	// 5. Create the render target view
 	ID3D11Texture2D* backBuffer;
-	HR(mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)(&backBuffer)));
-	HR(md3dDevice->CreateRenderTargetView(backBuffer, 0, &mRenderTargetView));
+	HR(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)(&backBuffer)));
+	HR(d3dDevice->CreateRenderTargetView(backBuffer, 0, &renderTargetView));
 	ReleaseCOM(backBuffer);
 
 	// 6. Create the depth/stencil buffer
@@ -179,35 +179,35 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// Use 4X MSAA? --must match swap chain MSAA values.
-	depthStencilDesc.SampleDesc.Count = mEnable4xMsaa ? 4 : 1;
-	depthStencilDesc.SampleDesc.Quality = mEnable4xMsaa ? (m4xMsaaQuality - 1) : 0;
+	depthStencilDesc.SampleDesc.Count = enable4xMsaa ? 4 : 1;
+	depthStencilDesc.SampleDesc.Quality = enable4xMsaa ? (msaaQuality - 1) : 0;
 
 	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags = 0;
 
-	HR(md3dDevice->CreateTexture2D(&depthStencilDesc, 0, &mDepthStencilBuffer));
-	HR(md3dDevice->CreateDepthStencilView(mDepthStencilBuffer, 0, &mDepthStencilView));
+	HR(d3dDevice->CreateTexture2D(&depthStencilDesc, 0, &depthStencilBuffer));
+	HR(d3dDevice->CreateDepthStencilView(depthStencilBuffer, 0, &depthStencilView));
 
 	// 7. Bind the render target view
 
 	// Bind the render target view and depth/stencil view to the pipeline.
 
-	md3dImmediateContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
+	d3dImmediateContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
 	// 8. Set the viewport
 
 	// Set the viewport transform.
 
-	mScreenViewport.TopLeftX = 0;
-	mScreenViewport.TopLeftY = 0;
-	mScreenViewport.Width = (float)(width);
-	mScreenViewport.Height = (float)(height);
-	mScreenViewport.MinDepth = 0.0f;
-	mScreenViewport.MaxDepth = 1.0f;
+	screenViewport.TopLeftX = 0;
+	screenViewport.TopLeftY = 0;
+	screenViewport.Width = (float)(width);
+	screenViewport.Height = (float)(height);
+	screenViewport.MinDepth = 0.0f;
+	screenViewport.MaxDepth = 1.0f;
 
-	md3dImmediateContext->RSSetViewports(1, &mScreenViewport);
+	d3dImmediateContext->RSSetViewports(1, &screenViewport);
 
 	printf("[DX11]: Successfully initialized\n");
 
@@ -225,27 +225,27 @@ void InitDX11::SetMode(int width_, int height_, bool fullscreen_)
 
 void InitDX11::DrawScene()
 {
-	assert(md3dImmediateContext);
-	assert(mSwapChain);
+	assert(d3dImmediateContext);
+	assert(swapChain);
 
-	md3dImmediateContext->ClearRenderTargetView(mRenderTargetView, DirectX::Colors::LightBlue);
-	md3dImmediateContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	d3dImmediateContext->ClearRenderTargetView(renderTargetView, DirectX::Colors::LightBlue);
+	d3dImmediateContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	mSwapChain->Present(0, 0);
+	swapChain->Present(0, 0);
 }
 
 InitDX11::~InitDX11()
 {
-	ReleaseCOM(mRenderTargetView);
-	ReleaseCOM(mDepthStencilView);
-	ReleaseCOM(mSwapChain);
-	ReleaseCOM(mDepthStencilBuffer);
+	ReleaseCOM(renderTargetView);
+	ReleaseCOM(depthStencilView);
+	ReleaseCOM(swapChain);
+	ReleaseCOM(depthStencilBuffer);
 
 	// Restore all default settings.
-	if (md3dImmediateContext)
-		md3dImmediateContext->ClearState();
+	if (d3dImmediateContext)
+		d3dImmediateContext->ClearState();
 
-	if (md3dDevice != nullptr) 
+	if (d3dDevice != nullptr) 
 	{
 		if (mainWindow)
 		{
@@ -257,8 +257,8 @@ InitDX11::~InitDX11()
 		printf("%s", "[DX11]: Window destroyed\n");
 	}
 
-	ReleaseCOM(md3dImmediateContext);
-	ReleaseCOM(md3dDevice);
+	ReleaseCOM(d3dImmediateContext);
+	ReleaseCOM(d3dDevice);
 
 	printf("%s", "[DX11]: Render destoyed");
 }
