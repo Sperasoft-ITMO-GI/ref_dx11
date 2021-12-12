@@ -48,6 +48,67 @@ bool InitDX11::InitializeWindow(HINSTANCE hinstance_, WNDPROC wndProc_)
 	return true;
 }
 
+void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, std::array<float, 3> color) {
+	using DirectX::XMFLOAT2;
+	using DirectX::XMFLOAT3;
+	using Microsoft::WRL::ComPtr;
+
+	std::array<Vertex, 4> vertices;
+	for (auto i = 0; i < vertices.size(); ++i) {
+		vertices[i] = {
+			XMFLOAT2(-vertexes[i].first, -vertexes[i].second),
+			//XMFLOAT3(color.data())
+		};
+	}
+
+	ComPtr<ID3D11Buffer> vertex_buffer;
+
+	D3D11_BUFFER_DESC buffer_desc = {};
+	buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	buffer_desc.CPUAccessFlags = 0u;
+	buffer_desc.MiscFlags = 0u;
+	buffer_desc.ByteWidth = sizeof(vertices);
+	buffer_desc.StructureByteStride = sizeof(Vertex);
+
+	D3D11_SUBRESOURCE_DATA subresource_data = {};
+	subresource_data.pSysMem = vertices.data();
+
+	HR(d3dDevice->CreateBuffer(&buffer_desc, &subresource_data, &vertex_buffer));
+	
+	const UINT stride = sizeof(Vertex);
+	const UINT offset = 0u;
+	d3dImmediateContext->IASetVertexBuffers(0u, 1u, vertex_buffer.GetAddressOf(), &stride, &offset);
+
+	ComPtr<ID3D11PixelShader> pixel_shader;
+	ComPtr<ID3DBlob> blob;
+	D3DReadFileToBlob(L"ref_dx11\\shaders\\pixel_shader.cso", &blob);
+	HR(d3dDevice->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &pixel_shader));
+	d3dImmediateContext->PSSetShader(pixel_shader.Get(), 0, 0);
+
+	ComPtr<ID3D11VertexShader> vertex_shader;
+	D3DReadFileToBlob(L"ref_dx11\\shaders\\vertex_shader.cso", &blob);
+	HR(d3dDevice->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &vertex_shader));
+	d3dImmediateContext->VSSetShader(vertex_shader.Get(), 0, 0);
+
+	ComPtr<ID3D11InputLayout> input_layout;
+	D3D11_INPUT_ELEMENT_DESC input_element_descriptor[] = {
+		{"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+	HR(d3dDevice->CreateInputLayout(
+		input_element_descriptor, std::size(input_element_descriptor),
+		blob->GetBufferPointer(), blob->GetBufferSize(),
+		&input_layout
+	));
+
+	d3dImmediateContext->IASetInputLayout(input_layout.Get());
+
+	d3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	d3dImmediateContext->Draw(std::size(vertices), 0u);
+	swapChain->Present(0, 0);
+}
+
 
 
 
@@ -118,8 +179,7 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	sd.BufferDesc.Width = width;
 	sd.BufferDesc.Height = height;
 	// TODO: check VSYNC
-	sd.BufferDesc.RefreshRate.Numerator = 60; // 60
-	sd.BufferDesc.RefreshRate.Denominator = 1; // 1
+	sd.BufferDesc.RefreshRate = QueryRefreshRate(width, height, true);
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
@@ -231,7 +291,7 @@ void InitDX11::DrawScene()
 	d3dImmediateContext->ClearRenderTargetView(renderTargetView, DirectX::Colors::LightBlue);
 	d3dImmediateContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	swapChain->Present(0, 0);
+	//swapChain->Present(0, 0);
 }
 
 InitDX11::~InitDX11()
@@ -261,4 +321,93 @@ InitDX11::~InitDX11()
 	ReleaseCOM(d3dDevice);
 
 	printf("%s", "[DX11]: Render destoyed");
+}
+
+DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync)
+{
+	DXGI_RATIONAL refreshRate = { 0, 1 };
+	if (vsync)
+	{
+		IDXGIFactory* factory;
+		IDXGIAdapter* adapter;
+		IDXGIOutput* adapterOutput;
+		DXGI_MODE_DESC* displayModeList;
+
+		// Create a DirectX graphics interface factory.
+		HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+		if (FAILED(hr))
+		{
+			MessageBox(0,
+				TEXT("Could not create DXGIFactory instance."),
+				TEXT("Query Refresh Rate"),
+				MB_OK);
+
+			throw new std::exception("Failed to create DXGIFactory.");
+		}
+
+		hr = factory->EnumAdapters(0, &adapter);
+		if (FAILED(hr))
+		{
+			MessageBox(0,
+				TEXT("Failed to enumerate adapters."),
+				TEXT("Query Refresh Rate"),
+				MB_OK);
+
+			throw new std::exception("Failed to enumerate adapters.");
+		}
+
+		hr = adapter->EnumOutputs(0, &adapterOutput);
+		if (FAILED(hr))
+		{
+			MessageBox(0,
+				TEXT("Failed to enumerate adapter outputs."),
+				TEXT("Query Refresh Rate"),
+				MB_OK);
+
+			throw new std::exception("Failed to enumerate adapter outputs.");
+		}
+
+		UINT numDisplayModes;
+		hr = adapterOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numDisplayModes, nullptr);
+		if (FAILED(hr))
+		{
+			MessageBox(0,
+				TEXT("Failed to query display mode list."),
+				TEXT("Query Refresh Rate"),
+				MB_OK);
+
+			throw new std::exception("Failed to query display mode list.");
+		}
+
+		displayModeList = new DXGI_MODE_DESC[numDisplayModes];
+		assert(displayModeList);
+
+		hr = adapterOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numDisplayModes, displayModeList);
+		if (FAILED(hr))
+		{
+			MessageBox(0,
+				TEXT("Failed to query display mode list."),
+				TEXT("Query Refresh Rate"),
+				MB_OK);
+
+			throw new std::exception("Failed to query display mode list.");
+		}
+
+		// Now store the refresh rate of the monitor that matches the width and height of the requested screen.
+		for (UINT i = 0; i < numDisplayModes; ++i)
+		{
+			printf("Widht: %d, Height: %d\n", displayModeList[i].Width, displayModeList[i].Height);
+			if (displayModeList[i].Width == screenWidth && displayModeList[i].Height == screenHeight)
+			{
+				refreshRate = displayModeList[i].RefreshRate;
+			}
+		}
+
+		delete[] displayModeList;
+		ReleaseCOM(adapterOutput);
+		ReleaseCOM(adapter);
+		ReleaseCOM(factory);
+	}
+
+	return refreshRate;
 }

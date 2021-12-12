@@ -17,7 +17,7 @@
 
 #define	REF_VERSION	"DX11 0.01"
 
-//unsigned	d_8to24table[256];
+unsigned	d_8to24table[256];
 
 typedef struct
 {

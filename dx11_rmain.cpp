@@ -270,13 +270,18 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 	if ((unsigned)c > 255)
 		ri.Sys_Error(ERR_FATAL, "Draw_Fill: bad color");
 
-	//color.c = d_8to24table[c];
+	color.c = d_8to24table[c];
 
-	/*MenuResource menu_resource;
-	menu_resource.SetVertexes(x, y, w, h);
-	menu_resource.SetColor(color.v[0] / 255.0, color.v[1] / 255.0, color.v[2] / 255.0);
+	std::array<std::pair<float, float>, 4> pos = {
+		std::make_pair(x, y),
+		std::make_pair(x, y + h),
+		std::make_pair(x + w, y),
+		std::make_pair(x + w, y + h),
+	};
 
-	dxApp.AddMenuResource(menu_resource);*/
+	std::array<float, 3> col = { color.v[0] / 255, color.v[1] / 255, color.v[2] / 255 };
+
+	dx11App.DrawColored2D(pos, col);
 }
 
 /*

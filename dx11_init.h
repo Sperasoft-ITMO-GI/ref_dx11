@@ -15,6 +15,10 @@
 
 #include "dxerr.h"
 
+#include <array>
+#include <utility>
+#include <stdexcept>
+
 //---------------------------------------------------------------------------------------
 // Simple d3d error checker for book demos.
 //---------------------------------------------------------------------------------------
@@ -49,6 +53,13 @@
 
 #define SafeDelete(x) { delete x; x = 0; }
 
+DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync);
+
+struct Vertex {
+	//float x, y;
+	DirectX::XMFLOAT2 position;
+	//DirectX::XMFLOAT3 color;
+};
 
 class InitDX11
 {
@@ -57,6 +68,8 @@ public:
 	bool InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_);
 	void SetMode(int width_, int height_, bool fullscreen_);
 	void DrawScene();
+
+	void DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, std::array<float, 3> color);
 
 	~InitDX11();
 
