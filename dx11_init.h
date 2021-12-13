@@ -16,6 +16,7 @@
 #include "dxerr.h"
 
 #include <array>
+#include <vector>
 #include <utility>
 #include <stdexcept>
 
@@ -65,13 +66,44 @@ struct ConstantBuffer {
 	DirectX::XMMATRIX transform;
 };
 
+// TODO: need to rename it
+struct TexturedQuad_Info
+{
+	D3D_PRIMITIVE_TOPOLOGY topology;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;
+	unsigned short indices;
+	UINT vertex_stride;
+	UINT vertex_offset;
+};
+
+// TODO: NEED TO RENAME!!!
+struct TextureQuad_Instance
+{
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
+	DirectX::XMMATRIX transform;
+};
+
 class InitDX11
 {
 public:
 		
 	bool InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_);
 	void SetMode(int width_, int height_, bool fullscreen_);
-	void DrawScene();
+	void ClearScene();
+	void SwapBuffers();
+
+	void AddPictureToArray(int x, int y, int width, int height);
+
+	void DrawPic();
+
+	bool CompileAllShaders();
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> LoadTestBMP(char* fileName);
 
 	void DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, std::array<float, 4> color);
 
@@ -80,6 +112,10 @@ public:
 private:
 
 	bool InitializeWindow(HINSTANCE hinstance_, WNDPROC wndProc_);
+	// TODO: need to rename it
+	void CreateConstantVar();
+	void BuildQuadStaff();
+	bool CompileQuadShaders();
 
 	bool					enable4xMsaa;
 	UINT					msaaQuality;
@@ -97,6 +133,13 @@ private:
 
 	HINSTANCE				hInstance;
 	WNDPROC					wndProc;
+
+	DirectX::XMMATRIX		orthogonal;
+
+	TexturedQuad_Info		textureQuad;
+	std::vector<TextureQuad_Instance> quads;
+
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> d3dSamplerState;
 
 	int width;
 	int height;

@@ -12,9 +12,20 @@ cvar_t* vid_fullscreen;
 cvar_t* vid_gamma;
 cvar_t* vid_ref;
 
+dx11config_t dx11_config;
+dx11state_t  dx11_state;
+
 InitDX11 dx11App = {};
 
+void RecompileShaders()
+{
+	// TODO: added function to recompile shaders
+	if(dx11App.CompileAllShaders())
+		printf("RECOMPILE SUCCESS\n");
+}
+
 // reading param from config.txt
+// setting a command
 void R_Register(void)
 {
 	dx11_mode = ri.Cvar_Get("dx11_mode", "3", CVAR_ARCHIVE);
@@ -22,6 +33,8 @@ void R_Register(void)
 	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
 	vid_ref = ri.Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
+
+	ri.Cmd_AddCommand("compile_shaders", RecompileShaders);
 }
 
 bool R_SetMode(int* width, int* height)
@@ -66,6 +79,9 @@ R_Init
 qboolean R_Init(void* hinstance, void* hWnd)
 {
 	int width = 1280, height = 720;
+
+	// setting palette mapped from 8 byte color to 24 byte color
+	Draw_GetPalette();
 
 	// register the cvar variables
 	R_Register();
@@ -152,16 +168,6 @@ struct image_s* R_RegisterSkin(char* name)
 }
 
 /*
-=============
-Draw_FindPic
-=============
-*/
-image_t* Draw_FindPic(char* name)
-{
-	return NULL;
-}
-
-/*
 ============
 R_SetSky
 ============
@@ -196,36 +202,6 @@ void R_RenderFrame(refdef_t* fd)
 }
 
 /*
-=============
-Draw_GetPicSize
-=============
-*/
-void Draw_GetPicSize(int* w, int* h, char* pic)
-{
-	return;
-}
-
-/*
-=============
-Draw_Pic
-=============
-*/
-void Draw_Pic(int x, int y, char* pic)
-{
-	return;
-}
-
-/*
-=============
-Draw_StretchPic
-=============
-*/
-void Draw_StretchPic(int x, int y, int w, int h, char* pic)
-{
-	return;
-}
-
-/*
 ================
 Draw_Char
 
@@ -254,58 +230,6 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic)
 
 /*
 =============
-Draw_Fill
-
-Fills a box of pixels with a single color
-=============
-*/
-void Draw_Fill(int x, int y, int w, int h, int c)
-{
-	union
-	{
-		unsigned	c;
-		byte		v[4];
-	} color;
-
-	if ((unsigned)c > 255)
-		ri.Sys_Error(ERR_FATAL, "Draw_Fill: bad color");
-
-	color.c = d_8to24table[c];
-
-	std::array<std::pair<float, float>, 4> pos = {
-		std::make_pair(x, y),
-		std::make_pair(x + w, y),
-		std::make_pair(x, y + h),
-		std::make_pair(x + w, y + h),
-	};
-
-	std::array<float, 4> col = { color.v[0] / 255, color.v[1] / 255, color.v[2] / 255, 1.0f };
-
-	dx11App.DrawColored2D(pos, col);
-}
-
-/*
-================
-Draw_FadeScreen
-
-================
-*/
-void Draw_FadeScreen(void)
-{
-	std::array<std::pair<float, float>, 4> pos = {
-		std::make_pair(0.0f, 0.0f),
-		std::make_pair(vid.width, 0.0f),
-		std::make_pair(0.0f, vid.height),
-		std::make_pair(vid.width, vid.height),
-	};
-
-	std::array<float, 4> col = { 0.0f, 0.0f, 0.0f, 0.8f };
-
-	dx11App.DrawColored2D(pos, col);
-}
-
-/*
-=============
 Draw_StretchRaw
 =============
 */
@@ -325,7 +249,38 @@ unsigned r_rawpalette[256];
 
 void R_SetPalette(const unsigned char* palette)
 {
-	return;
+	int		i;
+
+	byte* rp = (byte*)r_rawpalette;
+
+	if (palette)
+	{
+		for (i = 0; i < 256; i++)
+		{
+			rp[i * 4 + 0] = palette[i * 3 + 0];
+			rp[i * 4 + 1] = palette[i * 3 + 1];
+			rp[i * 4 + 2] = palette[i * 3 + 2];
+			rp[i * 4 + 3] = 0xff;
+		}
+	}
+	else
+	{
+		for (i = 0; i < 256; i++)
+		{
+			rp[i * 4 + 0] = d_8to24table[i] & 0xff;
+			rp[i * 4 + 1] = (d_8to24table[i] >> 8) & 0xff;
+			rp[i * 4 + 2] = (d_8to24table[i] >> 16) & 0xff;
+			rp[i * 4 + 3] = 0xff;
+		}
+	}
+	// setting texture palette
+	DX11_SetTexturePalette(r_rawpalette);
+
+	// TODO: just clear color buffers
+	// maybe this is don't need to us
+	//qglClearColor(0, 0, 0, 0);
+	//qglClear(GL_COLOR_BUFFER_BIT);
+	//qglClearColor(1, 0, 0.5, 0.5);
 }
 
 /*
@@ -335,15 +290,7 @@ R_BeginFrame
 */
 void R_BeginFrame(float camera_separation)
 {
-	//try {
-	//	dxApp.Update();
-	//	dxApp.Draw();
-	//}
-	//catch (DxException& dxE) {
-	//	printf("%s", dxE.ToString());
-	//}
-
-	dx11App.DrawScene();
+	dx11App.ClearScene();
 }
 
 /*
@@ -353,9 +300,9 @@ void R_BeginFrame(float camera_separation)
 ** as yet to be determined.  Probably better not to make this a GLimp
 ** function and instead do a call to GLimp_SwapBuffers.
 */
-void GLimp_EndFrame(void)
+void DX11_EndFrame(void)
 {
-	return;
+	dx11App.SwapBuffers();
 }
 
 /*
@@ -365,6 +312,26 @@ void GLimp_AppActivate(qboolean active)
 {
 	return;
 }
+
+
+//===================================================================
+
+
+void			R_BeginRegistration(char* map);
+struct model_s* R_RegisterModel(char* name);
+struct image_s* R_RegisterSkin(char* name);
+void			R_SetSky(char* name, float rotate, vec3_t axis);
+void			R_EndRegistration(void);
+
+void			R_RenderFrame(refdef_t* fd);
+
+struct image_s* Draw_FindPic(char* name);
+
+void			Draw_Pic(int x, int y, char* name);
+void			Draw_Char(int x, int y, int c);
+void			Draw_TileClear(int x, int y, int w, int h, char* name);
+void			Draw_Fill(int x, int y, int w, int h, int c);
+void			Draw_FadeScreen(void);
 
 /*
 @@@@@@@@@@@@@@@@@@@@@
@@ -395,7 +362,7 @@ refexport_t GetRefAPI(refimport_t rimp)
 	re.DrawStretchPic = Draw_StretchPic;
 	re.DrawChar = Draw_Char;
 	re.DrawTileClear = Draw_TileClear;
-	re.DrawFill = Draw_Fill;
+	re.DrawFill = Draw_Fill; 
 	re.DrawFadeScreen = Draw_FadeScreen;
 
 	re.DrawStretchRaw = Draw_StretchRaw;
@@ -405,7 +372,7 @@ refexport_t GetRefAPI(refimport_t rimp)
 
 	re.CinematicSetPalette = R_SetPalette;
 	re.BeginFrame = R_BeginFrame;
-	re.EndFrame = GLimp_EndFrame;
+	re.EndFrame = DX11_EndFrame;
 
 	re.AppActivate = GLimp_AppActivate;
 

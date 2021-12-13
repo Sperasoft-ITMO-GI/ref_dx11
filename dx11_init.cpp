@@ -1,7 +1,181 @@
 #include "dx11_init.h"
 
+// NOTE: for test loading image only
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> InitDX11::LoadTestBMP(char* fileName)
+{
+	using Microsoft::WRL::ComPtr;
+
+	int x;
+	int y;
+	int c;
+
+	unsigned char* image = stbi_load(fileName , &x, &y, &c, NULL);
+
+	ComPtr<ID3D11ShaderResourceView> texSRV;
+
+	static const uint32_t s_pixel = 0xffc99aff;
+
+	D3D11_SUBRESOURCE_DATA initData = { image, x * c, 0 };
+
+	D3D11_TEXTURE2D_DESC desc = {};
+	desc.Width = x;
+	desc.Height = y;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_IMMUTABLE;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	ComPtr<ID3D11Texture2D> tex;
+	HR(d3dDevice->CreateTexture2D(&desc, &initData, tex.GetAddressOf()));
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+	SRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	SRVDesc.Texture2D.MipLevels = 1;
+	
+	HR(d3dDevice->CreateShaderResourceView(tex.Get(),
+		&SRVDesc, texSRV.GetAddressOf()));
+
+	//STBI_FREE(image);
+
+	return texSRV;
+}
+
+bool InitDX11::CompileQuadShaders()
+{
+	using Microsoft::WRL::ComPtr;
+
+	// Read quad texture shaders from files
+	ComPtr<ID3D11VertexShader> vertex_shader;
+	ComPtr<ID3DBlob> vertex_blob;
+	HR(D3DCompileFromFile(L"ref_dx11\\shaders\\VS_QuadTexture.hlsl", NULL, NULL, "main", "vs_5_0", NULL, NULL, &vertex_blob, NULL));
+	HR(d3dDevice->CreateVertexShader(vertex_blob->GetBufferPointer(), vertex_blob->GetBufferSize(), nullptr, &vertex_shader));
+
+	ComPtr<ID3D11PixelShader> pixel_shader;
+	ComPtr<ID3DBlob> pixel_blob;
+	HR(D3DCompileFromFile(L"ref_dx11\\shaders\\PS_QuadTexture.hlsl", NULL, NULL, "main", "ps_5_0", NULL, NULL, &pixel_blob, NULL));
+	HR(d3dDevice->CreatePixelShader(pixel_blob->GetBufferPointer(), pixel_blob->GetBufferSize(), nullptr, &pixel_shader));
+
+	// Set input layout
+	ComPtr<ID3D11InputLayout> input_layout = NULL;
+	D3D11_INPUT_ELEMENT_DESC input_element_descriptor[] = {
+		{"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+	HR(d3dDevice->CreateInputLayout(
+		input_element_descriptor, 2,
+		vertex_blob->GetBufferPointer(), vertex_blob->GetBufferSize(),
+		&input_layout));
+
+	textureQuad.vertex_shader = vertex_shader;
+	textureQuad.pixel_shader = pixel_shader;
+	textureQuad.input_layout = input_layout;
+
+	return true;
+}
 
 
+bool InitDX11::CompileAllShaders()
+{
+	return true;
+}
+
+void InitDX11::BuildQuadStaff()
+{
+	using DirectX::XMFLOAT2;
+	using DirectX::XMFLOAT3;
+	using DirectX::XMFLOAT4;
+	using Microsoft::WRL::ComPtr;
+
+	float vertices[] =
+	{
+		// left bottom
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		// left top
+		1.0f, -1.0f, 0.0f, 1.0f,
+		// right bottom
+		-1.0f, 1.0f, 1.0f, 0.0f,
+		// right top
+		1.0f, 1.0f, 1.0f, 1.0f
+	};
+
+	// Create Vertex Buffer
+	ComPtr<ID3D11Buffer> vertex_buffer;
+
+	D3D11_BUFFER_DESC vertex_buffer_desc{};
+	vertex_buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertex_buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
+	vertex_buffer_desc.CPUAccessFlags = 0;
+	vertex_buffer_desc.MiscFlags = 0;
+	vertex_buffer_desc.ByteWidth = sizeof(vertices);
+	vertex_buffer_desc.StructureByteStride = vertex_buffer_desc.ByteWidth / 4;
+
+	D3D11_SUBRESOURCE_DATA subresource_data{};
+	subresource_data.pSysMem = vertices;
+
+	HR(d3dDevice->CreateBuffer(&vertex_buffer_desc, &subresource_data, &vertex_buffer));
+
+	// Create Index Buffer
+	const unsigned short indices[] = 
+	{
+		0, 2, 3,
+		3, 1, 0
+	};
+
+	ComPtr<ID3D11Buffer> index_buffer;
+
+	D3D11_BUFFER_DESC index_buffer_desc{};
+	index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	index_buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
+	index_buffer_desc.CPUAccessFlags = 0;
+	index_buffer_desc.MiscFlags = 0;
+	index_buffer_desc.ByteWidth = sizeof(indices);
+	index_buffer_desc.StructureByteStride = sizeof(unsigned short);
+
+	D3D11_SUBRESOURCE_DATA index_subresource_data{};
+	index_subresource_data.pSysMem = indices;
+
+	HR(d3dDevice->CreateBuffer(&index_buffer_desc, &index_subresource_data, &index_buffer));
+
+	// Create constant buffer
+
+	ComPtr<ID3D11Buffer> constant_buffer;
+
+	D3D11_BUFFER_DESC constant_buffer_desc{};
+	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constant_buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
+	constant_buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+	constant_buffer_desc.MiscFlags = 0;
+	constant_buffer_desc.ByteWidth = sizeof(orthogonal);
+	constant_buffer_desc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA constant_subresource_data{};
+	constant_subresource_data.pSysMem = &orthogonal;
+
+	d3dDevice->CreateBuffer(&constant_buffer_desc, &constant_subresource_data, &constant_buffer);
+
+	textureQuad.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	textureQuad.vertex_buffer = vertex_buffer;
+	textureQuad.index_buffer = index_buffer;
+	textureQuad.constant_buffer = constant_buffer;
+
+	textureQuad.indices = 6;
+
+	textureQuad.vertex_stride = vertex_buffer_desc.StructureByteStride;
+	textureQuad.vertex_offset = 0;
+
+	// Compile shaders for this quad
+	CompileQuadShaders();
+
+}
 
 bool InitDX11::InitializeWindow(HINSTANCE hinstance_, WNDPROC wndProc_)
 {
@@ -48,6 +222,23 @@ bool InitDX11::InitializeWindow(HINSTANCE hinstance_, WNDPROC wndProc_)
 	return true;
 }
 
+void InitDX11::AddPictureToArray(int x_, int y_, int width_, int height_)
+{
+	TextureQuad_Instance t = {};
+
+	t.texture = LoadTestBMP("ref_dx11\\textures\\darkbrick.bmp");
+
+	t.transform = DirectX::XMMatrixTranspose(DirectX::XMMatrixIdentity() *
+		DirectX::XMMatrixScaling(width_, height_, 1) *
+		DirectX::XMMatrixTranslation(x_, y_, 0.0f));
+
+	t.transform *= orthogonal;
+
+	quads.push_back(t);
+}
+
+
+
 void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, std::array<float, 4> color) {
 	using DirectX::XMFLOAT2;
 	using DirectX::XMFLOAT4;
@@ -57,10 +248,22 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 	std::array<Vertex, 4> vertices; 
 	for (auto i = 0; i < vertices.size(); ++i) {
 		vertices[i] = {
-			XMFLOAT2(vertexes[i].first - (width / 2.0f), vertexes[i].second - (height / 2.0f)),
+			XMFLOAT2(vertexes[i].first, vertexes[i].second),
 			XMFLOAT4(color.data())
 		};
 	}
+
+	vertices[0].position.x = -1.0f;
+	vertices[0].position.y = -1.0f;
+
+	vertices[1].position.x = 1.0f;
+	vertices[1].position.y = -1.0f;
+
+	vertices[2].position.x = -1.0f;
+	vertices[2].position.y = 1.0f;
+
+	vertices[3].position.x = 1.0f;
+	vertices[3].position.y = 1.0f;
 
 	// Create Vertex Buffer
 	ComPtr<ID3D11Buffer> vertex_buffer;
@@ -98,12 +301,14 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 	index_subresource_data.pSysMem = indices;
 
 	HR(d3dDevice->CreateBuffer(&index_buffer_desc, &index_subresource_data, &index_buffer));
-
 	
 	// Create constant buffer
-	ConstantBuffer cb = {
-	DirectX::XMMatrixOrthographicRH(width, height, 0.0f, 1.0f)
-	};
+	ConstantBuffer cb = { DirectX::XMMatrixTranspose(orthogonal) };
+
+	DirectX::XMMATRIX model = DirectX::XMMatrixIdentity();
+	model *= DirectX::XMMatrixScaling(1024, 768, 1);
+
+	cb.transform *= model;
 
 	ComPtr<ID3D11Buffer> constant_buffer;
 
@@ -156,10 +361,38 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 	d3dImmediateContext->PSSetShader(pixel_shader.Get(), 0, 0);
 
 	d3dImmediateContext->DrawIndexed(std::size(indices), 0u, 0u);
+}
+
+// TODO: VSYNC
+void InitDX11::SwapBuffers()
+{
 	swapChain->Present(1, 0);
 }
 
+void InitDX11::CreateConstantVar()
+{
+	orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, 0.0f, height, 0.0f, 1.0f);
 
+	// Create a sampler state for texture sampling in the pixel shader
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
+
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samplerDesc.BorderColor[0] = 1.0f;
+	samplerDesc.BorderColor[1] = 1.0f;
+	samplerDesc.BorderColor[2] = 1.0f;
+	samplerDesc.BorderColor[3] = 1.0f;
+	samplerDesc.MinLOD = -FLT_MAX;
+	samplerDesc.MaxLOD = FLT_MAX;
+
+	d3dDevice->CreateSamplerState(&samplerDesc, &d3dSamplerState);
+}
 
 
 bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
@@ -228,7 +461,6 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 
 	sd.BufferDesc.Width = width;
 	sd.BufferDesc.Height = height;
-	// TODO: check VSYNC
 	sd.BufferDesc.RefreshRate = QueryRefreshRate(width, height, true);
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
@@ -319,9 +551,43 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 
 	d3dImmediateContext->RSSetViewports(1, &screenViewport);
 
+	// Creating constant variables
+	// like a orthogonal martrix
+	// TODO: need to rename it and move to more appropriate place
+	CreateConstantVar();
+
+	// TODO: move this to more appropriate place
+	BuildQuadStaff();
+
 	printf("[DX11]: Successfully initialized\n");
 
 	return true;
+}
+
+
+void InitDX11::DrawPic()
+{
+	using Microsoft::WRL::ComPtr;
+
+	for (auto i : quads)
+	{
+		d3dImmediateContext->IASetInputLayout(textureQuad.input_layout.Get());
+		d3dImmediateContext->IASetPrimitiveTopology(textureQuad.topology);
+		d3dImmediateContext->IASetVertexBuffers(0, 1, textureQuad.vertex_buffer.GetAddressOf(), &textureQuad.vertex_stride, &textureQuad.vertex_offset);
+		d3dImmediateContext->IASetIndexBuffer(textureQuad.index_buffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+
+		d3dImmediateContext->UpdateSubresource(textureQuad.constant_buffer.Get(), 0, nullptr, &i.transform, 0, 0);
+
+		d3dImmediateContext->PSSetSamplers(0, 1, d3dSamplerState.GetAddressOf());
+		d3dImmediateContext->PSSetShaderResources(0, 1, i.texture.GetAddressOf());
+
+		d3dImmediateContext->VSSetConstantBuffers(0, 1, textureQuad.constant_buffer.GetAddressOf());
+
+		d3dImmediateContext->VSSetShader(textureQuad.vertex_shader.Get(), 0, 0);
+		d3dImmediateContext->PSSetShader(textureQuad.pixel_shader.Get(), 0, 0);
+
+		d3dImmediateContext->DrawIndexed(textureQuad.indices, 0, 0);
+	}
 }
 
 
@@ -333,15 +599,12 @@ void InitDX11::SetMode(int width_, int height_, bool fullscreen_)
 	fullscreen = fullscreen_;
 }
 
-void InitDX11::DrawScene()
+void InitDX11::ClearScene()
 {
 	assert(d3dImmediateContext);
-	assert(swapChain);
 
 	d3dImmediateContext->ClearRenderTargetView(renderTargetView, DirectX::Colors::DodgerBlue);
 	d3dImmediateContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	//swapChain->Present(0, 0);
 }
 
 InitDX11::~InitDX11()
@@ -446,7 +709,8 @@ DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync)
 		// Now store the refresh rate of the monitor that matches the width and height of the requested screen.
 		for (UINT i = 0; i < numDisplayModes; ++i)
 		{
-			printf("Widht: %d, Height: %d\n", displayModeList[i].Width, displayModeList[i].Height);
+			printf("Widht: %d, Height: %d, hz: %d\n", displayModeList[i].Width, displayModeList[i].Height, 
+				(displayModeList[i].RefreshRate.Numerator / displayModeList[i].RefreshRate.Denominator));
 			if (displayModeList[i].Width == screenWidth && displayModeList[i].Height == screenHeight)
 			{
 				refreshRate = displayModeList[i].RefreshRate;

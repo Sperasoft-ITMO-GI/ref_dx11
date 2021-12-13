@@ -11,13 +11,12 @@
 #include "../client/ref.h"
 #include "../win32/winquake.h"
 
-
 #include "dx11_init.h"
 
 
 #define	REF_VERSION	"DX11 0.01"
 
-unsigned	d_8to24table[256];
+extern unsigned	d_8to24table[256];
 
 typedef struct
 {
@@ -34,46 +33,6 @@ extern cvar_t* vid_ref;
 
 extern InitDX11 dx11App;
 
-typedef struct
-{
-
-} dx12config_t;
-
-typedef struct
-{
-	float inverse_intensity;
-	qboolean fullscreen;
-
-	int     prev_mode;
-
-	unsigned char* d_16to8table;
-
-	int lightmap_textures;
-
-	int	currenttextures[2];
-	int currenttmu;
-
-	float camera_separation;
-	qboolean stereo_enabled;
-
-	unsigned char originalRedGammaTable[256];
-	unsigned char originalGreenGammaTable[256];
-	unsigned char originalBlueGammaTable[256];
-} dx12state_t;
-
-extern dx12config_t  gl_config;
-extern dx12state_t   gl_state;
-
-typedef enum
-{
-	rserr_ok,
-
-	rserr_invalid_fullscreen,
-	rserr_invalid_mode,
-
-	rserr_unknown
-} rserr_t;
-
 /*
 
   skins will be outline flood filled and mip mapped
@@ -86,6 +45,7 @@ typedef enum
   pic
 
 */
+
 typedef enum
 {
 	it_skin,
@@ -111,18 +71,97 @@ typedef struct image_s
 	qboolean paletted;
 } image_t;
 
+typedef struct
+{
+	int         renderer;
+	const char* renderer_string;
+	const char* vendor_string;
+	const char* version_string;
+	const char* extensions_string;
+
+	qboolean	allow_cds;
+} dx11config_t;
+
+typedef struct
+{
+	float inverse_intensity;
+	qboolean fullscreen;
+
+	int     prev_mode;
+
+	unsigned char* d_16to8table;
+
+	int lightmap_textures;
+
+	int	currenttextures[2];
+	int currenttmu;
+
+	float camera_separation;
+	qboolean stereo_enabled;
+
+	unsigned char originalRedGammaTable[256];
+	unsigned char originalGreenGammaTable[256];
+	unsigned char originalBlueGammaTable[256];
+} dx11state_t;
+
+extern dx11config_t  dx11_config;
+extern dx11state_t   dx11_state;
+
+typedef enum
+{
+	rserr_ok,
+
+	rserr_invalid_fullscreen,
+	rserr_invalid_mode,
+
+	rserr_unknown
+} rserr_t;
 
 
+#define	TEXNUM_LIGHTMAPS	1024
+#define	TEXNUM_SCRAPS		1152
+#define	TEXNUM_IMAGES		1153
+
+#define		MAX_GLTEXTURES	1024
+
+#define	MAX_LBM_HEIGHT		480
+
+#define BACKFACE_EPSILON	0.01
+
+
+//====================================================
+
+extern	image_t		gltextures[MAX_GLTEXTURES];
+extern	int			numgltextures;
+
+extern	int		registration_sequence;
+
+
+extern	image_t* r_notexture;
+extern	image_t* r_particletexture;
+extern	entity_t* currententity;
+//extern	model_t* currentmodel;
+extern	int			r_visframecount;
+extern	int			r_framecount;
+extern	cplane_t	frustum[4];
+extern	int			c_brush_polys, c_alias_polys;
+
+
+extern	int			gl_filter_min, gl_filter_max;
+
+
+
+void LoadPCX(char* filename, byte** pic, byte** palette, int* width, int* height);
 
 
 bool R_SetMode(int* width, int* height);
 
+int Draw_GetPalette(void);
+
+void DX11_SetTexturePalette(unsigned palette[256]);
 
 
-
-
-
-
+image_t* DX11_FindImage(char* name, imagetype_t type);
 
 qboolean 	R_Init(void* hinstance, void* hWnd);
 void		R_Shutdown(void);

@@ -157,10 +157,13 @@
     <ClInclude Include="dx11_init.h" />
     <ClInclude Include="dx11_local.h" />
     <ClInclude Include="dxerr.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\game\q_shared.c" />
     <ClCompile Include="..\win32\q_shwin.c" />
+    <ClCompile Include="dx11_draw.cpp" />
+    <ClCompile Include="dx11_image.cpp" />
     <ClCompile Include="dx11_init.cpp" />
     <ClCompile Include="dx11_rmain.cpp" />
     <ClCompile Include="dxerr.cpp" />
@@ -171,11 +174,15 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="shaders\PS_QuadTexture.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="shaders\vertex_shader.hlsl">
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\%(Filename).cso</ObjectFileOutput>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="shaders\VS_QuadTexture.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
