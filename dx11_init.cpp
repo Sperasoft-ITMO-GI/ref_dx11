@@ -53,17 +53,19 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 	using DirectX::XMFLOAT3;
 	using Microsoft::WRL::ComPtr;
 
-	std::array<Vertex, 4> vertices;
+	// Set vertices from DrawFill function
+	std::array<Vertex, 4> vertices; 
 	for (auto i = 0; i < vertices.size(); ++i) {
 		vertices[i] = {
-			XMFLOAT2(-vertexes[i].first, -vertexes[i].second),
-			//XMFLOAT3(color.data())
+			XMFLOAT2(vertexes[i].first - (width / 2.0f), vertexes[i].second - (height / 2.0f)),
+			XMFLOAT3(color[0], color[1], color[2])
 		};
 	}
 
+	// Create Vertex Buffer
 	ComPtr<ID3D11Buffer> vertex_buffer;
 
-	D3D11_BUFFER_DESC buffer_desc = {};
+	D3D11_BUFFER_DESC buffer_desc{};
 	buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
 	buffer_desc.CPUAccessFlags = 0u;
@@ -71,42 +73,90 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 	buffer_desc.ByteWidth = sizeof(vertices);
 	buffer_desc.StructureByteStride = sizeof(Vertex);
 
-	D3D11_SUBRESOURCE_DATA subresource_data = {};
+	D3D11_SUBRESOURCE_DATA subresource_data{};
 	subresource_data.pSysMem = vertices.data();
 
 	HR(d3dDevice->CreateBuffer(&buffer_desc, &subresource_data, &vertex_buffer));
+
+	// Create Index Buffer
+	const unsigned short indices[] = {
+		0, 2, 3,
+		3, 1, 0
+	};
+
+	ComPtr<ID3D11Buffer> index_buffer;
+
+	D3D11_BUFFER_DESC index_buffer_desc{};
+	index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	index_buffer_desc.CPUAccessFlags = 0u;
+	index_buffer_desc.MiscFlags = 0u;
+	index_buffer_desc.ByteWidth = sizeof(indices);;
+	index_buffer_desc.StructureByteStride = sizeof(unsigned short);
+
+	D3D11_SUBRESOURCE_DATA index_subresource_data{};
+	index_subresource_data.pSysMem = indices;
+
+	HR(d3dDevice->CreateBuffer(&index_buffer_desc, &index_subresource_data, &index_buffer));
+
 	
-	const UINT stride = sizeof(Vertex);
-	const UINT offset = 0u;
-	d3dImmediateContext->IASetVertexBuffers(0u, 1u, vertex_buffer.GetAddressOf(), &stride, &offset);
+	// Create constant buffer
+	ConstantBuffer cb = {
+	DirectX::XMMatrixOrthographicRH(width, height, 0.0f, 1.0f)
+	};
 
+	ComPtr<ID3D11Buffer> constant_buffer;
+
+	D3D11_BUFFER_DESC constant_buffer_desc{};
+	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constant_buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
+	constant_buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	constant_buffer_desc.MiscFlags = 0u;
+	constant_buffer_desc.ByteWidth = sizeof(cb);;
+	constant_buffer_desc.StructureByteStride = 0u;
+
+	D3D11_SUBRESOURCE_DATA constant_subresource_data{};
+	constant_subresource_data.pSysMem = &cb;
+
+	d3dDevice->CreateBuffer(&constant_buffer_desc, &constant_subresource_data, &constant_buffer);
+
+	// Read pixel and vertex shaders from compiled files
 	ComPtr<ID3D11PixelShader> pixel_shader;
-	ComPtr<ID3DBlob> blob;
-	D3DReadFileToBlob(L"ref_dx11\\shaders\\pixel_shader.cso", &blob);
-	HR(d3dDevice->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &pixel_shader));
-	d3dImmediateContext->PSSetShader(pixel_shader.Get(), 0, 0);
-
+	ComPtr<ID3DBlob> pixel_blob;
+	D3DReadFileToBlob(L"ref_dx11\\shaders\\pixel_shader.cso", &pixel_blob);
+	HR(d3dDevice->CreatePixelShader(pixel_blob->GetBufferPointer(), pixel_blob->GetBufferSize(), nullptr, &pixel_shader));
+	
 	ComPtr<ID3D11VertexShader> vertex_shader;
-	D3DReadFileToBlob(L"ref_dx11\\shaders\\vertex_shader.cso", &blob);
-	HR(d3dDevice->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &vertex_shader));
-	d3dImmediateContext->VSSetShader(vertex_shader.Get(), 0, 0);
-
+	ComPtr<ID3DBlob> vertex_blob;
+	D3DReadFileToBlob(L"ref_dx11\\shaders\\vertex_shader.cso", &vertex_blob);
+	HR(d3dDevice->CreateVertexShader(vertex_blob->GetBufferPointer(), vertex_blob->GetBufferSize(), nullptr, &vertex_shader));
+	
+	// Set input layout
 	ComPtr<ID3D11InputLayout> input_layout;
 	D3D11_INPUT_ELEMENT_DESC input_element_descriptor[] = {
-		{"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"Color", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMFLOAT3), D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 	HR(d3dDevice->CreateInputLayout(
 		input_element_descriptor, std::size(input_element_descriptor),
-		blob->GetBufferPointer(), blob->GetBufferSize(),
+		vertex_blob->GetBufferPointer(), vertex_blob->GetBufferSize(),
 		&input_layout
 	));
 
+
+	// Bind all to pipeline
+	const UINT stride = sizeof(Vertex);
+	const UINT offset = 0u;
 	d3dImmediateContext->IASetInputLayout(input_layout.Get());
-
 	d3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	d3dImmediateContext->IASetVertexBuffers(0u, 1u, vertex_buffer.GetAddressOf(), &stride, &offset);
+	d3dImmediateContext->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+	d3dImmediateContext->VSSetConstantBuffers(0u, 1u, constant_buffer.GetAddressOf());
+	d3dImmediateContext->VSSetShader(vertex_shader.Get(), 0, 0);
+	d3dImmediateContext->PSSetShader(pixel_shader.Get(), 0, 0);
 
-	d3dImmediateContext->Draw(std::size(vertices), 0u);
-	swapChain->Present(0, 0);
+	d3dImmediateContext->DrawIndexed(std::size(indices), 0u, 0u);
+	swapChain->Present(1, 0);
 }
 
 
@@ -259,7 +309,7 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	// 8. Set the viewport
 
 	// Set the viewport transform.
-
+	
 	screenViewport.TopLeftX = 0;
 	screenViewport.TopLeftY = 0;
 	screenViewport.Width = (float)(width);
@@ -288,7 +338,7 @@ void InitDX11::DrawScene()
 	assert(d3dImmediateContext);
 	assert(swapChain);
 
-	d3dImmediateContext->ClearRenderTargetView(renderTargetView, DirectX::Colors::LightBlue);
+	d3dImmediateContext->ClearRenderTargetView(renderTargetView, DirectX::Colors::DodgerBlue);
 	d3dImmediateContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	//swapChain->Present(0, 0);

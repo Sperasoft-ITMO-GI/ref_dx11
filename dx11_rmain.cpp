@@ -274,8 +274,8 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 
 	std::array<std::pair<float, float>, 4> pos = {
 		std::make_pair(x, y),
-		std::make_pair(x, y + h),
 		std::make_pair(x + w, y),
+		std::make_pair(x, y + h),
 		std::make_pair(x + w, y + h),
 	};
 
