@@ -279,7 +279,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 		std::make_pair(x + w, y + h),
 	};
 
-	std::array<float, 3> col = { color.v[0] / 255, color.v[1] / 255, color.v[2] / 255 };
+	std::array<float, 4> col = { color.v[0] / 255, color.v[1] / 255, color.v[2] / 255, 1.0f };
 
 	dx11App.DrawColored2D(pos, col);
 }
@@ -292,7 +292,16 @@ Draw_FadeScreen
 */
 void Draw_FadeScreen(void)
 {
-	return;
+	std::array<std::pair<float, float>, 4> pos = {
+		std::make_pair(0.0f, 0.0f),
+		std::make_pair(vid.width, 0.0f),
+		std::make_pair(0.0f, vid.height),
+		std::make_pair(vid.width, vid.height),
+	};
+
+	std::array<float, 4> col = { 0.0f, 0.0f, 0.0f, 0.8f };
+
+	dx11App.DrawColored2D(pos, col);
 }
 
 /*

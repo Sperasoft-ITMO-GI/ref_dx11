@@ -48,9 +48,9 @@ bool InitDX11::InitializeWindow(HINSTANCE hinstance_, WNDPROC wndProc_)
 	return true;
 }
 
-void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, std::array<float, 3> color) {
+void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, std::array<float, 4> color) {
 	using DirectX::XMFLOAT2;
-	using DirectX::XMFLOAT3;
+	using DirectX::XMFLOAT4;
 	using Microsoft::WRL::ComPtr;
 
 	// Set vertices from DrawFill function
@@ -58,7 +58,7 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 	for (auto i = 0; i < vertices.size(); ++i) {
 		vertices[i] = {
 			XMFLOAT2(vertexes[i].first - (width / 2.0f), vertexes[i].second - (height / 2.0f)),
-			XMFLOAT3(color[0], color[1], color[2])
+			XMFLOAT4(color.data())
 		};
 	}
 
@@ -135,7 +135,7 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 	ComPtr<ID3D11InputLayout> input_layout;
 	D3D11_INPUT_ELEMENT_DESC input_element_descriptor[] = {
 		{"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"Color", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMFLOAT3), D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"Color", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMFLOAT4), D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 	HR(d3dDevice->CreateInputLayout(
 		input_element_descriptor, std::size(input_element_descriptor),

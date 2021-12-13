@@ -58,7 +58,7 @@ DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync);
 struct Vertex {
 	//float x, y;
 	DirectX::XMFLOAT2 position;
-	DirectX::XMFLOAT3 color;
+	DirectX::XMFLOAT4 color;
 };
 
 struct ConstantBuffer {
@@ -73,7 +73,7 @@ public:
 	void SetMode(int width_, int height_, bool fullscreen_);
 	void DrawScene();
 
-	void DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, std::array<float, 3> color);
+	void DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, std::array<float, 4> color);
 
 	~InitDX11();
 
