@@ -57,7 +57,6 @@
 DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync);
 
 struct Vertex {
-	//float x, y;
 	DirectX::XMFLOAT2 position;
 	DirectX::XMFLOAT4 color;
 };

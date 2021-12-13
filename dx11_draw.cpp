@@ -96,7 +96,7 @@ void Draw_Pic(int x, int y, char* pic)
 	if (scrap_dirty)
 		Scrap_Upload();
 
-	//dx11App.AddPictureToArray(x, y, gl->width, gl->height);
+	dx11App.AddPictureToArray(x, y, gl->width, gl->height);
 
 	/*GL_Bind(gl->texnum);
 	qglBegin(GL_QUADS);

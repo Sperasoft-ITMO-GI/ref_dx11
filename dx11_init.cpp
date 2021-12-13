@@ -2,7 +2,7 @@
 
 // NOTE: for test loading image only
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <stb_image.h>
 
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> InitDX11::LoadTestBMP(char* fileName)
 {
@@ -67,7 +67,7 @@ bool InitDX11::CompileQuadShaders()
 	ComPtr<ID3D11InputLayout> input_layout = NULL;
 	D3D11_INPUT_ELEMENT_DESC input_element_descriptor[] = {
 		{"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
 	HR(d3dDevice->CreateInputLayout(
@@ -253,18 +253,6 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 		};
 	}
 
-	vertices[0].position.x = -1.0f;
-	vertices[0].position.y = -1.0f;
-
-	vertices[1].position.x = 1.0f;
-	vertices[1].position.y = -1.0f;
-
-	vertices[2].position.x = -1.0f;
-	vertices[2].position.y = 1.0f;
-
-	vertices[3].position.x = 1.0f;
-	vertices[3].position.y = 1.0f;
-
 	// Create Vertex Buffer
 	ComPtr<ID3D11Buffer> vertex_buffer;
 
@@ -294,8 +282,8 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 	index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
 	index_buffer_desc.CPUAccessFlags = 0u;
 	index_buffer_desc.MiscFlags = 0u;
-	index_buffer_desc.ByteWidth = sizeof(indices);;
-	index_buffer_desc.StructureByteStride = sizeof(unsigned short);
+	index_buffer_desc.ByteWidth = sizeof(indices);
+	index_buffer_desc.StructureByteStride = sizeof(unsigned short); // должно быть ноль на том что не SRV
 
 	D3D11_SUBRESOURCE_DATA index_subresource_data{};
 	index_subresource_data.pSysMem = indices;
@@ -305,10 +293,9 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 	// Create constant buffer
 	ConstantBuffer cb = { DirectX::XMMatrixTranspose(orthogonal) };
 
-	DirectX::XMMATRIX model = DirectX::XMMatrixIdentity();
-	model *= DirectX::XMMatrixScaling(1024, 768, 1);
-
-	cb.transform *= model;
+	//DirectX::XMMATRIX model = DirectX::XMMatrixIdentity();
+	//model *= DirectX::XMMatrixScaling(1024, 768, 1);
+	//cb.transform *= model;
 
 	ComPtr<ID3D11Buffer> constant_buffer;
 
