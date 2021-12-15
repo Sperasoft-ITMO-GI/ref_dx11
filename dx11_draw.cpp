@@ -2,8 +2,81 @@
 
 image_t* draw_chars;
 
-extern	qboolean	scrap_dirty;
-void Scrap_Upload(void);
+/*
+===============
+Draw_InitLocal
+===============
+*/
+void Draw_InitLocal(void)
+{
+	// load console characters (don't bilerp characters)
+	draw_chars = DX11_FindImage("pics/conchars.pcx", it_pic);
+	//GL_Bind(draw_chars->texnum);
+	//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+}
+
+
+/*
+================
+Draw_Char
+
+Draws one 8*8 graphics character with 0 being transparent.
+It can be clipped to the top of the screen to allow the console to be
+smoothly scrolled off.
+================
+*/
+void Draw_Char(int x, int y, int num)
+{
+	int				row, col;
+	float			frow, fcol, size;
+
+	num &= 255;
+
+	if ((num & 127) == 32)
+		return;		// space
+
+	if (y <= -8)
+		return;			// totally off screen
+
+	row = num >> 4;
+	col = num & 15;
+
+	frow = row * 0.0625;
+	fcol = col * 0.0625;
+	size = 0.0625;
+
+	Vertex_PosTexCol_Info info = {};
+	info.pos.x = x;
+	info.pos.y = y;
+	info.pos.width = 8;
+	info.pos.height = 8;
+
+	info.tex.xl = fcol;
+	info.tex.xr = fcol + size;
+	info.tex.yt = frow;
+	info.tex.yb = frow + size;
+
+	info.col.x = 1.0;
+	info.col.y = 1.0;
+	info.col.z = 1.0;
+	info.col.w = 1.0;
+
+	dx11App.DummyDrawingPicture(&info, draw_chars->texnum);
+
+	/*GL_Bind(draw_chars->texnum);
+
+	qglBegin(GL_QUADS);
+	qglTexCoord2f(fcol, frow);
+	qglVertex2f(x, y);
+	qglTexCoord2f(fcol + size, frow);
+	qglVertex2f(x + 8, y);
+	qglTexCoord2f(fcol + size, frow + size);
+	qglVertex2f(x + 8, y + 8);
+	qglTexCoord2f(fcol, frow + size);
+	qglVertex2f(x, y + 8);
+	qglEnd();*/
+}
 
 /*
 =============
@@ -61,20 +134,23 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic)
 		return;
 	}
 
-	/*if (scrap_dirty)
-		Scrap_Upload();*/
+	Vertex_PosTexCol_Info info = {};
+	info.pos.x = x;
+	info.pos.y = y;
+	info.pos.width = gl->width;
+	info.pos.height = gl->height;
 
-	/*GL_Bind(gl->texnum);
-	qglBegin(GL_QUADS);
-	qglTexCoord2f(gl->sl, gl->tl);
-	qglVertex2f(x, y);
-	qglTexCoord2f(gl->sh, gl->tl);
-	qglVertex2f(x + w, y);
-	qglTexCoord2f(gl->sh, gl->th);
-	qglVertex2f(x + w, y + h);
-	qglTexCoord2f(gl->sl, gl->th);
-	qglVertex2f(x, y + h);
-	qglEnd();*/
+	info.tex.xl = 0.0f;
+	info.tex.xr = 1.0f;
+	info.tex.yt = 0.0f;
+	info.tex.yb = 1.0f;
+
+	info.col.x = 1.0;
+	info.col.y = 1.0;
+	info.col.z = 1.0;
+	info.col.w = 1.0;
+
+	dx11App.DummyDrawingPicture(&info, gl->texnum);
 }
 
 
@@ -94,22 +170,23 @@ void Draw_Pic(int x, int y, char* pic)
 		return;
 	}
 
-	/*if (scrap_dirty)
-		Scrap_Upload();*/
+	Vertex_PosTexCol_Info info = {};
+	info.pos.x = x;
+	info.pos.y = y;
+	info.pos.width = gl->width;
+	info.pos.height = gl->height;
 
-	dx11App.DummyDrawingPicture(x, y, gl->width, gl->height, 1, gl->texnum);
+	info.tex.xl = 0.0f;
+	info.tex.xr = 1.0f;
+	info.tex.yt = 0.0f;
+	info.tex.yb = 1.0f;
 
-	/*GL_Bind(gl->texnum);
-	qglBegin(GL_QUADS);
-	qglTexCoord2f(gl->sl, gl->tl);
-	qglVertex2f(x, y);
-	qglTexCoord2f(gl->sh, gl->tl);
-	qglVertex2f(x + gl->width, y);
-	qglTexCoord2f(gl->sh, gl->th);
-	qglVertex2f(x + gl->width, y + gl->height);
-	qglTexCoord2f(gl->sl, gl->th);
-	qglVertex2f(x, y + gl->height);
-	qglEnd();*/
+	info.col.x = 1.0;
+	info.col.y = 1.0;
+	info.col.z = 1.0;
+	info.col.w = 1.0;
+
+	dx11App.DummyDrawingPicture(&info, gl->texnum);
 }
 
 /*
@@ -141,7 +218,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 
 	std::array<float, 4> col = { color.v[0] / 255, color.v[1] / 255, color.v[2] / 255, 1.0f };
 
-	//dx11App.DrawColored2D(pos, col);
+	dx11App.DrawColored2D(pos, col);
 }
 
 /*
@@ -161,5 +238,5 @@ void Draw_FadeScreen(void)
 
 	std::array<float, 4> col = { 0.0f, 0.0f, 0.0f, 0.8f };
 
-	//dx11App.DrawColored2D(pos, col);
+	dx11App.DrawColored2D(pos, col);
 }

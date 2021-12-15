@@ -152,6 +152,7 @@ extern	int			gl_filter_min, gl_filter_max;
 extern	cvar_t* gl_round_down;
 
 
+void Draw_InitLocal(void);
 
 void LoadPCX(char* filename, byte** pic, byte** palette, int* width, int* height);
 

@@ -57,10 +57,26 @@
 DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync);
 
 // TODO: NEED TO RENAME!!!
-struct Vertex_PosTexCol {
+struct Vertex_PosTexCol 
+{
 	DirectX::XMFLOAT2 pos;
 	DirectX::XMFLOAT2 texCoord;
 	DirectX::XMFLOAT4 col;
+};
+
+struct Vertex_PosTexCol_Info
+{
+	struct Pos {
+		float x, y, width, height;
+	} pos;
+
+	struct TexCoord {
+		float xl, yt, xr, yb;
+	} tex;
+
+	struct Col {
+		float x, y, z, w;
+	} col;
 };
 
 struct Vertex {
@@ -92,7 +108,7 @@ public:
 	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum);
 
 	void DummyTest(char* name, int width, int height, int bits, unsigned char* data, int type);
-	void DummyDrawingPicture(int x, int y, int width, int height, int col, int texNum);
+	void DummyDrawingPicture(Vertex_PosTexCol_Info* vertex, int texNum);
 
 private:
 
@@ -111,6 +127,7 @@ private:
 	ID3D11RenderTargetView* renderTargetView;
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11BlendState*		blendState;
+	ID3D11RasterizerState*	d3dRasterizerState;
 	D3D11_VIEWPORT			screenViewport;
 	D3D_DRIVER_TYPE			d3dDriverType;
 
@@ -130,8 +147,8 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> d3dSamplerState;
 
-	int width;
-	int height;
+	int mainWindowWidth;
+	int mainWindowHeight;
 
 	bool fullscreen;
 

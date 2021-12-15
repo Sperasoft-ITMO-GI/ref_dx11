@@ -109,6 +109,11 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	// can be call after creating context and Vid_NewWindow()
 	ri.Vid_MenuInit();
 
+	//GL_InitImages();
+	//Mod_Init();
+	//R_InitParticleTexture();
+	Draw_InitLocal();
+
 	return True;
 }
 
@@ -201,20 +206,6 @@ R_RenderFrame
 @@@@@@@@@@@@@@@@@@@@@
 */
 void R_RenderFrame(refdef_t* fd)
-{
-	return;
-}
-
-/*
-================
-Draw_Char
-
-Draws one 8*8 graphics character with 0 being transparent.
-It can be clipped to the top of the screen to allow the console to be
-smoothly scrolled off.
-================
-*/
-void Draw_Char(int x, int y, int num)
 {
 	return;
 }

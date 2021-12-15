@@ -558,12 +558,12 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 				uploaded_paletted = True;
 				GL_BuildPalettedTexture(paletted_texture, (unsigned char*)data, scaled_width, scaled_height);
 				dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum);
-				//dx11App.DummyTest(name, scaled_width, scaled_height, 8, paletted_texture, type);
+				dx11App.DummyTest(name, scaled_width, scaled_height, 8, paletted_texture, img->type);
 			}
 			else
 			{
 				dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum);
-				//dx11App.DummyTest(name, scaled_width, scaled_height, 32, (unsigned char*)data, type);
+				dx11App.DummyTest(name, scaled_width, scaled_height, 32, (unsigned char*)data, img->type);
 			}
 			goto done;
 		}
@@ -579,12 +579,12 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 		uploaded_paletted = True;
 		GL_BuildPalettedTexture(paletted_texture, (unsigned char*)scaled, scaled_width, scaled_height);
 		dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum);
-		//dx11App.DummyTest(name, scaled_width, scaled_height, 8, paletted_texture, type);
+		dx11App.DummyTest(name, scaled_width, scaled_height, 8, paletted_texture, img->type);
 	}
 	else
 	{
 		dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum);
-		//dx11App.DummyTest(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, type);
+		dx11App.DummyTest(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
 	}
 
 	/*if (mipmap)
@@ -932,7 +932,10 @@ image_t* DX_LoadPic(char* name, byte* pic, int width, int height, imagetype_t ty
 	image->type = type;
 
 	if (type == it_skin && bits == 8)
+	{
 		R_FloodFillSkin(pic, width, height);
+		//dx11App.DummyTest(name, image->width, image->height, 8, (unsigned char*)pic, image->type);
+	}
 
 	// load little pics into the scrap
 	if (image->type == it_pic && bits == 8
@@ -959,6 +962,9 @@ image_t* DX_LoadPic(char* name, byte* pic, int width, int height, imagetype_t ty
 		image->sh = (x + image->width - 0.01) / (float)BLOCK_WIDTH;
 		image->tl = (y + 0.01) / (float)BLOCK_WIDTH;
 		image->th = (y + image->height - 0.01) / (float)BLOCK_WIDTH;
+
+		dx11App.AddTexturetoSRV(image->width, image->height, 8, (unsigned char*)pic, image->texnum);
+		dx11App.DummyTest(name, image->width, image->height, 8, (unsigned char*)pic, image->type);
 	}
 	else
 	{

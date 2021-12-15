@@ -138,7 +138,7 @@ bool InitDX11::InitializeWindow(HINSTANCE hinstance_, WNDPROC wndProc_)
 	}
 
 	// Compute window rectangle dimensions based on requested client area dimensions.
-	RECT R = { 0, 0, width, height };
+	RECT R = { 0, 0, mainWindowWidth, mainWindowHeight };
 	AdjustWindowRect(&R, WS_OVERLAPPEDWINDOW, false);
 	int width = R.right - R.left;
 	int height = R.bottom - R.top;
@@ -278,7 +278,8 @@ void InitDX11::SwapBuffers()
 
 void InitDX11::CreateConstantVar()
 {
-	orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, 0.0f, height, 0.0f, 1.0f);
+	orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, mainWindowWidth, mainWindowHeight, 0.0f, 0.0f, 100.0f); // (mainWindowWidth, 0.0f, mainWindowHeight, 0.0f, 0.0f, 1.0f)
+																														// (0.0f, mainWindowWidth, 0.0f, mainWindowHeight, 0.0f, 1.0f)
 
 	// Create a sampler state for texture sampling in the pixel shader
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -366,9 +367,9 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	sd.BufferDesc.Width = width;
-	sd.BufferDesc.Height = height;
-	sd.BufferDesc.RefreshRate = QueryRefreshRate(width, height, true);
+	sd.BufferDesc.Width = mainWindowWidth;
+	sd.BufferDesc.Height = mainWindowHeight;
+	sd.BufferDesc.RefreshRate = QueryRefreshRate(mainWindowWidth, mainWindowHeight, true);
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
@@ -421,8 +422,8 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 
-	depthStencilDesc.Width = width;
-	depthStencilDesc.Height = height;
+	depthStencilDesc.Width = mainWindowWidth;
+	depthStencilDesc.Height = mainWindowHeight;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
 	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -451,14 +452,35 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 	
 	screenViewport.TopLeftX = 0;
 	screenViewport.TopLeftY = 0;
-	screenViewport.Width = (float)(width);
-	screenViewport.Height = (float)(height);
+	screenViewport.Width = (float)(mainWindowWidth);
+	screenViewport.Height = (float)(mainWindowHeight);
 	screenViewport.MinDepth = 0.0f;
 	screenViewport.MaxDepth = 1.0f;
 
 	d3dImmediateContext->RSSetViewports(1, &screenViewport);
 
-	// 9. Creating Blend state
+	// 9. Setup rasterizer state.
+	// NOTE: Current cull mode setted for UI
+	D3D11_RASTERIZER_DESC rasterizerDesc;
+	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+
+	rasterizerDesc.AntialiasedLineEnable = FALSE;
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
+	rasterizerDesc.DepthBias = 0;
+	rasterizerDesc.DepthBiasClamp = 0.0f;
+	rasterizerDesc.DepthClipEnable = TRUE;
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.FrontCounterClockwise = FALSE;
+	rasterizerDesc.MultisampleEnable = FALSE;
+	rasterizerDesc.ScissorEnable = FALSE;
+	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+
+	// Create the rasterizer state object.
+	d3dDevice->CreateRasterizerState(&rasterizerDesc, &d3dRasterizerState);
+
+	d3dImmediateContext->RSSetState(d3dRasterizerState);
+
+	// 10. Creating Blend state
 
 	D3D11_BLEND_DESC blendStateDesc;
 	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
@@ -486,8 +508,8 @@ bool InitDX11::InitializeDX11(HINSTANCE hinstance_, WNDPROC wndProc_)
 
 void InitDX11::SetMode(int width_, int height_, bool fullscreen_)
 {
-	width = width_;
-	height = height_;
+	mainWindowWidth = width_;
+	mainWindowHeight = height_;
 	fullscreen = fullscreen_;
 }
 
@@ -660,30 +682,32 @@ void InitDX11::AddTexturetoSRV(int width, int height, int bits, unsigned char* d
 }
 
 
-void InitDX11::DummyDrawingPicture(int x, int y, int width, int height, int col, int texNum)
+void InitDX11::DummyDrawingPicture(Vertex_PosTexCol_Info* v, int texNum)
 {
 	using DirectX::XMFLOAT2;
 	using DirectX::XMFLOAT3;
 	using DirectX::XMFLOAT4;
+	using DirectX::XMVECTOR;
+	using DirectX::XMMATRIX;
 	using Microsoft::WRL::ComPtr;
 
 	Vertex_PosTexCol vertices[4] = {};
 
-	vertices[0].pos = XMFLOAT2(x, y);
-	vertices[0].texCoord = XMFLOAT2(0.0f, 0.0f);
-	vertices[0].col = XMFLOAT4(col, col, col, 1.0f);
+	vertices[0].pos = XMFLOAT2(v->pos.x, v->pos.y);
+	vertices[0].texCoord = XMFLOAT2(v->tex.xl, v->tex.yt);
+	vertices[0].col = XMFLOAT4(v->col.x, v->col.y, v->col.z, v->col.w);
 
-	vertices[1].pos = XMFLOAT2(x + width, y);
-	vertices[1].texCoord = XMFLOAT2(1.0f, 0.0f);
-	vertices[1].col = XMFLOAT4(col, col, col, 1.0f);
+	vertices[1].pos = XMFLOAT2(v->pos.x + v->pos.width, v->pos.y);
+	vertices[1].texCoord = XMFLOAT2(v->tex.xr, v->tex.yt);
+	vertices[1].col = XMFLOAT4(v->col.x, v->col.y, v->col.z, v->col.w);
 
-	vertices[2].pos = XMFLOAT2(x + width, y + height);
-	vertices[2].texCoord = XMFLOAT2(1.0f, 1.0f);
-	vertices[2].col = XMFLOAT4(col, col, col, 1.0f);
+	vertices[2].pos = XMFLOAT2(v->pos.x + v->pos.width, v->pos.y + v->pos.height);
+	vertices[2].texCoord = XMFLOAT2(v->tex.xr, v->tex.yb);
+	vertices[2].col = XMFLOAT4(v->col.x, v->col.y, v->col.z, v->col.w);
 
-	vertices[3].pos = XMFLOAT2(x, y + height);
-	vertices[3].texCoord = XMFLOAT2(0.0f, 1.0f);
-	vertices[3].col = XMFLOAT4(col, col, col, 1.0f);
+	vertices[3].pos = XMFLOAT2(v->pos.x, v->pos.y + v->pos.height);
+	vertices[3].texCoord = XMFLOAT2(v->tex.xl, v->tex.yb);
+	vertices[3].col = XMFLOAT4(v->col.x, v->col.y, v->col.z, v->col.w);
 
 	// Create Vertex Buffer
 	ComPtr<ID3D11Buffer> vertex_buffer;
@@ -723,7 +747,7 @@ void InitDX11::DummyDrawingPicture(int x, int y, int width, int height, int col,
 	HR(d3dDevice->CreateBuffer(&index_buffer_desc, &index_subresource_data, &index_buffer));
 
 	// Create constant buffer
-	ConstantBuffer cb = { DirectX::XMMatrixTranspose(orthogonal) };
+	XMMATRIX transform = DirectX::XMMatrixTranspose(orthogonal);
 
 	ComPtr<ID3D11Buffer> constant_buffer;
 
@@ -732,11 +756,11 @@ void InitDX11::DummyDrawingPicture(int x, int y, int width, int height, int col,
 	constant_buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
 	constant_buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	constant_buffer_desc.MiscFlags = 0;
-	constant_buffer_desc.ByteWidth = sizeof(cb);;
+	constant_buffer_desc.ByteWidth = sizeof(transform);;
 	constant_buffer_desc.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA constant_subresource_data{};
-	constant_subresource_data.pSysMem = &cb;
+	constant_subresource_data.pSysMem = &transform;
 
 	d3dDevice->CreateBuffer(&constant_buffer_desc, &constant_subresource_data, &constant_buffer);
 
