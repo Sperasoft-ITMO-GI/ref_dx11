@@ -4,6 +4,7 @@ sampler Sampler : register(s0);
 struct PSin
 {
     float4 pos : SV_Position;
+    float4 col : Color;
     float2 texCoord : TEXCOORD;
 };
 

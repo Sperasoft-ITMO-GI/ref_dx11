@@ -117,12 +117,15 @@ typedef enum
 	rserr_unknown
 } rserr_t;
 
+// our texture counter
+#define MAX_DXTEXTURES 1600
+#define MAX_DXSCRAPTEXTURES 400
 
-#define	TEXNUM_LIGHTMAPS	1024
-#define	TEXNUM_SCRAPS		1152
-#define	TEXNUM_IMAGES		1153
+extern	image_t		dxtextures[MAX_DXTEXTURES];
+extern	int			numdxtextures;
+extern	int			scrapNum;
 
-#define		MAX_GLTEXTURES	1024
+
 
 #define	MAX_LBM_HEIGHT		480
 
@@ -130,9 +133,6 @@ typedef enum
 
 
 //====================================================
-
-extern	image_t		gltextures[MAX_GLTEXTURES];
-extern	int			numgltextures;
 
 extern	int		registration_sequence;
 
@@ -148,6 +148,8 @@ extern	int			c_brush_polys, c_alias_polys;
 
 
 extern	int			gl_filter_min, gl_filter_max;
+
+extern	cvar_t* gl_round_down;
 
 
 

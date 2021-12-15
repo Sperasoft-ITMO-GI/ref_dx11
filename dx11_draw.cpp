@@ -61,8 +61,8 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic)
 		return;
 	}
 
-	if (scrap_dirty)
-		Scrap_Upload();
+	/*if (scrap_dirty)
+		Scrap_Upload();*/
 
 	/*GL_Bind(gl->texnum);
 	qglBegin(GL_QUADS);
@@ -93,10 +93,11 @@ void Draw_Pic(int x, int y, char* pic)
 		ri.Con_Printf(PRINT_ALL, "Can't find pic: %s\n", pic);
 		return;
 	}
-	if (scrap_dirty)
-		Scrap_Upload();
 
-	dx11App.AddPictureToArray(x, y, gl->width, gl->height);
+	/*if (scrap_dirty)
+		Scrap_Upload();*/
+
+	dx11App.DummyDrawingPicture(x, y, gl->width, gl->height, 1, gl->texnum);
 
 	/*GL_Bind(gl->texnum);
 	qglBegin(GL_QUADS);
@@ -140,7 +141,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 
 	std::array<float, 4> col = { color.v[0] / 255, color.v[1] / 255, color.v[2] / 255, 1.0f };
 
-	dx11App.DrawColored2D(pos, col);
+	//dx11App.DrawColored2D(pos, col);
 }
 
 /*
@@ -160,5 +161,5 @@ void Draw_FadeScreen(void)
 
 	std::array<float, 4> col = { 0.0f, 0.0f, 0.0f, 0.8f };
 
-	dx11App.DrawColored2D(pos, col);
+	//dx11App.DrawColored2D(pos, col);
 }

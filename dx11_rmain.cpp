@@ -17,6 +17,8 @@ dx11state_t  dx11_state;
 
 InitDX11 dx11App = {};
 
+cvar_t* gl_round_down;
+
 void RecompileShaders()
 {
 	// TODO: added function to recompile shaders
@@ -33,6 +35,8 @@ void R_Register(void)
 	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
 	vid_ref = ri.Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
+
+	gl_round_down = ri.Cvar_Get("gl_round_down", "1", 0);
 
 	ri.Cmd_AddCommand("compile_shaders", RecompileShaders);
 }

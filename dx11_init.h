@@ -56,34 +56,19 @@
 
 DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync);
 
+// TODO: NEED TO RENAME!!!
+struct Vertex_PosTexCol {
+	DirectX::XMFLOAT2 pos;
+	DirectX::XMFLOAT2 texCoord;
+	DirectX::XMFLOAT4 col;
+};
+
 struct Vertex {
 	DirectX::XMFLOAT2 position;
 	DirectX::XMFLOAT4 color;
 };
 
 struct ConstantBuffer {
-	DirectX::XMMATRIX transform;
-};
-
-// TODO: need to rename it
-struct TexturedQuad_Info
-{
-	D3D_PRIMITIVE_TOPOLOGY topology;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;
-	unsigned short indices;
-	UINT vertex_stride;
-	UINT vertex_offset;
-};
-
-// TODO: NEED TO RENAME!!!
-struct TextureQuad_Instance
-{
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
 	DirectX::XMMATRIX transform;
 };
 
@@ -96,10 +81,6 @@ public:
 	void ClearScene();
 	void SwapBuffers();
 
-	void AddPictureToArray(int x, int y, int width, int height);
-
-	void DrawPic();
-
 	bool CompileAllShaders();
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> LoadTestBMP(char* fileName);
@@ -108,12 +89,16 @@ public:
 
 	~InitDX11();
 
+	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum);
+
+	void DummyTest(char* name, int width, int height, int bits, unsigned char* data, int type);
+	void DummyDrawingPicture(int x, int y, int width, int height, int col, int texNum);
+
 private:
 
 	bool InitializeWindow(HINSTANCE hinstance_, WNDPROC wndProc_);
 	// TODO: need to rename it
 	void CreateConstantVar();
-	void BuildQuadStaff();
 	bool CompileQuadShaders();
 
 	bool					enable4xMsaa;
@@ -125,6 +110,7 @@ private:
 	ID3D11Texture2D*		depthStencilBuffer;
 	ID3D11RenderTargetView* renderTargetView;
 	ID3D11DepthStencilView* depthStencilView;
+	ID3D11BlendState*		blendState;
 	D3D11_VIEWPORT			screenViewport;
 	D3D_DRIVER_TYPE			d3dDriverType;
 
@@ -135,8 +121,12 @@ private:
 
 	DirectX::XMMATRIX		orthogonal;
 
-	TexturedQuad_Info		textureQuad;
-	std::vector<TextureQuad_Instance> quads;
+	// TODO: temporable variables
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_PosColTex_shader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_PosColTex_shader;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_PosColTex_layout;
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texArraySRV[1600];
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> d3dSamplerState;
 
