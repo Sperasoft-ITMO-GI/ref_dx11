@@ -124,11 +124,7 @@ R_Shutdown
 */
 void R_Shutdown(void)
 {
-	ri.Cmd_RemoveCommand((char*)"modellist");
-	ri.Cmd_RemoveCommand((char*)"screenshot");
-	ri.Cmd_RemoveCommand((char*)"imagelist");
-	ri.Cmd_RemoveCommand((char*)"gl_strings");
-
+	ri.Cmd_RemoveCommand("compile_shaders");
 
 	// free models
 	//Mod_FreeAll();
@@ -206,31 +202,6 @@ R_RenderFrame
 @@@@@@@@@@@@@@@@@@@@@
 */
 void R_RenderFrame(refdef_t* fd)
-{
-	return;
-}
-
-/*
-=============
-Draw_TileClear
-
-This repeats a 64*64 tile graphic to fill the screen around a sized down
-refresh window.
-=============
-*/
-void Draw_TileClear(int x, int y, int w, int h, char* pic)
-{
-	return;
-}
-
-/*
-=============
-Draw_StretchRaw
-=============
-*/
-extern unsigned	r_rawpalette[256];
-
-void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 {
 	return;
 }
