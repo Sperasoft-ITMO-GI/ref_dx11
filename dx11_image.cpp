@@ -15,7 +15,7 @@ cvar_t* intensity;
 
 unsigned	d_8to24table[256];
 
-qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean is_sky, image_t* img, char* name);
+qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean is_sky, image_t* img, char* name, bool scale);
 qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, image_t* img, char* name);
 
 
@@ -557,12 +557,12 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 			{
 				uploaded_paletted = True;
 				GL_BuildPalettedTexture(paletted_texture, (unsigned char*)data, scaled_width, scaled_height);
-				dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum);
+				dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
 				dx11App.DummyTest(name, scaled_width, scaled_height, 8, paletted_texture, img->type);
 			}
 			else
 			{
-				dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum);
+				dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum, false);
 				dx11App.DummyTest(name, scaled_width, scaled_height, 32, (unsigned char*)data, img->type);
 			}
 			goto done;
@@ -578,12 +578,12 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 	{
 		uploaded_paletted = True;
 		GL_BuildPalettedTexture(paletted_texture, (unsigned char*)scaled, scaled_width, scaled_height);
-		dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum);
+		dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
 		dx11App.DummyTest(name, scaled_width, scaled_height, 8, paletted_texture, img->type);
 	}
 	else
 	{
-		dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum);
+		dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
 		dx11App.DummyTest(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
 	}
 
@@ -639,7 +639,7 @@ done:;
 	return (samples == gl_alpha_format) ? True : False;
 }
 
-qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean is_sky, image_t* img, char* name)
+qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean is_sky, image_t* img, char* name, bool scale)
 {
 	unsigned	trans[512 * 256];
 	int			i, s;
@@ -676,7 +676,16 @@ qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean
 		}
 	}
 
-	return GL_Upload32(trans, width, height, mipmap, img, name);
+	if (scale)
+	{
+		return GL_Upload32(trans, width, height, mipmap, img, name);
+	}
+	else
+	{
+		dx11App.AddTexturetoSRV(img->width, img->height, 32, (unsigned char*)trans, img->texnum, false);
+		dx11App.DummyTest(name, img->width, img->height, 32, (unsigned char*)trans, img->type);
+		return True;
+	}
 }
 
 /*
@@ -938,47 +947,24 @@ image_t* DX_LoadPic(char* name, byte* pic, int width, int height, imagetype_t ty
 	}
 
 	// load little pics into the scrap
-	if (image->type == it_pic && bits == 8
-		&& image->width < 64 && image->height < 64)
+	if ((image->type == it_pic && bits == 8) && (image->width < 64 && image->height < 64))
 	{
-		int		x, y;
-		int		texnum;
-
-		texnum = Scrap_AllocBlock(image->width, image->height, &x, &y);
-		if (texnum == -1)
-			goto nonscrap;
-		//scrap_dirty = True;
-
-		// copy the texels into the scrap block
-		/*k = 0;
-		for (i = 0; i < image->height; i++)
-			for (j = 0; j < image->width; j++, k++)
-				scrap_texels[texnum][(y + i) * BLOCK_WIDTH + x + j] = pic[k];*/
 
 		image->texnum = i;
 		image->scrap = True;
 		image->has_alpha = True;
-		image->sl = (x + 0.01) / (float)BLOCK_WIDTH;
-		image->sh = (x + image->width - 0.01) / (float)BLOCK_WIDTH;
-		image->tl = (y + 0.01) / (float)BLOCK_WIDTH;
-		image->th = (y + image->height - 0.01) / (float)BLOCK_WIDTH;
 
-		dx11App.AddTexturetoSRV(image->width, image->height, 8, (unsigned char*)pic, image->texnum);
-		dx11App.DummyTest(name, image->width, image->height, 8, (unsigned char*)pic, image->type);
+		GL_Upload8(pic, width, height, False, False, image, name, false);
 	}
 	else
 	{
-	nonscrap:
-		image->scrap = False;
 		image->texnum = image - dxtextures;
 
-		// binding the texture
-		//GL_Bind(image->texnum);
 		if (bits == 8)
 		{
 			qboolean mipmap = (image->type != it_pic && image->type != it_sky) ? True : False;
 			qboolean is_sky = image->type == it_sky ? True : False;
-			image->has_alpha = GL_Upload8(pic, width, height, mipmap, is_sky, image, name);
+			image->has_alpha = GL_Upload8(pic, width, height, mipmap, is_sky, image, name, true);
 		}
 		else
 		{
@@ -989,10 +975,6 @@ image_t* DX_LoadPic(char* name, byte* pic, int width, int height, imagetype_t ty
 		image->upload_width = upload_width;		// after power of 2 and scales
 		image->upload_height = upload_height;
 		image->paletted = uploaded_paletted;
-		image->sl = 0;
-		image->sh = 1;
-		image->tl = 0;
-		image->th = 1;
 	}
 
 	return image;
@@ -1069,7 +1051,7 @@ image_t* DX11_FindImage(char* name, imagetype_t type)
 GL_InitImages
 ===============
 */
-void	GL_InitImages(void)
+void	DX_InitImages(void)
 {
 	int		i, j;
 	float	g = vid_gamma->value;
@@ -1126,7 +1108,7 @@ void	GL_InitImages(void)
 GL_ShutdownImages
 ===============
 */
-void	GL_ShutdownImages(void)
+void	DX_ShutdownImages(void)
 {
 	int		i;
 	image_t* image;
@@ -1135,8 +1117,7 @@ void	GL_ShutdownImages(void)
 	{
 		if (!image->registration_sequence)
 			continue;		// free image_t slot
-		// free it
-		//qglDeleteTextures(1, &image->texnum);
+
 		memset(image, 0, sizeof(*image));
 	}
 }

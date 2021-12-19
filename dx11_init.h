@@ -105,7 +105,8 @@ public:
 
 	~InitDX11();
 
-	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum);
+	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool dynamic);
+	void UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum);
 
 	void DummyTest(char* name, int width, int height, int bits, unsigned char* data, int type);
 	void DummyDrawingPicture(Vertex_PosTexCol_Info* vertex, int texNum);
@@ -144,6 +145,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_PosColTex_layout;
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texArraySRV[1600];
+	
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> d3dSamplerState;
 

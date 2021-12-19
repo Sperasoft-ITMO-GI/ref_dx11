@@ -81,12 +81,12 @@ bool InitDX11::CompileQuadShaders()
 	// Read quad texture shaders from files
 	//ComPtr<ID3D11VertexShader> vertex_shader;
 	ComPtr<ID3DBlob> vertex_blob;
-	HR(D3DCompileFromFile(L"ref_dx11\\shaders\\VS_QuadTexture.hlsl", NULL, NULL, "main", "vs_5_0", NULL, NULL, &vertex_blob, NULL));
+	HR(D3DCompileFromFile(L"ref_dx11\\shaders\\QuadTexture.hlsl", NULL, NULL, "VSmain", "vs_5_0", NULL, NULL, &vertex_blob, NULL));
 	HR(d3dDevice->CreateVertexShader(vertex_blob->GetBufferPointer(), vertex_blob->GetBufferSize(), nullptr, &vertex_PosColTex_shader));
 
 	//ComPtr<ID3D11PixelShader> pixel_shader;
 	ComPtr<ID3DBlob> pixel_blob;
-	HR(D3DCompileFromFile(L"ref_dx11\\shaders\\PS_QuadTexture.hlsl", NULL, NULL, "main", "ps_5_0", NULL, NULL, &pixel_blob, NULL));
+	HR(D3DCompileFromFile(L"ref_dx11\\shaders\\QuadTexture.hlsl", NULL, NULL, "PSmain", "ps_5_0", NULL, NULL, &pixel_blob, NULL));
 	HR(d3dDevice->CreatePixelShader(pixel_blob->GetBufferPointer(), pixel_blob->GetBufferSize(), nullptr, &pixel_PosColTex_shader));
 
 	// Set input layout
@@ -285,7 +285,7 @@ void InitDX11::CreateConstantVar()
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
 
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -527,6 +527,16 @@ InitDX11::~InitDX11()
 	ReleaseCOM(depthStencilView);
 	ReleaseCOM(swapChain);
 	ReleaseCOM(depthStencilBuffer);
+	ReleaseCOM(blendState);
+	ReleaseCOM(d3dRasterizerState);
+
+	for (auto i : texArraySRV)
+	{
+		if (i)
+		{
+			i.~ComPtr();
+		}
+	}
 
 	// Restore all default settings.
 	if (d3dImmediateContext)
@@ -640,7 +650,7 @@ DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync)
 	return refreshRate;
 }
 
-void InitDX11::AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum)
+void InitDX11::AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool dynamic)
 {
 	using DirectX::XMFLOAT2;
 	using DirectX::XMFLOAT3;
@@ -658,6 +668,12 @@ void InitDX11::AddTexturetoSRV(int width, int height, int bits, unsigned char* d
 	else if (bits == 32)
 		format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
+	D3D11_USAGE usage;
+	if (dynamic)
+		usage = D3D11_USAGE_DEFAULT;
+	else
+		usage = D3D11_USAGE_IMMUTABLE;
+
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = width;
 	desc.Height = height;
@@ -665,7 +681,7 @@ void InitDX11::AddTexturetoSRV(int width, int height, int bits, unsigned char* d
 	desc.ArraySize = 1;
 	desc.Format = format;
 	desc.SampleDesc.Count = 1;
-	desc.Usage = D3D11_USAGE_IMMUTABLE;
+	desc.Usage = usage;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
@@ -679,6 +695,18 @@ void InitDX11::AddTexturetoSRV(int width, int height, int bits, unsigned char* d
 	SRVDesc.Texture2D.MipLevels = 1;
 
 	HR(d3dDevice->CreateShaderResourceView(tex.Get(), &SRVDesc, texArraySRV[texNum].GetAddressOf()));
+}
+
+void InitDX11::UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum)
+{
+	using Microsoft::WRL::ComPtr;
+
+	ID3D11Resource* res = nullptr;
+	texArraySRV[texNum].Get()->GetResource(&res);
+
+	d3dImmediateContext->UpdateSubresource(res, NULL, NULL, data, width * (bits / 8), 0);
+
+	ReleaseCOM(res);
 }
 
 

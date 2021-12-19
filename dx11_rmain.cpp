@@ -109,7 +109,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	// can be call after creating context and Vid_NewWindow()
 	ri.Vid_MenuInit();
 
-	//GL_InitImages();
+	DX_InitImages();
 	//Mod_Init();
 	//R_InitParticleTexture();
 	Draw_InitLocal();
@@ -130,7 +130,7 @@ void R_Shutdown(void)
 	//Mod_FreeAll();
 
 	// shutdown images
-	//GL_ShutdownImages();
+	DX_ShutdownImages();
 
 	/*
 	** shut down OS specific DX12 stuff like contexts, etc.
@@ -256,6 +256,14 @@ R_BeginFrame
 */
 void R_BeginFrame(float camera_separation)
 {
+	if (dx11_mode->modified || vid_fullscreen->modified)
+	{	// FIXME: only restart if CDS is required
+		cvar_t* ref;
+
+		ref = ri.Cvar_Get("vid_ref", "dx11", 0);
+		ref->modified = True;
+	}
+
 	dx11App.ClearScene();
 }
 

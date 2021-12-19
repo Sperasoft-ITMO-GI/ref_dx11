@@ -303,6 +303,7 @@ Draw_StretchRaw
 =============
 */
 extern unsigned	r_rawpalette[256];
+bool firstLoading = true;
 
 void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 {
@@ -347,7 +348,16 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 
 	//dx11App.DummyTest("pics/test.pcx", 256, 256, 32, (unsigned char*)image32, 1);
 
-	dx11App.AddTexturetoSRV(256, 256, 32, (unsigned char*)image32, 1300);
+	if (firstLoading)
+	{
+		dx11App.AddTexturetoSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE, true);
+		firstLoading = false;
+	}
+	else
+	{
+		dx11App.UpdateTextureInSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE);
+	}
+
 
 	//qglTexImage2D(GL_TEXTURE_2D, 0, gl_tex_solid_format, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, image32);
 
@@ -372,5 +382,5 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 	info.col.z = 1.0;
 	info.col.w = 1.0;
 
-	dx11App.DummyDrawingPicture(&info, 1300);
+	dx11App.DummyDrawingPicture(&info, CINEMATIC_PICTURE);
 }

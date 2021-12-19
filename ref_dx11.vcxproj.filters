@@ -69,10 +69,7 @@
     <FxCompile Include="shaders\pixel_shader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="shaders\PS_QuadTexture.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="shaders\VS_QuadTexture.hlsl">
+    <FxCompile Include="shaders\QuadTexture.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

@@ -1,3 +1,11 @@
+Texture2D Text : register(t0);
+sampler Sampler : register(s0);
+
+cbuffer Cbuf
+{
+    matrix orthogonal;
+};
+
 struct VSOut
 {
     float4 pos : SV_Position;
@@ -12,16 +20,16 @@ struct VSIn
     float2 texCoord : TexCoord;
 };
 
-cbuffer Cbuf
-{
-    matrix orthogonal;
-};
-
-VSOut main(VSIn IN)
+VSOut VSmain(VSIn IN)
 {
     VSOut OUT;
     OUT.pos = mul(float4(IN.pos.x, IN.pos.y, 0.0f, 1.0f), orthogonal);
     OUT.texCoord = IN.texCoord;
     OUT.col = IN.col;
     return OUT;
+}
+
+float4 PSmain(VSOut IN) : SV_Target
+{
+    return Text.Sample(Sampler, IN.texCoord);
 }

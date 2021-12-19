@@ -120,6 +120,7 @@ typedef enum
 // our texture counter
 #define MAX_DXTEXTURES 1600
 #define MAX_DXSCRAPTEXTURES 400
+#define CINEMATIC_PICTURE 1300
 
 extern	image_t		dxtextures[MAX_DXTEXTURES];
 extern	int			numdxtextures;
@@ -156,6 +157,8 @@ void Draw_InitLocal(void);
 
 void LoadPCX(char* filename, byte** pic, byte** palette, int* width, int* height);
 
+void DX_ShutdownImages(void);
+void DX_InitImages(void);
 
 bool R_SetMode(int* width, int* height);
 
