@@ -63,19 +63,6 @@ void Draw_Char(int x, int y, int num)
 	info.col.w = 1.0;
 
 	dx11App.DummyDrawingPicture(&info, draw_chars->texnum);
-
-	/*GL_Bind(draw_chars->texnum);
-
-	qglBegin(GL_QUADS);
-	qglTexCoord2f(fcol, frow);
-	qglVertex2f(x, y);
-	qglTexCoord2f(fcol + size, frow);
-	qglVertex2f(x + 8, y);
-	qglTexCoord2f(fcol + size, frow + size);
-	qglVertex2f(x + 8, y + 8);
-	qglTexCoord2f(fcol, frow + size);
-	qglVertex2f(x, y + 8);
-	qglEnd();*/
 }
 
 /*
@@ -231,18 +218,6 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic)
 	info.col.w = 1.0;
 
 	dx11App.DummyDrawingPicture(&info, image->texnum);
-
-	/*GL_Bind(image->texnum);
-	qglBegin(GL_QUADS);
-	qglTexCoord2f(x / 64.0, y / 64.0);
-	qglVertex2f(x, y);
-	qglTexCoord2f((x + w) / 64.0, y / 64.0);
-	qglVertex2f(x + w, y);
-	qglTexCoord2f((x + w) / 64.0, (y + h) / 64.0);
-	qglVertex2f(x + w, y + h);
-	qglTexCoord2f(x / 64.0, (y + h) / 64.0);
-	qglVertex2f(x, y + h);
-	qglEnd();*/
 }
 
 /*
