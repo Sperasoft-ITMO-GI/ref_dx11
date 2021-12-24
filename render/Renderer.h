@@ -34,6 +34,12 @@ public:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain();
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> GetRenderTargetView();
 	std::tuple<float, float> GetWindowParameters();
+	UINT GetMSAAQuality() {
+		return msaa_quality;
+	}
+	bool IsMsaaEnable() {
+		return is_4xmsaa_enable;
+	}
 
 private:
 	Renderer();

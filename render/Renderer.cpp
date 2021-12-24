@@ -126,6 +126,8 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 
 	device->CreateSamplerState(&sampler_desc, &sampler);
 
+	context->PSSetSamplers(0, 1, sampler.GetAddressOf());
+
 	return true;
 }
 
@@ -191,7 +193,6 @@ void Renderer::UpdateTextureInSRV(int width, int height, int bits, unsigned char
 }
 
 void Renderer::Bind(int texture_index) {
-	context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 	context->PSSetShaderResources(0, 1, texture_array_srv[texture_index].GetAddressOf());
 }
 

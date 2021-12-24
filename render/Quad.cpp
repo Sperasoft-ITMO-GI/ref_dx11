@@ -9,7 +9,7 @@ static vector<uint16_t> indexes{
 	3, 1, 0
 };
 
-Quad::Quad(VertexBuffer* vb, IndexBuffer* ib, ConstantBuffer<ConstantBufferQuad>* cb, int flags, int index) 
+Quad::Quad(VertexBuffer vb, IndexBuffer ib, ConstantBuffer<ConstantBufferQuad> cb, int flags, int index) 
 	: vb(vb), ib(ib), cb(cb), flags(flags), texture_index(index) {
 }
 
@@ -21,9 +21,10 @@ void Quad::Draw() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	renderer->Bind(texture_index);
-	vb->Bind();
-	ib->Bind();
-	cb->Bind<ConstantBufferQuad>();
+
+	vb.Bind();
+	ib.Bind();
+	cb.Bind<ConstantBufferQuad>();
 
 	renderer->GetContext()->DrawIndexed(6u, 0u, 0u);
 }

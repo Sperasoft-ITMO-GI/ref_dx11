@@ -11,7 +11,7 @@
 
 class Quad {
 public:
-	Quad(VertexBuffer* vb, IndexBuffer* ib, ConstantBuffer<ConstantBufferQuad>* cb, int flags, int index);
+	Quad(VertexBuffer vb, IndexBuffer ib, ConstantBuffer<ConstantBufferQuad> cb, int flags, int index);
 
 	int GetFlags();
 
@@ -19,9 +19,9 @@ public:
 private:
 	int flags;
 	int texture_index;
-	VertexBuffer* vb;
-	IndexBuffer* ib;
-	ConstantBuffer<ConstantBufferQuad>* cb;
+	VertexBuffer vb;
+	IndexBuffer ib;
+	ConstantBuffer<ConstantBufferQuad> cb;
 	//Texture???
 };
 

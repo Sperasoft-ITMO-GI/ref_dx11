@@ -31,15 +31,15 @@ VSOut VSMain(VSIn IN)
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    float4 res = float4(1.0f, 1.0f, 1.0f, 1.0f);
-#ifdef COLORED
-    res = IN.col;
-#endif
     
-#ifdef TEXTURED
-    res = Text.Sample(Sampler, IN.texCoord);
-#endif
+//#ifdef COLORED
+//    res = IN.col;
+//#endif
+    
+//#ifdef TEXTURED
+//    res = Text.Sample(Sampler, IN.texCoord);
+//#endif
 
-    return res;
+    return mul(Text.Sample(Sampler, IN.texCoord), IN.col);
 }
 

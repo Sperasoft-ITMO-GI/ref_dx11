@@ -7,7 +7,7 @@ static std::vector<D3D_SHADER_MACRO> sm{
 };
 
 static D3D_SHADER_MACRO macro[] = {
-	"COLORED", "1", "NULL", "NULL"
+	"TEXTURED", "2", "NULL", "NULL"
 };
 
 void UIRenderer::Init() {
