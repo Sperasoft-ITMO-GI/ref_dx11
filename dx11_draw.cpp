@@ -68,7 +68,7 @@ void Draw_Char(int x, int y, int num)
 	cbq.transform = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
 		0.0f, std::get<0>(parameters), std::get<1>(parameters), 0.0f, 0.0f, 100.0f
 	));
-	IndexBuffer ib({ 0, 2, 3, 3, 1, 0 });
+	IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
 	std::vector<UIVertex> vert = {
 		{
 		{ DirectX::XMFLOAT2{ (float)x, (float)y },         DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol, frow }},
@@ -473,7 +473,7 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 	cbq.transform = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
 		0.0f, std::get<0>(parameters), std::get<1>(parameters), 0.0f, 0.0f, 100.0f
 	));
-	IndexBuffer ib({ 0, 2, 3, 3, 1, 0 });
+	IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
 	std::vector<UIVertex> vert = {
 		{
 		{ DirectX::XMFLOAT2{ (float)x, (float)y },         DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 0.0f, 0.0f }},

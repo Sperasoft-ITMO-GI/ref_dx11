@@ -27,6 +27,8 @@ public:
 	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool dynamic);
 	void UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum);
 
+	void Test(char* name, int width, int height, int bits, unsigned char* data, int type);
+
 	void Bind(int texture_index);
 
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();

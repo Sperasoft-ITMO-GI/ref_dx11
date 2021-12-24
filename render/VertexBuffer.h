@@ -19,7 +19,7 @@ public:
 
 		buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-		buffer_desc.ByteWidth = sizeof(vertices);
+		buffer_desc.ByteWidth = stride * vertices.size();
 
 		D3D11_SUBRESOURCE_DATA subresource_data{};
 		ZeroMemory(&subresource_data, sizeof(D3D11_SUBRESOURCE_DATA));

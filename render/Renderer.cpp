@@ -1,5 +1,10 @@
 #include "Renderer.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image.h>
+#include <stb_image_write.h>
+
 using std::make_unique;
 using Microsoft::WRL::ComPtr;
 
@@ -190,6 +195,27 @@ void Renderer::UpdateTextureInSRV(int width, int height, int bits, unsigned char
 	context->UpdateSubresource(res, NULL, NULL, data, width * (bits / 8), 0);
 
 	ReleaseCOM(res);
+}
+
+void Renderer::Test(char* name, int width, int height, int bits, unsigned char* data, int type) {
+		//it_skin = 0
+		//it_sprite = 1
+		//it_wall = 2
+		//it_pic = 3
+		//it_sky = 4
+
+		int lenName = strlen(name);
+		char* newName = (char*)malloc(lenName + 1);
+		memset(newName, 0, lenName + 1);
+		memcpy(newName, name, lenName);
+		char* extension = strchr(newName, '.');
+
+		extension[1] = 'p';
+		extension[2] = 'n';
+		extension[3] = 'g';
+
+		stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
+		free(newName);
 }
 
 void Renderer::Bind(int texture_index) {

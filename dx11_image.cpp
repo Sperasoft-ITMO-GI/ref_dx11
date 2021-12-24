@@ -559,13 +559,13 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 				GL_BuildPalettedTexture(paletted_texture, (unsigned char*)data, scaled_width, scaled_height);
 				//dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
 				renderer->AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
-				//dx11App.DummyTest(name, scaled_width, scaled_height, 8, paletted_texture, img->type);
+				renderer->Test(name, scaled_width, scaled_height, 8, paletted_texture, img->type);
 			}
 			else
 			{
 				//dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum, false);
 				renderer->AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
-				//dx11App.DummyTest(name, scaled_width, scaled_height, 32, (unsigned char*)data, img->type);
+				renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)data, img->type);
 			}
 			goto done;
 		}
@@ -581,7 +581,7 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 		uploaded_paletted = True;
 		GL_BuildPalettedTexture(paletted_texture, (unsigned char*)scaled, scaled_width, scaled_height);
 		//dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
-		//dx11App.DummyTest(name, scaled_width, scaled_height, 8, paletted_texture, img->type);
+		renderer->Test(name, scaled_width, scaled_height, 8, paletted_texture, img->type);
 		renderer->AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
 	}
 	else
@@ -689,7 +689,7 @@ qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean
 		Renderer* renderer = Renderer::GetInstance();
 		//dx11App.AddTexturetoSRV(img->width, img->height, 32, (unsigned char*)trans, img->texnum, false);
 		renderer->AddTexturetoSRV(img->width, img->height, 32, (unsigned char*)trans, img->texnum, false);
-		//dx11App.DummyTest(name, img->width, img->height, 32, (unsigned char*)trans, img->type);
+		renderer->Test(name, img->width, img->height, 32, (unsigned char*)trans, img->type);
 		return True;
 	}
 }
@@ -949,7 +949,7 @@ image_t* DX_LoadPic(char* name, byte* pic, int width, int height, imagetype_t ty
 	if (type == it_skin && bits == 8)
 	{
 		R_FloodFillSkin(pic, width, height);
-		//dx11App.DummyTest(name, image->width, image->height, 8, (unsigned char*)pic, image->type);
+		renderer->Test(name, image->width, image->height, 8, (unsigned char*)pic, image->type);
 	}
 
 	// load little pics into the scrap

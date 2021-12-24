@@ -1,10 +1,10 @@
 #include "dx11_init.h"
 
 // NOTE: for test loading image only
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image.h>
-#include <stb_image_write.h>
+//#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include <stb_image.h>
+//#include <stb_image_write.h>
 
 
 void InitDX11::DummyTest(char* name, int width, int height, int bits, unsigned char* data, int type)
@@ -26,7 +26,7 @@ void InitDX11::DummyTest(char* name, int width, int height, int bits, unsigned c
 	extension[2] = 'n';
 	extension[3] = 'g';
 
-	stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
+	//stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
 	free(newName);
 }
 
@@ -34,17 +34,17 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> InitDX11::LoadTestBMP(char* fil
 {
 	using Microsoft::WRL::ComPtr;
 
-	int x;
-	int y;
+	int x=0;
+	int y=0;
 	int c;
 
-	unsigned char* image = stbi_load(fileName , &x, &y, &c, NULL);
+	//unsigned char* image = stbi_load(fileName , &x, &y, &c, NULL);
 
 	ComPtr<ID3D11ShaderResourceView> texSRV;
 
 	static const uint32_t s_pixel = 0xffc99aff;
 
-	D3D11_SUBRESOURCE_DATA initData = { image, x * c, 0 };
+	//D3D11_SUBRESOURCE_DATA initData = { image, x * c, 0 };
 
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = x;
@@ -59,7 +59,7 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> InitDX11::LoadTestBMP(char* fil
 	desc.MiscFlags = 0;
 
 	ComPtr<ID3D11Texture2D> tex;
-	HR(d3dDevice->CreateTexture2D(&desc, &initData, tex.GetAddressOf()));
+	//HR(d3dDevice->CreateTexture2D(&desc, &initData, tex.GetAddressOf()));
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
 	SRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
