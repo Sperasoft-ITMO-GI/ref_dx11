@@ -98,9 +98,12 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 
 	// It is default render target view 
 	// Do we need it there???
-	ComPtr<ID3D11Texture2D> back_buffer;
+	ID3D11Texture2D* back_buffer;
 	DXCHECK(swap_chain->GetBuffer(0u, __uuidof(ID3D11Texture2D), (void**)&back_buffer));
-	DXCHECK(device->CreateRenderTargetView(back_buffer.Get(), nullptr, &render_target_view));
+	DXCHECK(device->CreateRenderTargetView(back_buffer, 0, &render_target_view));
+	back_buffer->Release();
+
+	context->OMSetRenderTargets(1, render_target_view.GetAddressOf(), NULL);
 
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
@@ -110,7 +113,6 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 	viewport.MaxDepth = 1.0f;
 
 	context->RSSetViewports(1, &viewport);
-	context->OMSetRenderTargets(1, &render_target_view, NULL);
 
 	D3D11_SAMPLER_DESC sampler_desc;
 	ZeroMemory(&sampler_desc, sizeof(D3D11_SAMPLER_DESC));

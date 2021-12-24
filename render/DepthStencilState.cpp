@@ -26,7 +26,5 @@ ComPtr<ID3D11DepthStencilView> MakeDefaultDSS() {
 	DXCHECK(renderer->GetDevice()->CreateTexture2D(&depth_stencil_desc, 0, &buffer));
 	DXCHECK(renderer->GetDevice()->CreateDepthStencilView(buffer, 0, &view));
 
-	//renderer->GetContext()->OMSetRenderTargets(1, &renderer->GetRenderTargetView(), NULL);
-
 	return view;
 }

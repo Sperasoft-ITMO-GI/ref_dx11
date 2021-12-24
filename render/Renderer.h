@@ -33,6 +33,10 @@ public:
 		context->ClearRenderTargetView(render_target_view.Get(), DirectX::Colors::DodgerBlue);
 	}
 
+	void Swap() {
+		swap_chain->Present(1, 0);
+	}
+
 	void Bind(int texture_index);
 
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();

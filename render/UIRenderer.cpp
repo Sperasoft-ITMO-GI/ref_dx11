@@ -29,11 +29,11 @@ void UIRenderer::Render() {
 	quads.clear();
 }
 
-void UIRenderer::Swap() {
-	Renderer* renderer = Renderer::GetInstance();
-	renderer->GetSwapChain()->Present(1, 0);
-	
-}
+//void UIRenderer::Swap() {
+//	Renderer* renderer = Renderer::GetInstance();
+//	renderer->GetSwapChain()->Present(1, 0);
+//	
+//}
 
 void UIRenderer::AddElement(const Quad& quad) {
 	quads.push_back(quad);
