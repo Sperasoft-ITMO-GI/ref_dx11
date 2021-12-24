@@ -20,6 +20,8 @@
 #include <utility>
 #include <stdexcept>
 
+#include <Utils.h>
+
 //---------------------------------------------------------------------------------------
 // Simple d3d error checker for book demos.
 //---------------------------------------------------------------------------------------
@@ -54,7 +56,7 @@
 
 #define SafeDelete(x) { delete x; x = 0; }
 
-DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync);
+//DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync);
 
 // TODO: NEED TO RENAME!!!
 struct Vertex_PosTexCol 
@@ -84,7 +86,7 @@ struct Vertex {
 	DirectX::XMFLOAT4 color;
 };
 
-struct ConstantBuffer {
+struct ConstantBufferStr {
 	DirectX::XMMATRIX transform;
 };
 

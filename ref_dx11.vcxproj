@@ -90,7 +90,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsCpp</CompileAs>
-      <AdditionalIncludeDirectories>$(ProjectDir)external\stb\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)render\;$(ProjectDir)external\stb\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,6 +158,31 @@
     <ClInclude Include="dx11_init.h" />
     <ClInclude Include="dx11_local.h" />
     <ClInclude Include="dxerr.h" />
+    <ClInclude Include="render\Bindable.h" />
+    <ClInclude Include="render\BlendState.h" />
+    <ClInclude Include="render\ConstantBuffer.h" />
+    <ClInclude Include="render\DepthStencilState.h" />
+    <ClInclude Include="render\IndexBuffer.h" />
+    <ClInclude Include="render\InputLayout.h" />
+    <ClInclude Include="render\IStateProvider.h" />
+    <ClInclude Include="render\PipelineFactory.h" />
+    <ClInclude Include="render\PipelineState.h" />
+    <ClInclude Include="render\PixelShader.h" />
+    <ClInclude Include="render\Quad.h" />
+    <ClInclude Include="render\RasterizationState.h" />
+    <ClInclude Include="render\Renderer.h" />
+    <ClInclude Include="render\RendererIncludes.h" />
+    <ClInclude Include="render\Shader.h" />
+    <ClInclude Include="render\States.h" />
+    <ClInclude Include="render\Textute.h" />
+    <ClInclude Include="render\Topology.h" />
+    <ClInclude Include="render\UIRenderer.h" />
+    <ClInclude Include="render\UIVertex.h" />
+    <ClInclude Include="render\Utils.h" />
+    <ClInclude Include="render\VertexBuffer.h" />
+    <ClInclude Include="render\VertexShader.h" />
+    <ClInclude Include="render\Window.h" />
+    <ClInclude Include="render\WndDxIncludes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\game\q_shared.c" />
@@ -167,11 +192,32 @@
     <ClCompile Include="dx11_init.cpp" />
     <ClCompile Include="dx11_rmain.cpp" />
     <ClCompile Include="dxerr.cpp" />
+    <ClCompile Include="render\BlendState.cpp" />
+    <ClCompile Include="render\ConstantBuffer.cpp" />
+    <ClCompile Include="render\DepthStencilState.cpp" />
+    <ClCompile Include="render\IndexBuffer.cpp" />
+    <ClCompile Include="render\InputLayout.cpp" />
+    <ClCompile Include="render\PipelineFactory.cpp" />
+    <ClCompile Include="render\PipelineState.cpp" />
+    <ClCompile Include="render\PixelShader.cpp" />
+    <ClCompile Include="render\Quad.cpp" />
+    <ClCompile Include="render\RasterizationState.cpp" />
+    <ClCompile Include="render\Renderer.cpp" />
+    <ClCompile Include="render\Texture.cpp" />
+    <ClCompile Include="render\UIRenderer.cpp" />
+    <ClCompile Include="render\Utils.cpp" />
+    <ClCompile Include="render\VertexBuffer.cpp" />
+    <ClCompile Include="render\VertexShader.cpp" />
+    <ClCompile Include="render\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\pixel_shader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="shaders\UITexture.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="shaders\vertex_shader.hlsl">

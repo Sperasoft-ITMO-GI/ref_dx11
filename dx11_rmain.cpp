@@ -16,6 +16,10 @@ dx11config_t dx11_config;
 dx11state_t  dx11_state;
 
 InitDX11 dx11App = {};
+Renderer* renderer = Renderer::GetInstance();
+UIRenderer* ui_renderer = new UIRenderer(); // Зачем указатель? Ответа на этот вопрос у меня нет...
+
+States* States::states = nullptr;
 
 cvar_t* gl_round_down;
 
@@ -70,7 +74,9 @@ bool R_SetMode(int* width, int* height)
 	vid.width = *width;
 
 	// setting size of our window
-	dx11App.SetMode(*width, *height, fullscreen);
+	//dx11App.SetMode(*width, *height, fullscreen);
+	renderer->SetWindowMode(*width, *height, fullscreen);
+	
 
 	return true;
 }
@@ -97,10 +103,15 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	}
 
 	// initialize DX11 context
-	if (!dx11App.InitializeDX11((HINSTANCE)hinstance, (WNDPROC)hWnd)) 
-	{
+	//if (!dx11App.InitializeDX11((HINSTANCE)hinstance, (WNDPROC)hWnd)) 
+	//{
+	//	return False;
+	//}
+	if (!renderer->Initialize((HINSTANCE)hinstance, (WNDPROC)hWnd)) {
 		return False;
 	}
+	ui_renderer->Init();
+
 
 	// let the sound and input subsystems know about the new window
 	// can be call after creating windows and its context
@@ -135,7 +146,7 @@ void R_Shutdown(void)
 	/*
 	** shut down OS specific DX12 stuff like contexts, etc.
 	*/
-	dx11App.~InitDX11();
+	//dx11App.~InitDX11();
 }
 
 // ==================================================================================================================================
@@ -264,7 +275,7 @@ void R_BeginFrame(float camera_separation)
 		ref->modified = True;
 	}
 
-	dx11App.ClearScene();
+	//dx11App.ClearScene();
 }
 
 /*
@@ -276,7 +287,9 @@ void R_BeginFrame(float camera_separation)
 */
 void DX11_EndFrame(void)
 {
-	dx11App.SwapBuffers();
+	//dx11App.SwapBuffers();
+	ui_renderer->Render();
+	ui_renderer->Swap();
 }
 
 /*

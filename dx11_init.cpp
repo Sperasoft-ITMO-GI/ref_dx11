@@ -215,7 +215,7 @@ void InitDX11::DrawColored2D(std::array<std::pair<float, float>, 4> vertexes, st
 	HR(d3dDevice->CreateBuffer(&index_buffer_desc, &index_subresource_data, &index_buffer));
 	
 	// Create constant buffer
-	ConstantBuffer cb = { DirectX::XMMatrixTranspose(orthogonal) };
+	ConstantBufferStr cb = { DirectX::XMMatrixTranspose(orthogonal) };
 
 	ComPtr<ID3D11Buffer> constant_buffer;
 
@@ -566,96 +566,6 @@ InitDX11::~InitDX11()
 	ReleaseCOM(d3dDevice);
 
 	printf("%s", "[DX11]: Render destoyed");
-}
-
-DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync)
-{
-	DXGI_RATIONAL refreshRate = { 0, 1 };
-	if (vsync)
-	{
-		IDXGIFactory* factory;
-		IDXGIAdapter* adapter;
-		IDXGIOutput* adapterOutput;
-		DXGI_MODE_DESC* displayModeList;
-
-		// Create a DirectX graphics interface factory.
-		HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-		if (FAILED(hr))
-		{
-			MessageBox(0,
-				TEXT("Could not create DXGIFactory instance."),
-				TEXT("Query Refresh Rate"),
-				MB_OK);
-
-			throw new std::exception("Failed to create DXGIFactory.");
-		}
-
-		hr = factory->EnumAdapters(0, &adapter);
-		if (FAILED(hr))
-		{
-			MessageBox(0,
-				TEXT("Failed to enumerate adapters."),
-				TEXT("Query Refresh Rate"),
-				MB_OK);
-
-			throw new std::exception("Failed to enumerate adapters.");
-		}
-
-		hr = adapter->EnumOutputs(0, &adapterOutput);
-		if (FAILED(hr))
-		{
-			MessageBox(0,
-				TEXT("Failed to enumerate adapter outputs."),
-				TEXT("Query Refresh Rate"),
-				MB_OK);
-
-			throw new std::exception("Failed to enumerate adapter outputs.");
-		}
-
-		UINT numDisplayModes;
-		hr = adapterOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numDisplayModes, nullptr);
-		if (FAILED(hr))
-		{
-			MessageBox(0,
-				TEXT("Failed to query display mode list."),
-				TEXT("Query Refresh Rate"),
-				MB_OK);
-
-			throw new std::exception("Failed to query display mode list.");
-		}
-
-		displayModeList = new DXGI_MODE_DESC[numDisplayModes];
-		assert(displayModeList);
-
-		hr = adapterOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numDisplayModes, displayModeList);
-		if (FAILED(hr))
-		{
-			MessageBox(0,
-				TEXT("Failed to query display mode list."),
-				TEXT("Query Refresh Rate"),
-				MB_OK);
-
-			throw new std::exception("Failed to query display mode list.");
-		}
-
-		// Now store the refresh rate of the monitor that matches the width and height of the requested screen.
-		for (UINT i = 0; i < numDisplayModes; ++i)
-		{
-			printf("Widht: %d, Height: %d, hz: %d\n", displayModeList[i].Width, displayModeList[i].Height, 
-				(displayModeList[i].RefreshRate.Numerator / displayModeList[i].RefreshRate.Denominator));
-			if (displayModeList[i].Width == screenWidth && displayModeList[i].Height == screenHeight)
-			{
-				refreshRate = displayModeList[i].RefreshRate;
-			}
-		}
-
-		delete[] displayModeList;
-		ReleaseCOM(adapterOutput);
-		ReleaseCOM(adapter);
-		ReleaseCOM(factory);
-	}
-
-	return refreshRate;
 }
 
 void InitDX11::AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool dynamic)

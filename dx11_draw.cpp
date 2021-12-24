@@ -62,7 +62,25 @@ void Draw_Char(int x, int y, int num)
 	info.col.z = 1.0;
 	info.col.w = 1.0;
 
-	dx11App.DummyDrawingPicture(&info, draw_chars->texnum);
+	//dx11App.DummyDrawingPicture(&info, draw_chars->texnum);
+	auto parameters = renderer->GetWindowParameters();
+	ConstantBufferQuad cbq;
+	cbq.transform = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, std::get<0>(parameters), std::get<1>(parameters), 0.0f, 0.0f, 100.0f
+	));
+	IndexBuffer ib({ 0, 2, 3, 3, 1, 0 });
+	std::vector<UIVertex> vert = {
+		{
+		{ DirectX::XMFLOAT2{ (float)x, (float)y },         DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol, frow }},
+		{ DirectX::XMFLOAT2{ (float)x + 8, (float)y },     DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol + size, frow } },
+		{ DirectX::XMFLOAT2{ (float)x + 8, (float)y + 8 }, DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol + size, fcol + size } },
+		{ DirectX::XMFLOAT2{ (float)x, (float)y + 8 },     DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol, fcol + size } },
+		} 
+	};
+	VertexBuffer vb(vert);
+	ConstantBuffer<ConstantBufferQuad> cb(cbq);
+	Quad textured_quad(&vb, &ib, &cb, TEXTURED, draw_chars->texnum);
+	ui_renderer->AddElement(textured_quad);
 }
 
 /*
@@ -139,7 +157,25 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic)
 	info.col.z = 1.0;
 	info.col.w = 1.0;
 
-	dx11App.DummyDrawingPicture(&info, gl->texnum);
+	//dx11App.DummyDrawingPicture(&info, gl->texnum);
+	auto parameters = renderer->GetWindowParameters();
+	ConstantBufferQuad cbq;
+	cbq.transform = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, std::get<0>(parameters), std::get<1>(parameters), 0.0f, 0.0f, 100.0f
+	));
+	IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
+	std::vector<UIVertex> vert = {
+		{
+		{ DirectX::XMFLOAT2{ (float)x, (float)y },                          DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 0.0f, 0.0f }},
+		{ DirectX::XMFLOAT2{ (float)x + gl->width, (float)y },              DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 1.0f, 0.0f } },
+		{ DirectX::XMFLOAT2{ (float)x + gl->width, (float)y + gl->height }, DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 1.0f, 1.0f } },
+		{ DirectX::XMFLOAT2{ (float)x, (float)y + gl->height },             DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 0.0f, 1.0f } },
+		}
+	};
+	VertexBuffer vb(vert);
+	ConstantBuffer<ConstantBufferQuad> cb(cbq);
+	Quad textured_quad(&vb, &ib, &cb, TEXTURED, draw_chars->texnum);
+	ui_renderer->AddElement(textured_quad);
 }
 
 
@@ -177,7 +213,25 @@ void Draw_Pic(int x, int y, char* pic)
 	info.col.z = 1.0;
 	info.col.w = 1.0;
 
-	dx11App.DummyDrawingPicture(&info, gl->texnum);
+	//dx11App.DummyDrawingPicture(&info, gl->texnum);
+	auto parameters = renderer->GetWindowParameters();
+	ConstantBufferQuad cbq;
+	cbq.transform = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, std::get<0>(parameters), std::get<1>(parameters), 0.0f, 0.0f, 100.0f
+	));
+	IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
+	std::vector<UIVertex> vert = {
+		{
+		{ DirectX::XMFLOAT2{ (float)x, (float)y },                          DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 0.0f, 0.0f }},
+		{ DirectX::XMFLOAT2{ (float)x + gl->width, (float)y },              DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 1.0f, 0.0f } },
+		{ DirectX::XMFLOAT2{ (float)x + gl->width, (float)y + gl->height }, DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 1.0f, 1.0f } },
+		{ DirectX::XMFLOAT2{ (float)x, (float)y + gl->height },             DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 0.0f, 1.0f } },
+		}
+	};
+	VertexBuffer vb(vert);
+	ConstantBuffer<ConstantBufferQuad> cb(cbq);
+	Quad textured_quad(&vb, &ib, &cb, TEXTURED, draw_chars->texnum);
+	ui_renderer->AddElement(textured_quad);
 }
 
 /*
@@ -217,7 +271,25 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic)
 	info.col.z = 1.0;
 	info.col.w = 1.0;
 
-	dx11App.DummyDrawingPicture(&info, image->texnum);
+	//dx11App.DummyDrawingPicture(&info, image->texnum);
+	auto parameters = renderer->GetWindowParameters();
+	ConstantBufferQuad cbq;
+	cbq.transform = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, std::get<0>(parameters), std::get<1>(parameters), 0.0f, 0.0f, 100.0f
+	));
+	IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
+	std::vector<UIVertex> vert = {
+		{
+		{ DirectX::XMFLOAT2{ (float)x, (float)y },         DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { x / 64.0f, y / 64.0f }},
+		{ DirectX::XMFLOAT2{ (float)x + w, (float)y },     DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { (x + w) / 64.0f, y / 64.0f } },
+		{ DirectX::XMFLOAT2{ (float)x + w, (float)y + h }, DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { (x + w) / 64.0f, (y + h) / 64.0f } },
+		{ DirectX::XMFLOAT2{ (float)x, (float)y + h },     DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { x / 64.0f, (y + h) / 64.0f } },
+		}
+	};
+	VertexBuffer vb(vert);
+	ConstantBuffer<ConstantBufferQuad> cb(cbq);
+	Quad textured_quad(&vb, &ib, &cb, TEXTURED, draw_chars->texnum);
+	ui_renderer->AddElement(textured_quad);
 }
 
 /*
@@ -240,16 +312,34 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 
 	color.c = d_8to24table[c];
 
-	std::array<std::pair<float, float>, 4> pos = {
-		std::make_pair(x, y),
-		std::make_pair(x + w, y),
-		std::make_pair(x, y + h),
-		std::make_pair(x + w, y + h),
+	//std::array<std::pair<float, float>, 4> pos = {
+	//	std::make_pair(x, y),
+	//	std::make_pair(x + w, y),
+	//	std::make_pair(x, y + h),
+	//	std::make_pair(x + w, y + h),
+	//};
+
+	//std::array<float, 4> col = { color.v[0] / 255, color.v[1] / 255, color.v[2] / 255, 1.0f };
+
+	//dx11App.DrawColored2D(pos, col);
+	auto parameters = renderer->GetWindowParameters();
+	ConstantBufferQuad cbq;
+	cbq.transform = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, std::get<0>(parameters), std::get<1>(parameters), 0.0f, 0.0f, 100.0f
+	));
+	IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
+	std::vector<UIVertex> vert = {
+		{
+		{ DirectX::XMFLOAT2{ (float)x, (float)y },                  DirectX::XMFLOAT4{ (float)color.v[0] / 255, (float)color.v[1] / 255, (float)color.v[2] / 255, 1.0f },   { 0.0f, 0.0f }},
+		{ DirectX::XMFLOAT2{ (float)(x + w), (float)y },            DirectX::XMFLOAT4{ (float)color.v[0] / 255, (float)color.v[1] / 255, (float)color.v[2] / 255, 1.0f },   { 0.0f, 0.0f }},
+		{ DirectX::XMFLOAT2{ (float)x + (float)w, (float)(y + h) }, DirectX::XMFLOAT4{ (float)color.v[0] / 255, (float)color.v[1] / 255, (float)color.v[2] / 255, 1.0f },   { 0.0f, 0.0f }},
+		{ DirectX::XMFLOAT2{ (float)x, (float)(y + h) },            DirectX::XMFLOAT4{ (float)color.v[0] / 255, (float)color.v[1] / 255, (float)color.v[2] / 255, 1.0f },   { 0.0f, 0.0f }},
+		}
 	};
-
-	std::array<float, 4> col = { color.v[0] / 255, color.v[1] / 255, color.v[2] / 255, 1.0f };
-
-	dx11App.DrawColored2D(pos, col);
+	VertexBuffer vb(vert);
+	ConstantBuffer<ConstantBufferQuad> cb(cbq);
+	Quad quad(&vb, &ib, &cb, COLORED, -1);
+	ui_renderer->AddElement(quad);
 }
 
 /*
@@ -260,16 +350,34 @@ Draw_FadeScreen
 */
 void Draw_FadeScreen(void)
 {
-	std::array<std::pair<float, float>, 4> pos = {
-		std::make_pair(0.0f, 0.0f),
-		std::make_pair(vid.width, 0.0f),
-		std::make_pair(0.0f, vid.height),
-		std::make_pair(vid.width, vid.height),
+	//std::array<std::pair<float, float>, 4> pos = {
+	//	std::make_pair(0.0f, 0.0f),
+	//	std::make_pair(vid.width, 0.0f),
+	//	std::make_pair(0.0f, vid.height),
+	//	std::make_pair(vid.width, vid.height),
+	//};
+
+	//std::array<float, 4> col = { 0.0f, 0.0f, 0.0f, 0.8f };
+
+	//dx11App.DrawColored2D(pos, col);
+	auto parameters = renderer->GetWindowParameters();
+	ConstantBufferQuad cbq;
+	cbq.transform = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, std::get<0>(parameters), std::get<1>(parameters), 0.0f, 0.0f, 100.0f
+	));
+	IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
+	std::vector<UIVertex> vert = {
+		{
+		{ DirectX::XMFLOAT2{ 0.0f, 0.0f },         DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.8f },   { 0.0f, 0.0f }},
+		{ DirectX::XMFLOAT2{ (float)vid.width, 0.0f },     DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.8f },   { 0.0f, 0.0f }},
+		{ DirectX::XMFLOAT2{ (float)vid.width, (float)vid.height }, DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.8f },   { 0.0f, 0.0f }},
+		{ DirectX::XMFLOAT2{ 0.0f, (float)vid.height },     DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.8f },   { 0.0f, 0.0f }},
+		}
 	};
-
-	std::array<float, 4> col = { 0.0f, 0.0f, 0.0f, 0.8f };
-
-	dx11App.DrawColored2D(pos, col);
+	VertexBuffer vb(vert);
+	ConstantBuffer<ConstantBufferQuad> cb(cbq);
+	Quad quad(&vb, &ib, &cb, COLORED, -1);
+	ui_renderer->AddElement(quad);
 }
 
 /*
@@ -325,12 +433,14 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 
 	if (firstLoading)
 	{
-		dx11App.AddTexturetoSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE, true);
+		//dx11App.AddTexturetoSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE, true);
+		renderer->AddTexturetoSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE, true);
 		firstLoading = false;
 	}
 	else
 	{
-		dx11App.UpdateTextureInSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE);
+		//dx11App.UpdateTextureInSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE);
+		renderer->UpdateTextureInSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE);
 	}
 
 
@@ -357,5 +467,23 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 	info.col.z = 1.0;
 	info.col.w = 1.0;
 
-	dx11App.DummyDrawingPicture(&info, CINEMATIC_PICTURE);
+	//dx11App.DummyDrawingPicture(&info, CINEMATIC_PICTURE);
+	auto parameters = renderer->GetWindowParameters();
+	ConstantBufferQuad cbq;
+	cbq.transform = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, std::get<0>(parameters), std::get<1>(parameters), 0.0f, 0.0f, 100.0f
+	));
+	IndexBuffer ib({ 0, 2, 3, 3, 1, 0 });
+	std::vector<UIVertex> vert = {
+		{
+		{ DirectX::XMFLOAT2{ (float)x, (float)y },         DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 0.0f, 0.0f }},
+		{ DirectX::XMFLOAT2{ (float)x + w, (float)y },     DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 1.0f, 0.0f } },
+		{ DirectX::XMFLOAT2{ (float)x + w, (float)y + h }, DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 1.0f, t } },
+		{ DirectX::XMFLOAT2{ (float)x, (float)y + h },     DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { 0.0f, t } },
+		}
+	};
+	VertexBuffer vb(vert);
+	ConstantBuffer<ConstantBufferQuad> cb(cbq);
+	Quad textured_quad(&vb, &ib, &cb, TEXTURED, draw_chars->texnum);
+	ui_renderer->AddElement(textured_quad);
 }
