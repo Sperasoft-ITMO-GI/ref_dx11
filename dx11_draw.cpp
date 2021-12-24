@@ -73,8 +73,8 @@ void Draw_Char(int x, int y, int num)
 		{
 		{ DirectX::XMFLOAT2{ (float)x, (float)y },         DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol, frow }},
 		{ DirectX::XMFLOAT2{ (float)x + 8, (float)y },     DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol + size, frow } },
-		{ DirectX::XMFLOAT2{ (float)x + 8, (float)y + 8 }, DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol + size, fcol + size } },
-		{ DirectX::XMFLOAT2{ (float)x, (float)y + 8 },     DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol, fcol + size } },
+		{ DirectX::XMFLOAT2{ (float)x + 8, (float)y + 8 }, DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol + size, frow + size } },
+		{ DirectX::XMFLOAT2{ (float)x, (float)y + 8 },     DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f },   { fcol, frow + size } },
 		} 
 	};
 	VertexBuffer vb(vert);

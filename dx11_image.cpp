@@ -564,7 +564,7 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 			else
 			{
 				//dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum, false);
-				renderer->AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
+				renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum, false);
 				renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)data, img->type);
 			}
 			goto done;
