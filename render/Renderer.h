@@ -29,6 +29,10 @@ public:
 
 	void Test(char* name, int width, int height, int bits, unsigned char* data, int type);
 
+	void Clear() {
+		context->ClearRenderTargetView(render_target_view.Get(), DirectX::Colors::DodgerBlue);
+	}
+
 	void Bind(int texture_index);
 
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();

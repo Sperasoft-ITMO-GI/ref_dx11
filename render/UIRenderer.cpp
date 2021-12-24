@@ -25,12 +25,14 @@ void UIRenderer::Render() {
 
 		quad.Draw();
 	}
+
+	quads.clear();
 }
 
 void UIRenderer::Swap() {
 	Renderer* renderer = Renderer::GetInstance();
 	renderer->GetSwapChain()->Present(1, 0);
-	quads.clear();
+	
 }
 
 void UIRenderer::AddElement(const Quad& quad) {

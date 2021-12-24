@@ -174,7 +174,7 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic)
 	};
 	VertexBuffer vb(vert);
 	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad textured_quad(vb, ib, cb, TEXTURED, draw_chars->texnum);
+	Quad textured_quad(vb, ib, cb, TEXTURED, gl->texnum);
 	ui_renderer->AddElement(textured_quad);
 }
 
@@ -230,7 +230,7 @@ void Draw_Pic(int x, int y, char* pic)
 	};
 	VertexBuffer vb(vert);
 	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad textured_quad(vb, ib, cb, TEXTURED, draw_chars->texnum);
+	Quad textured_quad(vb, ib, cb, TEXTURED, gl->texnum);
 	ui_renderer->AddElement(textured_quad);
 }
 
@@ -288,7 +288,7 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic)
 	};
 	VertexBuffer vb(vert);
 	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad textured_quad(vb, ib, cb, TEXTURED, draw_chars->texnum);
+	Quad textured_quad(vb, ib, cb, TEXTURED, image->texnum);
 	ui_renderer->AddElement(textured_quad);
 }
 
@@ -339,7 +339,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 	VertexBuffer vb(vert);
 	ConstantBuffer<ConstantBufferQuad> cb(cbq);
 	Quad quad(vb, ib, cb, COLORED, -1);
-	ui_renderer->AddElement(quad);
+	//ui_renderer->AddElement(quad);
 }
 
 /*
@@ -484,6 +484,6 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 	};
 	VertexBuffer vb(vert);
 	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad textured_quad(vb, ib, cb, TEXTURED, draw_chars->texnum);
+	Quad textured_quad(vb, ib, cb, TEXTURED, CINEMATIC_PICTURE);
 	ui_renderer->AddElement(textured_quad);
 }

@@ -274,7 +274,7 @@ void R_BeginFrame(float camera_separation)
 		ref = ri.Cvar_Get("vid_ref", "dx11", 0);
 		ref->modified = True;
 	}
-
+	ui_renderer->Render();
 	//dx11App.ClearScene();
 }
 
@@ -288,7 +288,7 @@ void R_BeginFrame(float camera_separation)
 void DX11_EndFrame(void)
 {
 	//dx11App.SwapBuffers();
-	ui_renderer->Render();
+	
 	ui_renderer->Swap();
 }
 

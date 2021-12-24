@@ -107,7 +107,7 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 	viewport.Width = static_cast<FLOAT>(window->GetWidth());
 	viewport.Height = static_cast<FLOAT>(window->GetHeight());
 	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 
 	context->RSSetViewports(1, &viewport);
 	context->OMSetRenderTargets(1, &render_target_view, NULL);
@@ -219,7 +219,8 @@ void Renderer::Test(char* name, int width, int height, int bits, unsigned char* 
 }
 
 void Renderer::Bind(int texture_index) {
-	context->PSSetShaderResources(0, 1, texture_array_srv[texture_index].GetAddressOf());
+	if(texture_index != -1)
+		context->PSSetShaderResources(0, 1, texture_array_srv[texture_index].GetAddressOf());
 }
 
 ComPtr<ID3D11Device> Renderer::GetDevice() {
