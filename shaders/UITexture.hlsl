@@ -3,7 +3,7 @@ sampler Sampler : register(s0);
 
 cbuffer Cbuf
 {
-    matrix transform
+    matrix transform;
 };
 
 struct VSOut
@@ -29,14 +29,17 @@ VSOut VSMain(VSIn IN)
     return OUT;
 }
 
-float4 PSmain(VSOut IN) : SV_Target
+float4 PSMain(VSOut IN) : SV_Target
 {
+    float4 res = float4(1.0f, 1.0f, 1.0f, 1.0f);
 #ifdef COLORED
-    return IN.col;
+    res = IN.col;
 #endif
     
 #ifdef TEXTURED
-    return Text.Sample(Sampler, IN.texCoord);
+    res = Text.Sample(Sampler, IN.texCoord);
 #endif
+
+    return res;
 }
 

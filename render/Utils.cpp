@@ -1,5 +1,7 @@
 #include <Utils.h>
 
+#pragma comment(lib,"d3dcompiler.lib")
+
 using Microsoft::WRL::ComPtr;
 using std::wstring;
 using std::string;
@@ -24,11 +26,11 @@ ComPtr<ID3DBlob> CompileShader(
 	ComPtr<ID3DBlob> byteCode;
 	ComPtr<ID3DBlob> errors;
 
-	DXCHECK(D3DCompileFromFile(filename, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		entrypoint, target, compileFlags, 0, &byteCode, &errors));
+	D3DCompileFromFile(filename, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		entrypoint, target, compileFlags, 0, &byteCode, &errors);
 
 	if (errors != nullptr)
-		printf("[DX12][ERROR]:%s", (char*)errors->GetBufferPointer());
+		printf("[DX11][ERROR]:%s", (char*)errors->GetBufferPointer());
 
 	return byteCode;
 };

@@ -1,12 +1,17 @@
 #include <UIRenderer.h>
 
 static std::vector<D3D_SHADER_MACRO> sm{
-	{"COLORED", "0x001"},
-	{"TEXTURED", "0x002"}
+	{"COLORED", "1"},
+	{"TEXTURED", "2"},
+	{"NULL", "NULL"}
+};
+
+static D3D_SHADER_MACRO macro[] = {
+	"COLORED", "1", "NULL", "NULL"
 };
 
 void UIRenderer::Init() {
-	factory = new PipelineFactory(L"ref_dx11\\shaders\\UITexture.hlsl", new UIPSProvider(), sm);
+	factory = new PipelineFactory(L"ref_dx11\\shaders\\UITexture.hlsl", new UIPSProvider(), macro);
 }
 
 void UIRenderer::Render() {

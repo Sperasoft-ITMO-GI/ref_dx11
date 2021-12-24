@@ -15,7 +15,7 @@ cvar_t* vid_ref;
 dx11config_t dx11_config;
 dx11state_t  dx11_state;
 
-InitDX11 dx11App = {};
+//InitDX11 dx11App = {};
 Renderer* renderer = Renderer::GetInstance();
 UIRenderer* ui_renderer = new UIRenderer(); // Зачем указатель? Ответа на этот вопрос у меня нет...
 
@@ -26,8 +26,8 @@ cvar_t* gl_round_down;
 void RecompileShaders()
 {
 	// TODO: added function to recompile shaders
-	if(dx11App.CompileAllShaders())
-		printf("RECOMPILE SUCCESS\n");
+	//if(dx11App.CompileAllShaders())
+		//printf("RECOMPILE SUCCESS\n");
 }
 
 // reading param from config.txt
@@ -75,7 +75,7 @@ bool R_SetMode(int* width, int* height)
 
 	// setting size of our window
 	//dx11App.SetMode(*width, *height, fullscreen);
-	renderer->SetWindowMode(*width, *height, fullscreen);
+	renderer->SetWindowMode(vid.width, vid.height, fullscreen);
 	
 
 	return true;

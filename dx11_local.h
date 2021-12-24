@@ -11,7 +11,7 @@
 #include "../client/ref.h"
 #include "../win32/winquake.h"
 
-#include "dx11_init.h"
+//#include "dx11_init.h"
 
 #include <RendererIncludes.h>
 
@@ -33,7 +33,7 @@ extern cvar_t* vid_fullscreen;
 extern cvar_t* vid_gamma;
 extern cvar_t* vid_ref;
 
-extern InitDX11 dx11App;
+//extern InitDX11 dx11App;
 extern Renderer* renderer;
 extern UIRenderer* ui_renderer;
 

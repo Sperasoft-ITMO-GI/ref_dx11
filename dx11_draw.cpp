@@ -46,7 +46,7 @@ void Draw_Char(int x, int y, int num)
 	fcol = col * 0.0625;
 	size = 0.0625;
 
-	Vertex_PosTexCol_Info info = {};
+	/*Vertex_PosTexCol_Info info = {};
 	info.pos.x = x;
 	info.pos.y = y;
 	info.pos.width = 8;
@@ -60,7 +60,7 @@ void Draw_Char(int x, int y, int num)
 	info.col.x = 1.0;
 	info.col.y = 1.0;
 	info.col.z = 1.0;
-	info.col.w = 1.0;
+	info.col.w = 1.0;*/
 
 	//dx11App.DummyDrawingPicture(&info, draw_chars->texnum);
 	auto parameters = renderer->GetWindowParameters();
@@ -141,21 +141,21 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic)
 
 	// TODO: check for alpha test if image->hax_alpha then enable it
 
-	Vertex_PosTexCol_Info info = {};
-	info.pos.x = x;
-	info.pos.y = y;
-	info.pos.width = gl->width;
-	info.pos.height = gl->height;
+	//Vertex_PosTexCol_Info info = {};
+	//info.pos.x = x;
+	//info.pos.y = y;
+	//info.pos.width = gl->width;
+	//info.pos.height = gl->height;
 
-	info.tex.xl = 0.0f;
-	info.tex.xr = 1.0f;
-	info.tex.yt = 0.0f;
-	info.tex.yb = 1.0f;
+	//info.tex.xl = 0.0f;
+	//info.tex.xr = 1.0f;
+	//info.tex.yt = 0.0f;
+	//info.tex.yb = 1.0f;
 
-	info.col.x = 1.0;
-	info.col.y = 1.0;
-	info.col.z = 1.0;
-	info.col.w = 1.0;
+	//info.col.x = 1.0;
+	//info.col.y = 1.0;
+	//info.col.z = 1.0;
+	//info.col.w = 1.0;
 
 	//dx11App.DummyDrawingPicture(&info, gl->texnum);
 	auto parameters = renderer->GetWindowParameters();
@@ -197,21 +197,21 @@ void Draw_Pic(int x, int y, char* pic)
 
 	// TODO: check for alpha test if image->hax_alpha then enable it
 
-	Vertex_PosTexCol_Info info = {};
-	info.pos.x = x;
-	info.pos.y = y;
-	info.pos.width = gl->width;
-	info.pos.height = gl->height;
+	//Vertex_PosTexCol_Info info = {};
+	//info.pos.x = x;
+	//info.pos.y = y;
+	//info.pos.width = gl->width;
+	//info.pos.height = gl->height;
 
-	info.tex.xl = 0.0f;
-	info.tex.xr = 1.0f;
-	info.tex.yt = 0.0f;
-	info.tex.yb = 1.0f;
+	//info.tex.xl = 0.0f;
+	//info.tex.xr = 1.0f;
+	//info.tex.yt = 0.0f;
+	//info.tex.yb = 1.0f;
 
-	info.col.x = 1.0;
-	info.col.y = 1.0;
-	info.col.z = 1.0;
-	info.col.w = 1.0;
+	//info.col.x = 1.0;
+	//info.col.y = 1.0;
+	//info.col.z = 1.0;
+	//info.col.w = 1.0;
 
 	//dx11App.DummyDrawingPicture(&info, gl->texnum);
 	auto parameters = renderer->GetWindowParameters();
@@ -255,21 +255,21 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic)
 
 	// TODO: check for alpha test if image->hax_alpha then enable it
 
-	Vertex_PosTexCol_Info info = {};
-	info.pos.x = x;
-	info.pos.y = y;
-	info.pos.width = w;
-	info.pos.height = h;
+	//Vertex_PosTexCol_Info info = {};
+	//info.pos.x = x;
+	//info.pos.y = y;
+	//info.pos.width = w;
+	//info.pos.height = h;
 
-	info.tex.xl = x / 64.0f;
-	info.tex.xr = (x + w) / 64.0f;
-	info.tex.yt = y / 64.0f;
-	info.tex.yb = (y + h) / 64.0f;
+	//info.tex.xl = x / 64.0f;
+	//info.tex.xr = (x + w) / 64.0f;
+	//info.tex.yt = y / 64.0f;
+	//info.tex.yb = (y + h) / 64.0f;
 
-	info.col.x = 1.0;
-	info.col.y = 1.0;
-	info.col.z = 1.0;
-	info.col.w = 1.0;
+	//info.col.x = 1.0;
+	//info.col.y = 1.0;
+	//info.col.z = 1.0;
+	//info.col.w = 1.0;
 
 	//dx11App.DummyDrawingPicture(&info, image->texnum);
 	auto parameters = renderer->GetWindowParameters();
@@ -451,21 +451,21 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 
 	// TODO: ENABLE ALPHA TEST
 
-	Vertex_PosTexCol_Info info = {};
-	info.pos.x = x;
-	info.pos.y = y;
-	info.pos.width = w;
-	info.pos.height = h;
+	//Vertex_PosTexCol_Info info = {};
+	//info.pos.x = x;
+	//info.pos.y = y;
+	//info.pos.width = w;
+	//info.pos.height = h;
 
-	info.tex.xl = 0.0f;
-	info.tex.xr = 1.0f;
-	info.tex.yt = 0.0f;
-	info.tex.yb = t;
+	//info.tex.xl = 0.0f;
+	//info.tex.xr = 1.0f;
+	//info.tex.yt = 0.0f;
+	//info.tex.yb = t;
 
-	info.col.x = 1.0;
-	info.col.y = 1.0;
-	info.col.z = 1.0;
-	info.col.w = 1.0;
+	//info.col.x = 1.0;
+	//info.col.y = 1.0;
+	//info.col.z = 1.0;
+	//info.col.w = 1.0;
 
 	//dx11App.DummyDrawingPicture(&info, CINEMATIC_PICTURE);
 	auto parameters = renderer->GetWindowParameters();

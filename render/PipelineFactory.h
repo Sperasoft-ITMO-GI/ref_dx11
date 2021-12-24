@@ -15,6 +15,7 @@ struct DefinePair {
 class PipelineFactory {
 public:
 	PipelineFactory(const std::wstring& path, IStateProvider* prov, std::vector<D3D_SHADER_MACRO> defs);
+	PipelineFactory(const std::wstring& path, IStateProvider* prov, D3D_SHADER_MACRO defs[]);
 
 	PipelineState* GetState(int defs);
 private:
@@ -22,4 +23,5 @@ private:
 	std::wstring shader_path;
 	IStateProvider* provider;
 	std::vector<D3D_SHADER_MACRO> defines;
+	D3D_SHADER_MACRO* definesArr;
 };
