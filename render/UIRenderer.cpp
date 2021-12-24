@@ -1,13 +1,12 @@
 #include <UIRenderer.h>
 
-static std::vector<D3D_SHADER_MACRO> sm{
-	{"COLORED", "1"},
-	{"TEXTURED", "2"},
-	{"NULL", "NULL"}
-};
+//static std::vector<D3D_SHADER_MACRO> sm{
+//	{"COLORED", "1"},
+//	{"NULL", "NULL"}
+//};
 
 static D3D_SHADER_MACRO macro[] = {
-	"TEXTURED", "2", "NULL", "NULL"
+	"COLORED", "0", "TEXTURED", "0", "NULL", "NULL"
 };
 
 void UIRenderer::Init() {
@@ -29,12 +28,6 @@ void UIRenderer::Render() {
 	quads.clear();
 }
 
-//void UIRenderer::Swap() {
-//	Renderer* renderer = Renderer::GetInstance();
-//	renderer->GetSwapChain()->Present(1, 0);
-//	
-//}
-
 void UIRenderer::AddElement(const Quad& quad) {
 	quads.push_back(quad);
 }
@@ -43,12 +36,6 @@ void UIRenderer::UIPSProvider::PatchPipelineState(PipelineState* state, int defi
 	state->dss = DepthStencilState::DEFAULT;
 	state->bs = BlendState::ALPHA;
 	state->rs = RasterizationState::CULL_NONE;
-
-	if (defines & COLORED) {
-		state->layout = Layout::COLOR;
-	}
-	if (defines & TEXTURED) {
-		state->layout = Layout::TEXTURE;
-	}
+	state->layout = Layout::QUAD;
 }
 

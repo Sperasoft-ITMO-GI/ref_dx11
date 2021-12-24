@@ -1,3 +1,6 @@
+//#define COLORED  
+//#define TEXTURED 
+
 Texture2D Text : register(t0);
 sampler Sampler : register(s0);
 
@@ -31,15 +34,16 @@ VSOut VSMain(VSIn IN)
 
 float4 PSMain(VSOut IN) : SV_Target
 {
+    float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
+#ifdef COLORED
+    result += float4(1.0f, 0.0f, 0.0f, 1.0f);
+#endif
     
-//#ifdef COLORED
-//    res = IN.col;
-//#endif
+#ifdef TEXTURED
+    result = Text.Sample(Sampler, IN.texCoord) * float4(0.0f, 1.0f, 0.0f, 1.0f);
+#endif
+    //return Text.Sample(Sampler, IN.texCoord) * IN.col;
     
-//#ifdef TEXTURED
-//    res = Text.Sample(Sampler, IN.texCoord);
-//#endif
-
-    return mul(Text.Sample(Sampler, IN.texCoord), IN.col);
+    return result;
 }
 

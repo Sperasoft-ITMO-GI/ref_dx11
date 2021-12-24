@@ -339,7 +339,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 	VertexBuffer vb(vert);
 	ConstantBuffer<ConstantBufferQuad> cb(cbq);
 	Quad quad(vb, ib, cb, COLORED, -1);
-	//ui_renderer->AddElement(quad);
+	ui_renderer->AddElement(quad);
 }
 
 /*

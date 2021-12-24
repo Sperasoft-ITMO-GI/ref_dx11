@@ -22,6 +22,6 @@ private:
 	std::unordered_map<int, PipelineState*> dict;
 	std::wstring shader_path;
 	IStateProvider* provider;
-	std::vector<D3D_SHADER_MACRO> defines;
+	std::vector<D3D_SHADER_MACRO> defines; 
 	D3D_SHADER_MACRO* definesArr;
 };

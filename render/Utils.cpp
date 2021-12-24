@@ -26,6 +26,8 @@ ComPtr<ID3DBlob> CompileShader(
 	ComPtr<ID3DBlob> byteCode;
 	ComPtr<ID3DBlob> errors;
 
+	printf("%s", defines[1].Name);
+
 	D3DCompileFromFile(filename, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		entrypoint, target, compileFlags, 0, &byteCode, &errors);
 
