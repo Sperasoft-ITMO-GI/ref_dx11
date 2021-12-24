@@ -34,12 +34,12 @@ VSOut VSMain(VSIn IN)
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
-#ifdef COLORED
-    result += float4(1.0f, 0.0f, 0.0f, 1.0f);
+    float4 result = float4(1.0f, 0.0f, 0.0f, 0.0f);
+#if COLORED
+    result = IN.col + result;
 #endif
     
-#ifdef TEXTURED
+#if TEXTURED
     result = Text.Sample(Sampler, IN.texCoord) * float4(0.0f, 1.0f, 0.0f, 1.0f);
 #endif
     //return Text.Sample(Sampler, IN.texCoord) * IN.col;

@@ -16,12 +16,12 @@ PipelineState* PipelineFactory::GetState(int defs) {
 	else {
 		ps = new PipelineState();
 
-		definesArr[defs].Definition = "1";
+		definesArr[defs - 1].Definition = "1";
 
 		ps->vs->Create(CompileShader(shader_path.c_str(), definesArr, "VSMain", "vs_5_0"));
 		ps->ps->Create(CompileShader(shader_path.c_str(), definesArr, "PSMain", "ps_5_0"));
 
-		definesArr[defs].Definition = "0";
+		definesArr[defs - 1].Definition = "0";
 		
 		provider->PatchPipelineState(ps, defs);
 
