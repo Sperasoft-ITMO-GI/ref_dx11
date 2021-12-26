@@ -111,6 +111,17 @@ qboolean R_Init(void* hinstance, void* hWnd)
 		return False;
 	}
 	ui_renderer->Init();
+	Quad::vb.Create(
+		std::vector<UIVertex>{
+			{ {0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+			{ {1.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+			{ {1.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+			{ {0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}
+		}
+	);
+	
+	Quad::ib.Create({2, 1, 0, 0, 3, 2});
+	
 
 
 	// let the sound and input subsystems know about the new window

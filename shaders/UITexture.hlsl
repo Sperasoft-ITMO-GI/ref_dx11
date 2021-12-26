@@ -1,12 +1,11 @@
-//#define COLORED  
-//#define TEXTURED 
-
 Texture2D Text : register(t0);
 sampler Sampler : register(s0);
 
 cbuffer Cbuf
 {
-    matrix transform;
+    matrix position_transform;
+    matrix color_transform;
+    matrix texture_transform;
 };
 
 struct VSOut
@@ -26,9 +25,9 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
-    OUT.pos = mul(float4(IN.pos.x, IN.pos.y, 0.0f, 1.0f), transform);
-    OUT.col = IN.col;
-    OUT.texCoord = IN.texCoord;
+    OUT.pos = mul(float4(IN.pos.x, IN.pos.y, 0.0f, 1.0f), position_transform);
+    OUT.col = mul(IN.col, color_transform);
+    OUT.texCoord = mul(float4(IN.texCoord.x, IN.texCoord.y, 0.0f, 1.0f), texture_transform).xy;
     return OUT;
 }
 
@@ -37,13 +36,16 @@ float4 PSMain(VSOut IN) : SV_Target
     float4 result = IN.col;
     
 #ifdef COLORED
-    result.x += float(1.0f);
+    result.x += 1.0f;
 #endif
-    
+
+#ifdef FADE 
+    result = float4(0.0f, 1.0f, 1.0f, 0.8f);
+#endif
+
 #ifdef TEXTURED
     result = Text.Sample(Sampler, IN.texCoord) * float4(0.0f, 1.0f, 0.0f, 1.0f);
 #endif
-    //return Text.Sample(Sampler, IN.texCoord) * IN.col;
     
     return result;
 }

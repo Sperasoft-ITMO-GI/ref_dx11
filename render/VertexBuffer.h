@@ -11,7 +11,11 @@
 
 class VertexBuffer : public Bindable {
 public:
-	template<class T>
+
+	VertexBuffer() {
+	}
+
+	template<typename T>
 	VertexBuffer(std::vector<T> vertices) : stride(sizeof(T)) {
 		Renderer* renderer = Renderer::GetInstance();
 		D3D11_BUFFER_DESC buffer_desc{};
@@ -30,6 +34,27 @@ public:
 	}
 
 	VertexBuffer(UIVertex vert[]);
+
+	template<typename T>
+	void Create(std::vector<T> vertices) {
+		if (!buffer) {
+			stride = sizeof(T);
+			Renderer* renderer = Renderer::GetInstance();
+			D3D11_BUFFER_DESC buffer_desc{};
+			ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
+
+			buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+			buffer_desc.ByteWidth = stride * vertices.size();
+
+			D3D11_SUBRESOURCE_DATA subresource_data{};
+			ZeroMemory(&subresource_data, sizeof(D3D11_SUBRESOURCE_DATA));
+
+			subresource_data.pSysMem = vertices.data();
+
+			DXCHECK(renderer->GetDevice()->CreateBuffer(&buffer_desc, &subresource_data, &buffer));
+		}
+	}
 
 	virtual void Bind() override;
 private:

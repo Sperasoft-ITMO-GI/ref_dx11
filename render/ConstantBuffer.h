@@ -5,7 +5,9 @@
 #include <Renderer.h>
 
 struct ConstantBufferQuad {
-	DirectX::XMMATRIX transform = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX color_transform = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX texture_transform = DirectX::XMMatrixIdentity();
 };
 
 template<typename T>
@@ -19,7 +21,7 @@ public:
 		constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		constant_buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
 		constant_buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		constant_buffer_desc.ByteWidth = sizeof(T);;
+		constant_buffer_desc.ByteWidth = sizeof(T);
 
 		D3D11_SUBRESOURCE_DATA constant_subresource_data{};
 		constant_subresource_data.pSysMem = &trans;
@@ -30,11 +32,12 @@ public:
 	template<typename T>
 	void Update(const T& transforms) {
 		Renderer* renderer = Renderer::GetInstance();
-		ComPtr<ID3D11DeviceContext> context = renderer->GetContext();
+		
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext> context = renderer->GetContext();
 
 		T data = transforms;
 		D3D11_MAPPED_SUBRESOURCE mapped_subresource;
-		ZeroMemory(mapped_subresource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+		ZeroMemory(&mapped_subresource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 		DXCHECK(context->Map(buffer.Get(), 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapped_subresource));
 		CopyMemory(mapped_subresource.pData, data, sizeof(T));
 		context->Unmap(buffer.Get(), 0u);

@@ -4,8 +4,11 @@ using std::vector;
 using DirectX::XMFLOAT2;
 using DirectX::XMFLOAT4;
 
-Quad::Quad(VertexBuffer vb, IndexBuffer ib, ConstantBuffer<ConstantBufferQuad> cb, int flags, int index) 
-	: vb(vb), ib(ib), cb(cb), flags(flags), texture_index(index) {
+VertexBuffer Quad::vb;
+IndexBuffer Quad::ib;
+
+Quad::Quad(ConstantBuffer<ConstantBufferQuad> cb, int flags, int index) 
+	: cb(cb), flags(flags), texture_index(index) {
 }
 
 int Quad::GetFlags() {

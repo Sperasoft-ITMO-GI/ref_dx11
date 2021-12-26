@@ -7,16 +7,20 @@
 //};
 
 static D3D_SHADER_MACRO colMac[] = {
-	"COLORED", "1"
+	"COLORED", "1", NULL, NULL
 };
 static D3D_SHADER_MACRO texMac[] = {
-	"TEXTURED", "2"
+	"TEXTURED", "2", NULL, NULL
+};
+static D3D_SHADER_MACRO fadeMac[] = {
+	"FADE", "3", NULL, NULL
 };
 
 
 static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
-	{1, colMac},
-	{2,  texMac}
+	{COLORED, colMac},
+	{TEXTURED,  texMac},
+	{FADE,  fadeMac},
 };
 
 void UIRenderer::Init() {
@@ -30,6 +34,9 @@ void UIRenderer::Render() {
 		}
 		if (quad.GetFlags() & TEXTURED) {
 			SetPipelineState(factory->GetState(TEXTURED));
+		}
+		if (quad.GetFlags() & FADE) {
+			SetPipelineState(factory->GetState(FADE));
 		}
 
 		quad.Draw();

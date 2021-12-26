@@ -9,7 +9,12 @@
 
 class IndexBuffer : public Bindable {
 public:
+	IndexBuffer() {
+	}
+
 	IndexBuffer(std::vector<uint16_t> indexes); // maybe uint16_t too small for store indixes;
+
+	void Create(std::vector<uint16_t> indexes);
 
 	virtual void Bind() override;
 

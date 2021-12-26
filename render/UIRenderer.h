@@ -11,6 +11,7 @@
 
 #define COLORED  0x001
 #define TEXTURED 0x002
+#define FADE     0x003
 
 class UIRenderer {
 public:
