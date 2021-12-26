@@ -2,11 +2,21 @@
 
 //static std::vector<D3D_SHADER_MACRO> sm{
 //	{"COLORED", "1"},
+//	{"TEXTURED", "2"},
 //	{"NULL", "NULL"}
 //};
 
-static D3D_SHADER_MACRO macro[] = {
-	"COLORED", "0", "TEXTURED", "0", "NULL", "NULL"
+static D3D_SHADER_MACRO colMac[] = {
+	"COLORED", "1"
+};
+static D3D_SHADER_MACRO texMac[] = {
+	"TEXTURED", "2"
+};
+
+
+static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
+	{1, colMac},
+	{2,  texMac}
 };
 
 void UIRenderer::Init() {

@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <vector>
+#include <unordered_map>
 
 #include <WndDxIncludes.h>
 #include <PipelineFactory.h>
