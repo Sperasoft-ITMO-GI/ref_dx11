@@ -40,7 +40,7 @@ float4 PSMain(VSOut IN) : SV_Target
 #endif
 
 #ifdef FADE 
-    result = float4(0.0f, 1.0f, 1.0f, 0.8f);
+    result = float4(1.0f, 1.0f, 0.0f, 0.6f);
 #endif
 
 #ifdef TEXTURED
