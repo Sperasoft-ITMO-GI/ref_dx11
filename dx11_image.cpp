@@ -488,7 +488,6 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 	int			scaled_width, scaled_height;
 	int			i, c;
 	byte* scan;
-	int comp;
 
 	uploaded_paletted = False;
 
@@ -538,17 +537,6 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 		}
 	}
 
-	if (samples == gl_solid_format)
-		comp = gl_tex_solid_format;
-	else if (samples == gl_alpha_format)
-		comp = gl_tex_alpha_format;
-	else {
-		ri.Con_Printf(PRINT_ALL,
-			"Unknown number of texture components %i\n",
-			samples);
-		comp = samples;
-	}
-
 	if (scaled_width == width && scaled_height == height)
 	{
 		if (!mipmap)
@@ -556,10 +544,10 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 			if (samples == gl_solid_format)
 			{
 				uploaded_paletted = True;
-				GL_BuildPalettedTexture(paletted_texture, (unsigned char*)data, scaled_width, scaled_height);
+				//GL_BuildPalettedTexture(paletted_texture, (unsigned char*)data, scaled_width, scaled_height);
 				//dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
-				renderer->AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
-				renderer->Test(name, scaled_width, scaled_height, 8, paletted_texture, img->type);
+				renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
+				renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
 			}
 			else
 			{
@@ -579,15 +567,16 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 	if (samples == gl_solid_format)
 	{
 		uploaded_paletted = True;
-		GL_BuildPalettedTexture(paletted_texture, (unsigned char*)scaled, scaled_width, scaled_height);
+		//GL_BuildPalettedTexture(paletted_texture, (unsigned char*)scaled, scaled_width, scaled_height);
 		//dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
-		renderer->Test(name, scaled_width, scaled_height, 8, paletted_texture, img->type);
-		renderer->AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
+		renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
+		renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
 	}
 	else
 	{
 		/*dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
 		dx11App.DummyTest(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);*/
+		renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
 		renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
 	}
 
