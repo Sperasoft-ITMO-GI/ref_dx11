@@ -7,7 +7,8 @@
 #include "Renderer.h"
 
 enum BlendState {
-	ALPHA
+	ALPHA,
+	NOALPHA,
 };
 
 Microsoft::WRL::ComPtr<ID3D11BlendState> MakeAlphaBS();

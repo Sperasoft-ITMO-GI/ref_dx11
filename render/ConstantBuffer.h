@@ -10,6 +10,12 @@ struct ConstantBufferQuad {
 	DirectX::XMMATRIX texture_transform = DirectX::XMMatrixIdentity();
 };
 
+struct ConstantBufferPolygon {
+	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX texture_transform = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX lightmap_transform = DirectX::XMMatrixIdentity(); // ????
+};
+
 template<typename T>
 class ConstantBuffer {
 public:

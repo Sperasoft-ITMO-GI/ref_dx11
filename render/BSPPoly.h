@@ -7,11 +7,11 @@
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <ConstantBuffer.h>
-#include <UIVertex.h>
+#include <ModelVertex.h>
 
-class Quad {
+class BSPPoly {
 public:
-	Quad(ConstantBuffer<ConstantBufferQuad> cb, int flags, int index);
+	BSPPoly(ConstantBuffer<ConstantBufferPolygon> cb, int flags, int tex_index, int lm_index);
 
 	int GetFlags();
 
@@ -19,12 +19,12 @@ public:
 private:
 	int flags;
 	int texture_index;
+	int lightmap_index;
 
 public:
 	static VertexBuffer vb;
 	static IndexBuffer  ib;
 
 private:
-	ConstantBuffer<ConstantBufferQuad> cb;
+	ConstantBuffer<ConstantBufferPolygon> cb;
 };
-

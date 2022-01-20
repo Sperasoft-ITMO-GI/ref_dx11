@@ -13,7 +13,7 @@ static D3D_SHADER_MACRO texMac[] = {
 	"TEXTURED", "2", NULL, NULL
 };
 static D3D_SHADER_MACRO fadeMac[] = {
-	"FADE", "3", NULL, NULL
+	"FADE", "4", NULL, NULL
 };
 
 
@@ -50,6 +50,12 @@ void UIRenderer::AddElement(const Quad& quad) {
 }
 
 void UIRenderer::UIPSProvider::PatchPipelineState(PipelineState* state, int defines) {
+	/* 
+		For menu this states are similar
+		but if for different defines we have to have different state  
+		there are will be "if" statements to chose it
+	*/
+
 	state->dss = DepthStencilState::DEFAULT;
 	state->bs = BlendState::ALPHA;
 	state->rs = RasterizationState::CULL_NONE;

@@ -169,9 +169,12 @@
     <ClInclude Include="render\IndexBuffer.h" />
     <ClInclude Include="render\InputLayout.h" />
     <ClInclude Include="render\IStateProvider.h" />
+    <ClInclude Include="render\ModelRenderer.h" />
+    <ClInclude Include="render\ModelVertex.h" />
     <ClInclude Include="render\PipelineFactory.h" />
     <ClInclude Include="render\PipelineState.h" />
     <ClInclude Include="render\PixelShader.h" />
+    <ClInclude Include="render\BSPPoly.h" />
     <ClInclude Include="render\Quad.h" />
     <ClInclude Include="render\RasterizationState.h" />
     <ClInclude Include="render\Renderer.h" />
@@ -201,9 +204,11 @@
     <ClCompile Include="render\DepthStencilState.cpp" />
     <ClCompile Include="render\IndexBuffer.cpp" />
     <ClCompile Include="render\InputLayout.cpp" />
+    <ClCompile Include="render\ModelRenderer.cpp" />
     <ClCompile Include="render\PipelineFactory.cpp" />
     <ClCompile Include="render\PipelineState.cpp" />
     <ClCompile Include="render\PixelShader.cpp" />
+    <ClCompile Include="render\BSPPoly.cpp" />
     <ClCompile Include="render\Quad.cpp" />
     <ClCompile Include="render\RasterizationState.cpp" />
     <ClCompile Include="render\Renderer.cpp" />
@@ -213,6 +218,11 @@
     <ClCompile Include="render\VertexBuffer.cpp" />
     <ClCompile Include="render\VertexShader.cpp" />
     <ClCompile Include="render\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shaders\UITexture.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

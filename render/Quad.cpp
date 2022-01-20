@@ -1,11 +1,7 @@
 #include <Quad.h>
 
-using std::vector;
-using DirectX::XMFLOAT2;
-using DirectX::XMFLOAT4;
-
 VertexBuffer Quad::vb;
-IndexBuffer Quad::ib;
+IndexBuffer  Quad::ib;
 
 Quad::Quad(ConstantBuffer<ConstantBufferQuad> cb, int flags, int index) 
 	: cb(cb), flags(flags), texture_index(index) {

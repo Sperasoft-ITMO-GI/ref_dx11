@@ -1,20 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{4fa7d0f5-4b85-4ff1-bf6d-258f3440ac63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render">
+      <UniqueIdentifier>{98008a03-f18c-46db-9004-d2eeb4deacfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\UIRenderer">
+      <UniqueIdentifier>{1f5b892d-7579-4ca9-afc2-3867620674a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Bindable">
+      <UniqueIdentifier>{432478ee-18e3-4ef5-81b1-86dae159c2fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\States">
+      <UniqueIdentifier>{ecc62620-5602-4b54-8a75-1009281ee77f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Factory">
+      <UniqueIdentifier>{1dd428b2-157e-41ed-90e2-3f7f4909fb83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{9d61d061-0617-46aa-94a3-ef3379b0ff65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\ModelRenderer">
+      <UniqueIdentifier>{99ac3113-0604-4795-bfc1-3f677f111c9e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -23,169 +36,189 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\game\q_shared.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\client\ref.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dx11_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dx11_init.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dxerr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Bindable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\BlendState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\DepthStencilState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\IndexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\IStateProvider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\PipelineFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\PipelineState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\PixelShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\RasterizationState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Textute.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\UIRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\UIVertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\VertexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\VertexShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="render\Window.h">
-      <Filter>Header Files</Filter>
+      <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="render\WndDxIncludes.h">
-      <Filter>Header Files</Filter>
+      <Filter>Render</Filter>
     </ClInclude>
-    <ClInclude Include="render\Quad.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="render\Bindable.h">
+      <Filter>Render\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="render\ConstantBuffer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="render\VertexShader.h">
+      <Filter>Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="render\VertexBuffer.h">
+      <Filter>Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Shader.h">
+      <Filter>Render\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="render\RendererIncludes.h">
-      <Filter>Header Files</Filter>
+      <Filter>Render</Filter>
     </ClInclude>
-    <ClInclude Include="render\States.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="render\RasterizationState.h">
+      <Filter>Render\States</Filter>
+    </ClInclude>
+    <ClInclude Include="render\PixelShader.h">
+      <Filter>Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="render\PipelineFactory.h">
+      <Filter>Render\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="render\IStateProvider.h">
+      <Filter>Render\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="render\PipelineState.h">
+      <Filter>Render\Factory</Filter>
     </ClInclude>
     <ClInclude Include="render\InputLayout.h">
-      <Filter>Header Files</Filter>
+      <Filter>Render\States</Filter>
+    </ClInclude>
+    <ClInclude Include="render\IndexBuffer.h">
+      <Filter>Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="render\DepthStencilState.h">
+      <Filter>Render\States</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ConstantBuffer.h">
+      <Filter>Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="render\BlendState.h">
+      <Filter>Render\States</Filter>
+    </ClInclude>
+    <ClInclude Include="render\States.h">
+      <Filter>Render\States</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Quad.h">
+      <Filter>Render\UIRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Renderer.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\UIRenderer.h">
+      <Filter>Render\UIRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\UIVertex.h">
+      <Filter>Render\UIRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Utils.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Textute.h">
+      <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="render\Topology.h">
-      <Filter>Header Files</Filter>
+      <Filter>Render\States</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11_init.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11_local.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="dxerr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\q_shared.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\ref.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="render\BSPPoly.h">
+      <Filter>Render\ModelRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ModelVertex.h">
+      <Filter>Render\ModelRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ModelRenderer.h">
+      <Filter>Render\ModelRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\game\q_shared.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\win32\q_shwin.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dx11_rmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dx11_init.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dxerr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dx11_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dx11_draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="render\BlendState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\DepthStencilState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\IndexBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\PipelineFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\PixelShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\RasterizationState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\VertexBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\VertexShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Quad.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\UIRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\PipelineState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Render\States</Filter>
     </ClCompile>
     <ClCompile Include="render\ConstantBuffer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="render\DepthStencilState.cpp">
+      <Filter>Render\States</Filter>
+    </ClCompile>
+    <ClCompile Include="render\IndexBuffer.cpp">
+      <Filter>Render\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="render\InputLayout.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Render\States</Filter>
     </ClCompile>
+    <ClCompile Include="render\PipelineFactory.cpp">
+      <Filter>Render\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="render\PipelineState.cpp">
+      <Filter>Render\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="render\PixelShader.cpp">
+      <Filter>Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Quad.cpp">
+      <Filter>Render\UIRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\RasterizationState.cpp">
+      <Filter>Render\States</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Renderer.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Texture.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\UIRenderer.cpp">
+      <Filter>Render\UIRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Utils.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\VertexBuffer.cpp">
+      <Filter>Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="render\VertexShader.cpp">
+      <Filter>Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Window.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11_draw.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11_image.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11_init.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11_rmain.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="dxerr.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\q_shared.c">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\win32\q_shwin.c">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="render\BSPPoly.cpp">
+      <Filter>Render\ModelRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ModelRenderer.cpp">
+      <Filter>Render\ModelRenderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shaders\UITexture.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

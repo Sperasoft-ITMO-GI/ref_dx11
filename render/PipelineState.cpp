@@ -11,8 +11,6 @@ void SetPipelineState(PipelineState* state) {
 	state->vs->Bind();
 	state->ps->Bind();
 
-	//context->OMSetDepthStencilState(dssStates.at(state->dss).Get(), )
-
 	// Кажется, что они не всегда такие
 	float blend_factor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sample_mask = 0xffffffff;
