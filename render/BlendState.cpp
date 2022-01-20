@@ -27,4 +27,8 @@ ComPtr<ID3D11BlendState> MakeAlphaBS() {
 	//renderer->GetContext()->OMSetBlendState(bs->state, blend_factor, sample_mask);
 
 	return state;
+};
+
+ComPtr<ID3D11BlendState> MakeNoAlphaBS() {
+
 }
