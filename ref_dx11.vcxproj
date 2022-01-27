@@ -159,8 +159,12 @@
   <ItemGroup>
     <ClInclude Include="..\client\ref.h" />
     <ClInclude Include="..\game\q_shared.h" />
+    <ClInclude Include="..\ref_gl\anorms.h" />
+    <ClInclude Include="..\ref_gl\anormtab.h" />
+    <ClInclude Include="..\ref_gl\warpsin.h" />
     <ClInclude Include="dx11_init.h" />
     <ClInclude Include="dx11_local.h" />
+    <ClInclude Include="dx11_model.h" />
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="render\Bindable.h" />
     <ClInclude Include="render\BlendState.h" />
@@ -197,7 +201,12 @@
     <ClCompile Include="dx11_draw.cpp" />
     <ClCompile Include="dx11_image.cpp" />
     <ClCompile Include="dx11_init.cpp" />
+    <ClCompile Include="dx11_light.cpp" />
+    <ClCompile Include="dx11_mesh.cpp" />
+    <ClCompile Include="dx11_model.cpp" />
     <ClCompile Include="dx11_rmain.cpp" />
+    <ClCompile Include="dx11_rsurf.cpp" />
+    <ClCompile Include="dx11_warp.cpp" />
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="render\BlendState.cpp" />
     <ClCompile Include="render\ConstantBuffer.cpp" />

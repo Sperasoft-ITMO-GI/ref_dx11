@@ -1,12 +1,8 @@
 #include "dx11_local.h"
 
-
 int			scrapNum;
 image_t		dxtextures[MAX_DXTEXTURES];
 int			numdxtextures;
-
-// TODO: need place in to dx11_model
-int		registration_sequence;
 
 static byte			 intensitytable[256];
 static unsigned char gammatable[256];
@@ -57,6 +53,323 @@ void DX11_SetTexturePalette(unsigned palette[256])
 }
 
 /*
+===============
+GL_TextureMode
+===============
+*/
+void GL_TextureMode(char* string)
+{
+	//int		i;
+	//image_t* glt;
+
+	//for (i = 0; i < NUM_GL_MODES; i++)
+	//{
+	//	if (!Q_stricmp(modes[i].name, string))
+	//		break;
+	//}
+
+	//if (i == NUM_GL_MODES)
+	//{
+	//	ri.Con_Printf(PRINT_ALL, "bad filter name\n");
+	//	return;
+	//}
+
+	//gl_filter_min = modes[i].minimize;
+	//gl_filter_max = modes[i].maximize;
+
+	//// change all the existing mipmap texture objects
+	//for (i = 0, glt = gltextures; i < numgltextures; i++, glt++)
+	//{
+	//	if (glt->type != it_pic && glt->type != it_sky)
+	//	{
+	//		GL_Bind(glt->texnum);
+	//		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+	//		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+	//	}
+	//}
+}
+
+/*
+===============
+GL_TextureAlphaMode
+===============
+*/
+void GL_TextureAlphaMode(char* string)
+{
+	/*int		i;
+
+	for (i = 0; i < NUM_GL_ALPHA_MODES; i++)
+	{
+		if (!Q_stricmp(gl_alpha_modes[i].name, string))
+			break;
+	}
+
+	if (i == NUM_GL_ALPHA_MODES)
+	{
+		ri.Con_Printf(PRINT_ALL, "bad alpha texture mode name\n");
+		return;
+	}
+
+	gl_tex_alpha_format = gl_alpha_modes[i].mode;*/
+}
+
+/*
+===============
+GL_TextureSolidMode
+===============
+*/
+void GL_TextureSolidMode(char* string)
+{
+	/*int		i;
+
+	for (i = 0; i < NUM_GL_SOLID_MODES; i++)
+	{
+		if (!Q_stricmp(gl_solid_modes[i].name, string))
+			break;
+	}
+
+	if (i == NUM_GL_SOLID_MODES)
+	{
+		ri.Con_Printf(PRINT_ALL, "bad solid texture mode name\n");
+		return;
+	}
+
+	gl_tex_solid_format = gl_solid_modes[i].mode;*/
+}
+
+/*
+===============
+GL_ImageList_f
+===============
+*/
+void	GL_ImageList_f(void)
+{
+	int		i;
+	image_t* image;
+	int		texels;
+	const char* palstrings[2] =
+	{
+		"RGB",
+		"PAL"
+	};
+
+	ri.Con_Printf(PRINT_ALL, "------------------\n");
+	texels = 0;
+
+	for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
+	{
+		if (image->texnum <= 0)
+			continue;
+		texels += image->upload_width * image->upload_height;
+		switch (image->type)
+		{
+		case it_skin:
+			ri.Con_Printf(PRINT_ALL, "M");
+			break;
+		case it_sprite:
+			ri.Con_Printf(PRINT_ALL, "S");
+			break;
+		case it_wall:
+			ri.Con_Printf(PRINT_ALL, "W");
+			break;
+		case it_pic:
+			ri.Con_Printf(PRINT_ALL, "P");
+			break;
+		default:
+			ri.Con_Printf(PRINT_ALL, " ");
+			break;
+		}
+
+		ri.Con_Printf(PRINT_ALL, " %3i %3i %s: %s\n",
+			image->upload_width, image->upload_height, palstrings[image->paletted], image->name);
+	}
+	ri.Con_Printf(PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels);
+}
+
+/*
+=============================================================================
+
+  scrap allocation
+
+  Allocate all the little status bar obejcts into a single texture
+  to crutch up inefficient hardware / drivers
+
+=============================================================================
+*/
+
+#define	MAX_SCRAPS		1
+#define	BLOCK_WIDTH		256
+#define	BLOCK_HEIGHT	256
+
+int			scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
+byte		scrap_texels[MAX_SCRAPS][BLOCK_WIDTH * BLOCK_HEIGHT];
+qboolean	scrap_dirty;
+
+// returns a texture number and the position inside it
+int Scrap_AllocBlock(int w, int h, int* x, int* y)
+{
+	int		i, j;
+	int		best, best2;
+	int		texnum;
+
+	for (texnum = 0; texnum < MAX_SCRAPS; texnum++)
+	{
+		best = BLOCK_HEIGHT;
+
+		for (i = 0; i < BLOCK_WIDTH - w; i++)
+		{
+			best2 = 0;
+
+			for (j = 0; j < w; j++)
+			{
+				if (scrap_allocated[texnum][i + j] >= best)
+					break;
+				if (scrap_allocated[texnum][i + j] > best2)
+					best2 = scrap_allocated[texnum][i + j];
+			}
+			if (j == w)
+			{	// this is a valid spot
+				*x = i;
+				*y = best = best2;
+			}
+		}
+
+		if (best + h > BLOCK_HEIGHT)
+			continue;
+
+		for (i = 0; i < w; i++)
+			scrap_allocated[texnum][*x + i] = best + h;
+
+		return texnum;
+	}
+
+	return -1;
+	//	Sys_Error ("Scrap_AllocBlock: full");
+}
+
+
+int	scrap_uploads;
+
+void Scrap_Upload(void)
+{
+	scrap_uploads++;
+	// binding texture
+	//GL_Bind(TEXNUM_SCRAPS);
+	//GL_Upload8(scrap_texels[0], BLOCK_WIDTH, BLOCK_HEIGHT, False, False);
+	scrap_dirty = False;
+}
+
+/*
+=================================================================
+
+PCX LOADING
+
+=================================================================
+*/
+
+
+/*
+==============
+LoadPCX
+==============
+*/
+void LoadPCX(char* filename, byte** pic, byte** palette, int* width, int* height)
+{
+	byte* raw;
+	pcx_t* pcx;
+	int		x, y;
+	int		len;
+	int		dataByte, runLength;
+	byte* out, * pix;
+
+	*pic = NULL;
+	*palette = NULL;
+
+	//
+	// load the file
+	//
+	len = ri.FS_LoadFile(filename, (void**)&raw);
+	if (!raw)
+	{
+		ri.Con_Printf(PRINT_DEVELOPER, "Bad pcx file %s\n", filename);
+		return;
+	}
+
+	//
+	// parse the PCX file
+	//
+	pcx = (pcx_t*)raw;
+
+	pcx->xmin = LittleShort(pcx->xmin);
+	pcx->ymin = LittleShort(pcx->ymin);
+	pcx->xmax = LittleShort(pcx->xmax);
+	pcx->ymax = LittleShort(pcx->ymax);
+	pcx->hres = LittleShort(pcx->hres);
+	pcx->vres = LittleShort(pcx->vres);
+	pcx->bytes_per_line = LittleShort(pcx->bytes_per_line);
+	pcx->palette_type = LittleShort(pcx->palette_type);
+
+	raw = &pcx->data;
+
+	if (pcx->manufacturer != 0x0a
+		|| pcx->version != 5
+		|| pcx->encoding != 1
+		|| pcx->bits_per_pixel != 8
+		|| pcx->xmax >= 640
+		|| pcx->ymax >= 480)
+	{
+		ri.Con_Printf(PRINT_ALL, "Bad pcx file %s\n", filename);
+		return;
+	}
+
+	out = (byte*)malloc((pcx->ymax + 1) * (pcx->xmax + 1));
+
+	*pic = out;
+
+	pix = out;
+
+	if (palette)
+	{
+		*palette = (byte*)malloc(768);
+		memcpy(*palette, (byte*)pcx + len - 768, 768);
+	}
+
+	if (width)
+		*width = pcx->xmax + 1;
+	if (height)
+		*height = pcx->ymax + 1;
+
+	for (y = 0; y <= pcx->ymax; y++, pix += pcx->xmax + 1)
+	{
+		for (x = 0; x <= pcx->xmax; )
+		{
+			dataByte = *raw++;
+
+			if ((dataByte & 0xC0) == 0xC0)
+			{
+				runLength = dataByte & 0x3F;
+				dataByte = *raw++;
+			}
+			else
+				runLength = 1;
+
+			while (runLength-- > 0)
+				pix[x++] = dataByte;
+		}
+
+	}
+
+	if (raw - (byte*)pcx > len)
+	{
+		ri.Con_Printf(PRINT_DEVELOPER, "PCX file %s was malformed", filename);
+		free(*pic);
+		*pic = NULL;
+	}
+
+	ri.FS_FreeFile(pcx);
+}
+
+/*
 =========================================================
 
 TARGA LOADING
@@ -71,7 +384,6 @@ typedef struct _TargaHeader {
 	unsigned short	x_origin, y_origin, width, height;
 	unsigned char	pixel_size, attributes;
 } TargaHeader;
-
 
 /*
 =============
@@ -263,76 +575,88 @@ void LoadTGA(char* name, byte** pic, int* width, int* height)
 }
 
 /*
-=============================================================================
+====================================================================
 
-  scrap allocation
+IMAGE FLOOD FILLING
 
-  Allocate all the little status bar obejcts into a single texture
-  to crutch up inefficient hardware / drivers
-
-=============================================================================
+====================================================================
 */
 
-#define	MAX_SCRAPS		1
-#define	BLOCK_WIDTH		256
-#define	BLOCK_HEIGHT	256
+/*
+=================
+Mod_FloodFillSkin
 
-int			scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
-byte		scrap_texels[MAX_SCRAPS][BLOCK_WIDTH * BLOCK_HEIGHT];
-qboolean	scrap_dirty;
+Fill background pixels so mipmapping doesn't have haloes
+=================
+*/
 
-// returns a texture number and the position inside it
-int Scrap_AllocBlock(int w, int h, int* x, int* y)
+typedef struct
 {
-	int		i, j;
-	int		best, best2;
-	int		texnum;
+	short		x, y;
+} floodfill_t;
 
-	for (texnum = 0; texnum < MAX_SCRAPS; texnum++)
+// must be a power of 2
+#define FLOODFILL_FIFO_SIZE 0x1000
+#define FLOODFILL_FIFO_MASK (FLOODFILL_FIFO_SIZE - 1)
+
+#define FLOODFILL_STEP( off, dx, dy ) \
+{ \
+	if (pos[off] == fillcolor) \
+	{ \
+		pos[off] = 255; \
+		fifo[inpt].x = x + (dx), fifo[inpt].y = y + (dy); \
+		inpt = (inpt + 1) & FLOODFILL_FIFO_MASK; \
+	} \
+	else if (pos[off] != 255) fdc = pos[off]; \
+}
+
+void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
+{
+	byte				fillcolor = *skin; // assume this is the pixel to fill
+	floodfill_t			fifo[FLOODFILL_FIFO_SIZE];
+	int					inpt = 0, outpt = 0;
+	int					filledcolor = -1;
+	int					i;
+
+	if (filledcolor == -1)
 	{
-		best = BLOCK_HEIGHT;
-
-		for (i = 0; i < BLOCK_WIDTH - w; i++)
-		{
-			best2 = 0;
-
-			for (j = 0; j < w; j++)
+		filledcolor = 0;
+		// attempt to find opaque black
+		for (i = 0; i < 256; ++i)
+			if (d_8to24table[i] == (255 << 0)) // alpha 1.0
 			{
-				if (scrap_allocated[texnum][i + j] >= best)
-					break;
-				if (scrap_allocated[texnum][i + j] > best2)
-					best2 = scrap_allocated[texnum][i + j];
+				filledcolor = i;
+				break;
 			}
-			if (j == w)
-			{	// this is a valid spot
-				*x = i;
-				*y = best = best2;
-			}
-		}
-
-		if (best + h > BLOCK_HEIGHT)
-			continue;
-
-		for (i = 0; i < w; i++)
-			scrap_allocated[texnum][*x + i] = best + h;
-
-		return texnum;
 	}
 
-	return -1;
-	//	Sys_Error ("Scrap_AllocBlock: full");
+	// can't fill to filled color or to transparent color (used as visited marker)
+	if ((fillcolor == filledcolor) || (fillcolor == 255))
+	{
+		//printf( "not filling skin from %d to %d\n", fillcolor, filledcolor );
+		return;
+	}
+
+	fifo[inpt].x = 0, fifo[inpt].y = 0;
+	inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
+
+	while (outpt != inpt)
+	{
+		int			x = fifo[outpt].x, y = fifo[outpt].y;
+		int			fdc = filledcolor;
+		byte* pos = &skin[x + skinwidth * y];
+
+		outpt = (outpt + 1) & FLOODFILL_FIFO_MASK;
+
+		if (x > 0)				FLOODFILL_STEP(-1, -1, 0);
+		if (x < skinwidth - 1)	FLOODFILL_STEP(1, 1, 0);
+		if (y > 0)				FLOODFILL_STEP(-skinwidth, 0, -1);
+		if (y < skinheight - 1)	FLOODFILL_STEP(skinwidth, 0, 1);
+		skin[x + skinwidth * y] = fdc;
+	}
 }
 
-int	scrap_uploads;
-
-void Scrap_Upload(void)
-{
-	scrap_uploads++;
-	// binding texture
-	//GL_Bind(TEXNUM_SCRAPS);
-	//GL_Upload8(scrap_texels[0], BLOCK_WIDTH, BLOCK_HEIGHT, False, False);
-	scrap_dirty = False;
-}
+//=======================================================
 
 /*
 ================
@@ -501,11 +825,11 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 		scaled_height >>= 1;
 
 	// let people sample down the world textures for speed
-	/*if (mipmap)
+	if (mipmap)
 	{
-		scaled_width >>= (int)gl_picmip->value;
-		scaled_height >>= (int)gl_picmip->value;
-	}*/
+		//scaled_width >>= (int)gl_picmip->value;
+		//scaled_height >>= (int)gl_picmip->value;
+	}
 
 	// don't ever bother with >256 textures
 	if (scaled_width > 256)
@@ -544,14 +868,11 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 			if (samples == gl_solid_format)
 			{
 				uploaded_paletted = True;
-				//GL_BuildPalettedTexture(paletted_texture, (unsigned char*)data, scaled_width, scaled_height);
-				//dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
 				renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
 				renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
 			}
 			else
 			{
-				//dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum, false);
 				renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum, false);
 				renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)data, img->type);
 			}
@@ -562,25 +883,22 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 	else
 		GL_ResampleTexture(data, width, height, scaled, scaled_width, scaled_height);
 
-	//GL_LightScaleTexture(scaled, scaled_width, scaled_height, !mipmap);
+	// 4 param - (!mipmap)
+	GL_LightScaleTexture(scaled, scaled_width, scaled_height, (!mipmap) ? False : True);
 
 	if (samples == gl_solid_format)
 	{
 		uploaded_paletted = True;
-		//GL_BuildPalettedTexture(paletted_texture, (unsigned char*)scaled, scaled_width, scaled_height);
-		//dx11App.AddTexturetoSRV(scaled_width, scaled_height, 8, paletted_texture, img->texnum, false);
 		renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
 		renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
 	}
 	else
 	{
-		/*dx11App.AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
-		dx11App.DummyTest(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);*/
 		renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
 		renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
 	}
 
-	/*if (mipmap)
+	if (mipmap)
 	{
 		int		miplevel;
 
@@ -597,9 +915,9 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 			miplevel++;
 			if (samples == gl_solid_format)
 			{
-				uploaded_paletted = True;
-				GL_BuildPalettedTexture(paletted_texture, (unsigned char*)scaled, scaled_width, scaled_height);
-				qglTexImage2D(GL_TEXTURE_2D,
+				//uploaded_paletted = True;
+				//GL_BuildPalettedTexture(paletted_texture, (unsigned char*)scaled, scaled_width, scaled_height);
+				/*qglTexImage2D(GL_TEXTURE_2D,
 					miplevel,
 					GL_COLOR_INDEX8_EXT,
 					scaled_width,
@@ -607,30 +925,31 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 					0,
 					GL_COLOR_INDEX,
 					GL_UNSIGNED_BYTE,
-					paletted_texture);
+					paletted_texture);*/
 			}
 			else
 			{
-				qglTexImage2D(GL_TEXTURE_2D, miplevel, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+				//qglTexImage2D(GL_TEXTURE_2D, miplevel, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 			}
 		}
-	}*/
+	}
 done:;
 
 
-	/*if (mipmap)
+	if (mipmap)
 	{
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+		//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+		//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
 	}
 	else
 	{
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
-	}*/
+		//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
+		//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+	}
 
 	return (samples == gl_alpha_format) ? True : False;
 }
+
 
 qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean is_sky, image_t* img, char* name, bool scale)
 {
@@ -642,7 +961,7 @@ qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean
 
 	if (s > sizeof(trans) / 4)
 		ri.Sys_Error(ERR_DROP, "GL_Upload8: too large");
-	
+
 	for (i = 0; i < s; i++)
 	{
 		p = data[i];
@@ -676,7 +995,6 @@ qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean
 	else
 	{
 		Renderer* renderer = Renderer::GetInstance();
-		//dx11App.AddTexturetoSRV(img->width, img->height, 32, (unsigned char*)trans, img->texnum, false);
 		renderer->AddTexturetoSRV(img->width, img->height, 32, (unsigned char*)trans, img->texnum, false);
 		renderer->Test(name, img->width, img->height, 32, (unsigned char*)trans, img->type);
 		return True;
@@ -684,104 +1002,211 @@ qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean
 }
 
 /*
-==============
-LoadPCX
-==============
+================
+GL_LoadPic
+
+This is also used as an entry point for the generated r_notexture
+================
 */
-void LoadPCX(char* filename, byte** pic, byte** palette, int* width, int* height)
+image_t* DX_LoadPic(char* name, byte* pic, int width, int height, imagetype_t type, int bits)
 {
-	byte* raw;
-	pcx_t* pcx;
-	int		x, y;
-	int		len;
-	int		dataByte, runLength;
-	byte* out, * pix;
+	image_t* image;
+	int			i;
 
-	*pic = NULL;
-	*palette = NULL;
-
-	//
-	// load the file
-	//
-	len = ri.FS_LoadFile(filename, (void**)&raw);
-	if (!raw)
+	// find a free image_t
+	for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
 	{
-		ri.Con_Printf(PRINT_DEVELOPER, "Bad pcx file %s\n", filename);
-		return;
+		if (image == NULL)
+			break;
+	}
+	if (i == numdxtextures)
+	{
+		if (numdxtextures == MAX_DXTEXTURES)
+			ri.Sys_Error(ERR_DROP, "MAX_DXTEXTURES");
+		numdxtextures++;
+	}
+	image = &dxtextures[i];
+
+	if (strlen(name) >= sizeof(image->name))
+		ri.Sys_Error(ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name);
+	strcpy(image->name, name);
+	image->registration_sequence = registration_sequence;
+
+	image->width = width;
+	image->height = height;
+	image->type = type;
+
+	if (type == it_skin && bits == 8)
+	{
+		R_FloodFillSkin(pic, width, height);
+		renderer->Test(name, image->width, image->height, 8, (unsigned char*)pic, image->type);
 	}
 
-	//
-	// parse the PCX file
-	//
-	pcx = (pcx_t*)raw;
-
-	pcx->xmin = LittleShort(pcx->xmin);
-	pcx->ymin = LittleShort(pcx->ymin);
-	pcx->xmax = LittleShort(pcx->xmax);
-	pcx->ymax = LittleShort(pcx->ymax);
-	pcx->hres = LittleShort(pcx->hres);
-	pcx->vres = LittleShort(pcx->vres);
-	pcx->bytes_per_line = LittleShort(pcx->bytes_per_line);
-	pcx->palette_type = LittleShort(pcx->palette_type);
-
-	raw = &pcx->data;
-
-	if (pcx->manufacturer != 0x0a
-		|| pcx->version != 5
-		|| pcx->encoding != 1
-		|| pcx->bits_per_pixel != 8
-		|| pcx->xmax >= 640
-		|| pcx->ymax >= 480)
+	if ((image->type == it_pic && bits == 8) && (image->width < 64 && image->height < 64))
 	{
-		ri.Con_Printf(PRINT_ALL, "Bad pcx file %s\n", filename);
-		return;
+		image->texnum = i;
+		image->scrap = True;
+		image->has_alpha = True;
+
+		GL_Upload8(pic, width, height, False, False, image, name, false);
 	}
-
-	out = (byte*)malloc((pcx->ymax + 1) * (pcx->xmax + 1));
-
-	*pic = out;
-
-	pix = out;
-
-	if (palette)
+	else
 	{
-		*palette = (byte*)malloc(768);
-		memcpy(*palette, (byte*)pcx + len - 768, 768);
-	}
+		image->texnum = image - dxtextures;
 
-	if (width)
-		*width = pcx->xmax + 1;
-	if (height)
-		*height = pcx->ymax + 1;
-
-	for (y = 0; y <= pcx->ymax; y++, pix += pcx->xmax + 1)
-	{
-		for (x = 0; x <= pcx->xmax; )
+		if (bits == 8)
 		{
-			dataByte = *raw++;
-
-			if ((dataByte & 0xC0) == 0xC0)
-			{
-				runLength = dataByte & 0x3F;
-				dataByte = *raw++;
-			}
-			else
-				runLength = 1;
-
-			while (runLength-- > 0)
-				pix[x++] = dataByte;
+			qboolean mipmap = (image->type != it_pic && image->type != it_sky) ? True : False;
+			qboolean is_sky = image->type == it_sky ? True : False;
+			image->has_alpha = GL_Upload8(pic, width, height, mipmap, is_sky, image, name, true);
 		}
-
+		else
+		{
+			qboolean mipmap = (image->type != it_pic && image->type != it_sky) ? True : False;
+			image->has_alpha = GL_Upload32((unsigned*)pic, width, height, mipmap, image, name);
+		}
+			
+		image->upload_width = upload_width;		// after power of 2 and scales
+		image->upload_height = upload_height;
+		image->paletted = uploaded_paletted;
 	}
 
-	if (raw - (byte*)pcx > len)
+	return image;
+}
+
+/*
+================
+GL_LoadWal
+================
+*/
+image_t* DX11_LoadWal(char* name)
+{
+	miptex_t* mt;
+	int			width, height, ofs;
+	image_t* image;
+
+	ri.FS_LoadFile(name, (void**)&mt);
+	if (!mt)
 	{
-		ri.Con_Printf(PRINT_DEVELOPER, "PCX file %s was malformed", filename);
-		free(*pic);
-		*pic = NULL;
+		ri.Con_Printf(PRINT_ALL, "GL_FindImage: can't load %s\n", name);
+		return r_notexture;
 	}
 
-	ri.FS_FreeFile(pcx);
+	width = LittleLong(mt->width);
+	height = LittleLong(mt->height);
+	ofs = LittleLong(mt->offsets[0]);
+
+	image = DX_LoadPic(name, (byte*)mt + ofs, width, height, it_wall, 8);
+
+	ri.FS_FreeFile((void*)mt);
+
+	return image;
+}
+
+/*
+===============
+GL_FindImage
+
+Finds or loads the given image
+===============
+*/
+image_t* DX11_FindImage(char* name, imagetype_t type)
+{
+	image_t* image = nullptr;
+	int		i, len;
+	byte* pic, * palette;
+	int		width, height;
+
+	if (!name)
+		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
+	len = strlen(name);
+	if (len < 5)
+		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
+
+	for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
+	{
+		if (!strcmp(name, image->name))
+		{
+			image->registration_sequence = registration_sequence;
+			return image;
+		}
+	}
+
+	//
+	// load the pic from disk
+	//
+	pic = NULL;
+	palette = NULL;
+	if (!strcmp(name + len - 4, ".pcx"))
+	{
+		LoadPCX(name, &pic, &palette, &width, &height);
+		//if (!pic)
+		//	return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
+		image = DX_LoadPic(name, pic, width, height, type, 8);
+	}
+	else if (!strcmp(name + len - 4, ".wal"))
+	{
+		image = DX11_LoadWal(name);
+	}
+	else if (!strcmp(name + len - 4, ".tga"))
+	{
+		LoadTGA(name, &pic, &width, &height);
+		if (!pic)
+			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
+		image = DX_LoadPic(name, pic, width, height, type, 32);
+	}
+	else
+		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad extension on: %s", name);
+
+
+	if (pic)
+		free(pic);
+	if (palette)
+		free(palette);
+
+	return image;
+}
+
+/*
+===============
+R_RegisterSkin
+===============
+*/
+struct image_s* R_RegisterSkin(char* name)
+{
+	return DX11_FindImage(name, it_skin);
+}
+
+/*
+================
+GL_FreeUnusedImages
+
+Any image that was not touched on this registration sequence
+will be freed.
+================
+*/
+void DX_FreeUnusedImages(void)
+{
+	int		i;
+	image_t* image;
+
+	// never free r_notexture or particle texture
+	r_notexture->registration_sequence = registration_sequence;
+	r_particletexture->registration_sequence = registration_sequence;
+
+	for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
+	{
+		if (image->registration_sequence == registration_sequence)
+			continue;		// used this sequence
+		if (!image->registration_sequence)
+			continue;		// free image_t slot
+		if (image->type == it_pic)
+			continue;		// don't free pics
+		// free it
+		// free SRV
+		//qglDeleteTextures(1, &image->texnum);
+		memset(image, 0, sizeof(*image));
+	}
 }
 
 /*
@@ -819,226 +1244,6 @@ int Draw_GetPalette(void)
 	free(pal);
 
 	return 0;
-}
-
-/*
-=================
-Mod_FloodFillSkin
-
-Fill background pixels so mipmapping doesn't have haloes
-=================
-*/
-
-typedef struct
-{
-	short		x, y;
-} floodfill_t;
-
-// must be a power of 2
-#define FLOODFILL_FIFO_SIZE 0x1000
-#define FLOODFILL_FIFO_MASK (FLOODFILL_FIFO_SIZE - 1)
-
-#define FLOODFILL_STEP( off, dx, dy ) \
-{ \
-	if (pos[off] == fillcolor) \
-	{ \
-		pos[off] = 255; \
-		fifo[inpt].x = x + (dx), fifo[inpt].y = y + (dy); \
-		inpt = (inpt + 1) & FLOODFILL_FIFO_MASK; \
-	} \
-	else if (pos[off] != 255) fdc = pos[off]; \
-}
-
-void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
-{
-	byte				fillcolor = *skin; // assume this is the pixel to fill
-	floodfill_t			fifo[FLOODFILL_FIFO_SIZE];
-	int					inpt = 0, outpt = 0;
-	int					filledcolor = -1;
-	int					i;
-
-	if (filledcolor == -1)
-	{
-		filledcolor = 0;
-		// attempt to find opaque black
-		for (i = 0; i < 256; ++i)
-			if (d_8to24table[i] == (255 << 0)) // alpha 1.0
-			{
-				filledcolor = i;
-				break;
-			}
-	}
-
-	// can't fill to filled color or to transparent color (used as visited marker)
-	if ((fillcolor == filledcolor) || (fillcolor == 255))
-	{
-		//printf( "not filling skin from %d to %d\n", fillcolor, filledcolor );
-		return;
-	}
-
-	fifo[inpt].x = 0, fifo[inpt].y = 0;
-	inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
-
-	while (outpt != inpt)
-	{
-		int			x = fifo[outpt].x, y = fifo[outpt].y;
-		int			fdc = filledcolor;
-		byte* pos = &skin[x + skinwidth * y];
-
-		outpt = (outpt + 1) & FLOODFILL_FIFO_MASK;
-
-		if (x > 0)				FLOODFILL_STEP(-1, -1, 0);
-		if (x < skinwidth - 1)	FLOODFILL_STEP(1, 1, 0);
-		if (y > 0)				FLOODFILL_STEP(-skinwidth, 0, -1);
-		if (y < skinheight - 1)	FLOODFILL_STEP(skinwidth, 0, 1);
-		skin[x + skinwidth * y] = fdc;
-	}
-}
-
-//=======================================================
-
-
-/*
-================
-GL_LoadPic
-
-This is also used as an entry point for the generated r_notexture
-================
-*/
-image_t* DX_LoadPic(char* name, byte* pic, int width, int height, imagetype_t type, int bits)
-{
-	image_t* image;
-	int			i;
-
-	// find a free image_t
-	for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
-	{
-		if (image == NULL)
-			break;
-	}
-	if (i == numdxtextures)
-	{
-		if (numdxtextures == MAX_DXTEXTURES)
-			ri.Sys_Error(ERR_DROP, "MAX_DXTEXTURES");
-		numdxtextures++;
-	}
-	image = &dxtextures[i];
-
-
-
-	if (strlen(name) >= sizeof(image->name))
-		ri.Sys_Error(ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name);
-	strcpy(image->name, name);
-	image->registration_sequence = registration_sequence;
-
-	image->width = width;
-	image->height = height;
-	image->type = type;
-
-	if (type == it_skin && bits == 8)
-	{
-		R_FloodFillSkin(pic, width, height);
-		renderer->Test(name, image->width, image->height, 8, (unsigned char*)pic, image->type);
-	}
-
-	// load little pics into the scrap
-	if ((image->type == it_pic && bits == 8) && (image->width < 64 && image->height < 64))
-	{
-
-		image->texnum = i;
-		image->scrap = True;
-		image->has_alpha = True;
-
-		GL_Upload8(pic, width, height, False, False, image, name, false);
-	}
-	else
-	{
-		image->texnum = image - dxtextures;
-
-		if (bits == 8)
-		{
-			qboolean mipmap = (image->type != it_pic && image->type != it_sky) ? True : False;
-			qboolean is_sky = image->type == it_sky ? True : False;
-			image->has_alpha = GL_Upload8(pic, width, height, mipmap, is_sky, image, name, true);
-		}
-		else
-		{
-			qboolean mipmap = (image->type != it_pic && image->type != it_sky) ? True : False;
-			image->has_alpha = GL_Upload32((unsigned*)pic, width, height, mipmap, image, name);
-		}
-			
-		image->upload_width = upload_width;		// after power of 2 and scales
-		image->upload_height = upload_height;
-		image->paletted = uploaded_paletted;
-	}
-
-	return image;
-}
-
-/*
-===============
-GL_FindImage
-
-Finds or loads the given image
-===============
-*/
-image_t* DX11_FindImage(char* name, imagetype_t type)
-{
-	image_t* image = nullptr;
-	int		i, len;
-	byte* pic, * palette;
-	int		width, height;
-
-	if (!name)
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
-	len = strlen(name);
-	if (len < 5)
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
-
-	for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
-	{
-		if (!strcmp(name, image->name))
-		{
-			image->registration_sequence = registration_sequence;
-			return image;
-		}
-	}
-
-
-
-	//
-	// load the pic from disk
-	//
-	pic = NULL;
-	palette = NULL;
-	if (!strcmp(name + len - 4, ".pcx"))
-	{
-		LoadPCX(name, &pic, &palette, &width, &height);
-		//if (!pic)
-		//	return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = DX_LoadPic(name, pic, width, height, type, 8);
-	}
-	else if (!strcmp(name + len - 4, ".wal"))
-	{
-		//image = GL_LoadWal(name);
-	}
-	else if (!strcmp(name + len - 4, ".tga"))
-	{
-		LoadTGA(name, &pic, &width, &height);
-		if (!pic)
-			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = DX_LoadPic(name, pic, width, height, type, 32);
-	}
-	else
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad extension on: %s", name);
-
-
-	if (pic)
-		free(pic);
-	if (palette)
-		free(palette);
-
-	return image;
 }
 
 /*

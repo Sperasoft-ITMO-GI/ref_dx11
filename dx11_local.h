@@ -121,6 +121,8 @@ typedef enum
 	rserr_unknown
 } rserr_t;
 
+#include "dx11_model.h"
+
 // our texture counter
 #define MAX_DXTEXTURES 1600
 #define MAX_DXSCRAPTEXTURES 400
@@ -145,7 +147,7 @@ extern	int		registration_sequence;
 extern	image_t* r_notexture;
 extern	image_t* r_particletexture;
 extern	entity_t* currententity;
-//extern	model_t* currentmodel;
+extern	model_t* currentmodel;
 extern	int			r_visframecount;
 extern	int			r_framecount;
 extern	cplane_t	frustum[4];
@@ -154,21 +156,94 @@ extern	int			c_brush_polys, c_alias_polys;
 
 extern	int			gl_filter_min, gl_filter_max;
 
+//
+// view origin
+//
+extern	vec3_t	vup;
+extern	vec3_t	vpn;
+extern	vec3_t	vright;
+extern	vec3_t	r_origin;
+
+//
+// screen size info
+//
+extern	refdef_t r_newrefdef;
+extern	int		 r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
+
+extern	cvar_t* r_norefresh;
+extern	cvar_t* r_lefthand;
+extern	cvar_t* r_drawentities;
+extern	cvar_t* r_drawworld;
+extern	cvar_t* r_speeds;
+extern	cvar_t* r_fullbright;
+extern	cvar_t* r_novis;
+extern	cvar_t* r_nocull;
+extern	cvar_t* r_lerpmodels;
+
+extern	cvar_t* r_lightlevel;	// FIXME: This is a HACK to get the client's light level
+
 extern	cvar_t* gl_round_down;
 
 
 void Draw_InitLocal(void);
+
+void R_RenderView(refdef_t* fd);
 
 void LoadPCX(char* filename, byte** pic, byte** palette, int* width, int* height);
 
 void DX_ShutdownImages(void);
 void DX_InitImages(void);
 
+void DX_FreeUnusedImages(void);
+
 bool R_SetMode(int* width, int* height);
 
 int Draw_GetPalette(void);
 
 void DX11_SetTexturePalette(unsigned palette[256]);
+
+void R_TranslatePlayerSkin(int playernum);
+void GL_Bind(int texnum);
+//void GL_MBind(GLenum target, int texnum);
+//void GL_TexEnv(GLenum value);
+void GL_EnableMultitexture(qboolean enable);
+//void GL_SelectTexture(GLenum);
+
+void R_LightPoint(vec3_t p, vec3_t color);
+void R_PushDlights(void);
+
+extern	model_t* r_worldmodel;
+
+extern	unsigned	d_8to24table[256];
+
+extern	int		registration_sequence;
+
+
+void V_AddBlend(float r, float g, float b, float a, float* v_blend);
+
+void R_RenderView(refdef_t* fd);
+void GL_ScreenShot_f(void);
+void R_DrawAliasModel(entity_t* e);
+void R_DrawBrushModel(entity_t* e);
+void R_DrawSpriteModel(entity_t* e);
+void R_DrawBeam(entity_t* e);
+void R_DrawWorld(void);
+void R_RenderDlights(void);
+void R_DrawAlphaSurfaces(void);
+void R_RenderBrushPoly(msurface_t* fa);
+void R_InitParticleTexture(void);
+void Draw_InitLocal(void);
+void GL_SubdivideSurface(msurface_t* fa);
+qboolean R_CullBox(vec3_t mins, vec3_t maxs);
+void R_RotateForEntity(entity_t* e);
+void R_MarkLeaves(void);
+
+glpoly_t* WaterWarpPolyVerts(glpoly_t* p);
+void EmitWaterPolys(msurface_t* fa);
+void R_AddSkySurface(msurface_t* fa);
+void R_ClearSkyBox(void);
+void R_DrawSkyBox(void);
+void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
 
 
 image_t* DX11_FindImage(char* name, imagetype_t type);

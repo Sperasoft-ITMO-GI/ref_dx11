@@ -135,6 +135,18 @@
     <ClInclude Include="render\ModelRenderer.h">
       <Filter>Render\ModelRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="dx11_model.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ref_gl\anorms.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ref_gl\anormtab.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ref_gl\warpsin.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">
@@ -214,6 +226,21 @@
     </ClCompile>
     <ClCompile Include="render\ModelRenderer.cpp">
       <Filter>Render\ModelRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11_model.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11_mesh.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11_rsurf.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11_warp.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11_light.cpp">
+      <Filter>Interface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
