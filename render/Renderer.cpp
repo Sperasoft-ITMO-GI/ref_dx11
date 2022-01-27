@@ -135,6 +135,8 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 
 	context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 
+	InitMatrix(width, height);
+
 	return true;
 }
 
@@ -243,4 +245,31 @@ Microsoft::WRL::ComPtr<ID3D11RenderTargetView> Renderer::GetRenderTargetView() {
 
 std::tuple<float, float> Renderer::GetWindowParameters() {
 	return { static_cast<float>(window->GetWidth()), static_cast<float>(window->GetHeight()) };
+}
+
+void Renderer::InitMatrix(int width, int height)
+{
+	orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1000.0f);
+
+	// TODO: выбивает исключение, скорее всего просто неправильно передал параметры
+	//perspective = DirectX::XMMatrixPerspectiveOffCenterLH(0.0f, width, 0.0f, height, 0.0f, 1000.f);
+}
+
+DirectX::XMMATRIX Renderer::GetOrthogonal()
+{
+	return orthogonal;
+}
+
+DirectX::XMMATRIX Renderer::GetPerspective()
+{
+	return perspective;
+}
+
+Renderer::~Renderer()
+{
+	// release SRV's
+	
+
+	// destroy window
+	window.get()->~Window();
 }

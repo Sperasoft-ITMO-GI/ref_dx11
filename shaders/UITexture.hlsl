@@ -36,15 +36,15 @@ float4 PSMain(VSOut IN) : SV_Target
     float4 result = IN.col;
     
 #ifdef COLORED
-    result.x += 1.0f;
+    result;
 #endif
 
 #ifdef FADE 
-    result = float4(1.0f, 1.0f, 0.0f, 0.6f);
+    result.w = 0.8f;
 #endif
 
 #ifdef TEXTURED
-    result = Text.Sample(Sampler, IN.texCoord) * float4(0.0f, 1.0f, 0.0f, 1.0f);
+    result = Text.Sample(Sampler, IN.texCoord);
 #endif
     
     return result;

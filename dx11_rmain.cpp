@@ -121,8 +121,6 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	);
 	
 	Quad::ib.Create({2, 1, 0, 0, 3, 2});
-	
-
 
 	// let the sound and input subsystems know about the new window
 	// can be call after creating windows and its context
@@ -157,7 +155,7 @@ void R_Shutdown(void)
 	/*
 	** shut down OS specific DX12 stuff like contexts, etc.
 	*/
-	//dx11App.~InitDX11();
+	renderer->~Renderer();
 }
 
 // ==================================================================================================================================

@@ -29,6 +29,11 @@ public:
 
 	void Test(char* name, int width, int height, int bits, unsigned char* data, int type);
 
+	void InitMatrix(int widht, int height);
+
+	DirectX::XMMATRIX GetOrthogonal();
+	DirectX::XMMATRIX GetPerspective();
+
 	void Clear() {
 		context->ClearRenderTargetView(render_target_view.Get(), DirectX::Colors::DodgerBlue);
 	}
@@ -70,6 +75,9 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler;
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture_array_srv[1600];
+
+	DirectX::XMMATRIX orthogonal;
+	DirectX::XMMATRIX perspective;
 
 private:
 	static Renderer* renderer;
