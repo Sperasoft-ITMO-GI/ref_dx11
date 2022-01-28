@@ -252,7 +252,7 @@ void Renderer::InitMatrix(int width, int height)
 	orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1000.0f);
 
 	// TODO: выбивает исключение, скорее всего просто неправильно передал параметры
-	//perspective = DirectX::XMMatrixPerspectiveOffCenterLH(0.0f, width, 0.0f, height, 0.0f, 1000.f);
+	perspective = DirectX::XMMatrixPerspectiveOffCenterLH(0.0f, width, 0.0f, height, 1.0f, 1000.f);
 }
 
 DirectX::XMMATRIX Renderer::GetOrthogonal()

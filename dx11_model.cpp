@@ -224,8 +224,9 @@ model_t* Mod_ForName(char* name, qboolean crash)
 	//
 	// load the file
 	//
-	void* tempBuf = buf;
-	modfilelen = ri.FS_LoadFile(mod->name, &tempBuf);
+	//void* tempBuf = buf;
+	//modfilelen = ri.FS_LoadFile(mod->name, &tempBuf);
+	modfilelen = ri.FS_LoadFile(mod->name, (void**)&buf);
 	if (!buf)
 	{
 		if (crash)
@@ -1188,7 +1189,7 @@ void R_EndRegistration(void)
 		}
 	}
 
-	DX_FreeUnusedImages();
+	//DX_FreeUnusedImages();
 }
 
 

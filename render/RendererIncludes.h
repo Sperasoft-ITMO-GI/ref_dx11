@@ -4,4 +4,6 @@
 
 #include <Renderer.h>
 #include <UIRenderer.h>
+#include <ModelRenderer.h>
 #include <Quad.h>
+#include <BSPPoly.h>

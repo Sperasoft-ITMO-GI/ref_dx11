@@ -182,14 +182,24 @@ void DrawGLPoly(glpoly_t* p)
 	int		i;
 	float* v;
 
-	/*qglBegin(GL_POLYGON);
+	//qglBegin(GL_POLYGON);
 	v = p->verts[0];
-	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
-	{
-		qglTexCoord2f(v[3], v[4]);
-		qglVertex3fv(v);
-	}
-	qglEnd();*/
+	//for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
+	//{
+	//	qglTexCoord2f(v[3], v[4]);
+	//	qglVertex3fv(v);
+	//}
+	//qglEnd();
+
+	using namespace DirectX;
+	ConstantBufferPolygon cbp;
+	float a = v[1];
+	cbp.position_transform *= XMMatrixTranspose(XMMatrixScaling(v[0], v[1], v[2]) * renderer->GetPerspective());
+	cbp.texture_transform *= XMMatrixTranspose(XMMatrixTranslation(v[3], v[4], 0));
+
+	ConstantBuffer<ConstantBufferPolygon> cb(cbp);
+	BSPPoly polygon(cb, 0, -1, -1);
+	model_renderer->AddElement(polygon);
 }
 
 //============
@@ -881,23 +891,23 @@ void R_DrawInlineBModel(void)
 	dlight_t* lt;
 
 	// calculate dynamic lighting for bmodel
-	/*if (!gl_flashblend->value)
-	{
-		lt = r_newrefdef.dlights;
-		for (k = 0; k < r_newrefdef.num_dlights; k++, lt++)
-		{
-			R_MarkLights(lt, 1 << k, currentmodel->nodes + currentmodel->firstnode);
-		}
-	}
+	//if (!gl_flashblend->value)
+	//{
+	//	lt = r_newrefdef.dlights;
+	//	for (k = 0; k < r_newrefdef.num_dlights; k++, lt++)
+	//	{
+	//		R_MarkLights(lt, 1 << k, currentmodel->nodes + currentmodel->firstnode);
+	//	}
+	//}
 
 	psurf = &currentmodel->surfaces[currentmodel->firstmodelsurface];
 
-	if (currententity->flags & RF_TRANSLUCENT)
-	{
-		qglEnable(GL_BLEND);
-		qglColor4f(1, 1, 1, 0.25);
-		GL_TexEnv(GL_MODULATE);
-	}*/
+	//if (currententity->flags & RF_TRANSLUCENT)
+	//{
+	//	qglEnable(GL_BLEND);
+	//	qglColor4f(1, 1, 1, 0.25);
+	//	GL_TexEnv(GL_MODULATE);
+	//}
 
 	//
 	// draw texture
@@ -909,26 +919,26 @@ void R_DrawInlineBModel(void)
 
 	//	dot = DotProduct(modelorg, pplane->normal) - pplane->dist;
 
-	//	// draw the polygon
-	//	if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
-	//		(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
-	//	{
-	//		if (psurf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
-	//		{	// add to the translucent chain
-	//			psurf->texturechain = r_alpha_surfaces;
-	//			r_alpha_surfaces = psurf;
-	//		}
-	//		else if (qglMTexCoord2fSGIS && !(psurf->flags & SURF_DRAWTURB))
-	//		{
-	//			GL_RenderLightmappedPoly(psurf);
-	//		}
-	//		else
-	//		{
-	//			GL_EnableMultitexture(False);
-	//			R_RenderBrushPoly(psurf);
-	//			GL_EnableMultitexture(True);
-	//		}
-	//	}
+		// draw the polygon
+		//if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
+		//	(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
+		//{
+		//	if (psurf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
+		//	{	// add to the translucent chain
+		//		psurf->texturechain = r_alpha_surfaces;
+		//		r_alpha_surfaces = psurf;
+		//	}
+		//	else if (qglMTexCoord2fSGIS && !(psurf->flags & SURF_DRAWTURB))
+		//	{
+		//		GL_RenderLightmappedPoly(psurf);
+		//	}
+		//	else
+		//	{
+				//GL_EnableMultitexture(False);
+				R_RenderBrushPoly(psurf);
+				//GL_EnableMultitexture(True);
+		//	}
+		//}
 	//}
 
 	/*if (!(currententity->flags & RF_TRANSLUCENT))
@@ -1009,7 +1019,7 @@ void R_DrawBrushModel(entity_t* e)
 	//GL_SelectTexture(GL_TEXTURE1_SGIS);
 	//GL_TexEnv(GL_MODULATE);
 
-	//R_DrawInlineBModel();
+	R_DrawInlineBModel();
 	//GL_EnableMultitexture(False);
 
 	//qglPopMatrix();

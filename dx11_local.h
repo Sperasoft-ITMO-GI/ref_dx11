@@ -36,6 +36,7 @@ extern cvar_t* vid_ref;
 //extern InitDX11 dx11App;
 extern Renderer* renderer;
 extern UIRenderer* ui_renderer;
+extern ModelRenderer* model_renderer;
 
 /*
 

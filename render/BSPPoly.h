@@ -7,7 +7,7 @@
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <ConstantBuffer.h>
-//#include <ModelVertex.h>
+#include <ModelVertex.h>
 
 class BSPPoly {
 public:

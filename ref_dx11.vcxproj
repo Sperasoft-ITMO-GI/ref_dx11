@@ -166,6 +166,7 @@
     <ClInclude Include="dx11_local.h" />
     <ClInclude Include="dx11_model.h" />
     <ClInclude Include="dxerr.h" />
+    <ClInclude Include="ModelVertex.h" />
     <ClInclude Include="render\Bindable.h" />
     <ClInclude Include="render\BlendState.h" />
     <ClInclude Include="render\ConstantBuffer.h" />
@@ -174,7 +175,6 @@
     <ClInclude Include="render\InputLayout.h" />
     <ClInclude Include="render\IStateProvider.h" />
     <ClInclude Include="render\ModelRenderer.h" />
-    <ClInclude Include="render\ModelVertex.h" />
     <ClInclude Include="render\PipelineFactory.h" />
     <ClInclude Include="render\PipelineState.h" />
     <ClInclude Include="render\PixelShader.h" />
@@ -229,6 +229,9 @@
     <ClCompile Include="render\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="ModelShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="shaders\UITexture.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>

@@ -71,6 +71,7 @@ dx11state_t  dx11_state;
 //InitDX11 dx11App = {};
 Renderer* renderer = Renderer::GetInstance();
 UIRenderer* ui_renderer = new UIRenderer(); // Зачем указатель? Ответа на этот вопрос у меня нет...
+ModelRenderer* model_renderer = new ModelRenderer();
 
 States* States::states = nullptr;
 
@@ -860,8 +861,10 @@ R_RenderFrame
 void R_RenderFrame(refdef_t* fd)
 {
 	R_RenderView(fd);
+	model_renderer->Render();
 	R_SetLightLevel();
 	R_SetGL2D();
+	renderer->Swap();
 }
 
 // reading param from config.txt
@@ -875,6 +878,18 @@ void R_Register(void)
 	vid_ref = ri.Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
 
 	gl_round_down = ri.Cvar_Get("gl_round_down", "1", 0);
+
+	r_lefthand = ri.Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
+	r_norefresh = ri.Cvar_Get("r_norefresh", "0", 0);
+	r_fullbright = ri.Cvar_Get("r_fullbright", "0", 0);
+	r_drawentities = ri.Cvar_Get("r_drawentities", "1", 0);
+	r_drawworld = ri.Cvar_Get("r_drawworld", "1", 0);
+	r_novis = ri.Cvar_Get("r_novis", "0", 0);
+	r_nocull = ri.Cvar_Get("r_nocull", "0", 0);
+	r_lerpmodels = ri.Cvar_Get("r_lerpmodels", "1", 0);
+	r_speeds = ri.Cvar_Get("r_speeds", "0", 0);
+
+	r_lightlevel = ri.Cvar_Get("r_lightlevel", "0", 0);
 
 	ri.Cmd_AddCommand("compile_shaders", RecompileShaders);
 }
@@ -941,16 +956,28 @@ qboolean R_Init(void* hinstance, void* hWnd)
 		return False;
 	}
 	ui_renderer->Init();
+	model_renderer->Init();
+
 	Quad::vb.Create(
 		std::vector<UIVertex>{
-			{ {0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
-			{ {1.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
-			{ {1.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-			{ {0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}
+			{ {0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f} },
+			{ {1.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },
+			{ {1.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f} },
+			{ {0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} }
 		}
 	);
 	
-	Quad::ib.Create({2, 1, 0, 0, 3, 2});
+	Quad::ib.Create({ 2, 1, 0, 0, 3, 2 });
+
+	BSPPoly::vb.Create(
+		std::vector<ModelVertex>{
+			{ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f} },
+			{ {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 0.0f} },
+			{ {1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f} }
+		}
+	);
+
+	BSPPoly::ib.Create({ 2, 1, 0 });
 
 	// let the sound and input subsystems know about the new window
 	// can be call after creating windows and its context

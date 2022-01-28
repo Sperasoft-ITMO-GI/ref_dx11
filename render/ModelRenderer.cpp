@@ -24,16 +24,7 @@ void  ModelRenderer::Init() {
 
 void ModelRenderer::Render() {
 	for (auto& polygon : polygons) {
-		if (polygon.GetFlags() & COLORED) {
-			SetPipelineState(factory->GetState(COLORED));
-		}
-		if (polygon.GetFlags() & TEXTURED) {
-			SetPipelineState(factory->GetState(TEXTURED));
-		}
-		if (polygon.GetFlags() & FADE) {
-			SetPipelineState(factory->GetState(FADE));
-		}
-
+		SetPipelineState(factory->GetState(1));
 		polygon.Draw();
 	}
 
