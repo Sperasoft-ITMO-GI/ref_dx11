@@ -242,12 +242,12 @@ void R_DrawTriangleOutlines(void)
 	int			i, j;
 	glpoly_t* p;
 
-	/*if (!gl_showtris->value)
-		return;
+	//if (!gl_showtris->value)
+	//	return;
 
-	qglDisable(GL_TEXTURE_2D);
-	qglDisable(GL_DEPTH_TEST);
-	qglColor4f(1, 1, 1, 1);
+	//qglDisable(GL_TEXTURE_2D);
+	//qglDisable(GL_DEPTH_TEST);
+	//qglColor4f(1, 1, 1, 1);
 
 	for (i = 0; i < MAX_LIGHTMAPS; i++)
 	{
@@ -260,19 +260,44 @@ void R_DrawTriangleOutlines(void)
 			{
 				for (j = 2; j < p->numverts; j++)
 				{
-					qglBegin(GL_LINE_STRIP);
-					qglVertex3fv(p->verts[0]);
-					qglVertex3fv(p->verts[j - 1]);
-					qglVertex3fv(p->verts[j]);
-					qglVertex3fv(p->verts[0]);
-					qglEnd();
+					//qglBegin(GL_LINE_STRIP);
+					//qglVertex3fv(p->verts[0]);
+					//qglVertex3fv(p->verts[j - 1]);
+					//qglVertex3fv(p->verts[j]);
+					//qglVertex3fv(p->verts[0]);
+					//qglEnd();
+					using namespace DirectX;
+					ConstantBufferPolygon cbp;
+					cbp.position_transform *= XMMatrixTranspose(XMMatrixTranslation(p->verts[0][0], p->verts[0][1], p->verts[0][2]) * renderer->GetPerspective());
+					ConstantBuffer<ConstantBufferPolygon> cb(cbp);
+					BSPPoly polygon(cb, 0, -1, -1);
+					model_renderer->AddElement(polygon);
+
+					ConstantBufferPolygon cbp1;
+					cbp.position_transform *= XMMatrixTranspose(XMMatrixTranslation(p->verts[j-1][0], p->verts[j - 1][1], p->verts[j - 1][2]) * renderer->GetPerspective());
+					ConstantBuffer<ConstantBufferPolygon> cb1(cbp1);
+					BSPPoly polygon1(cb, 0, -1, -1);
+					model_renderer->AddElement(polygon1);
+
+					ConstantBufferPolygon cbp2;
+					cbp.position_transform *= XMMatrixTranspose(XMMatrixTranslation(p->verts[j][0], p->verts[j][1], p->verts[j][2]) * renderer->GetPerspective());
+					ConstantBuffer<ConstantBufferPolygon> cb2(cbp2);
+					BSPPoly polygon2(cb2, 0, -1, -1);
+					model_renderer->AddElement(polygon2);
+
+					ConstantBufferPolygon cbp3;
+					cbp3.position_transform *= XMMatrixTranspose(XMMatrixTranslation(p->verts[0][0], p->verts[0][1], p->verts[0][2]) * renderer->GetPerspective());
+					ConstantBuffer<ConstantBufferPolygon> cb3(cbp3);
+					BSPPoly polygon3(cb3, 0, -1, -1);
+					model_renderer->AddElement(polygon3);
+
 				}
 			}
 		}
 	}
 
-	qglEnable(GL_DEPTH_TEST);
-	qglEnable(GL_TEXTURE_2D);*/
+	//qglEnable(GL_DEPTH_TEST);
+	//qglEnable(GL_TEXTURE_2D);
 }
 
 /*
