@@ -724,8 +724,10 @@ void R_RenderView(refdef_t* fd)
 
 	R_PushDlights();
 
+	// Здесь по логике происходит ожидание пока исполнится все функции отрисовки на видюхе
+	// подробности гуглятся по запросу - "glFinish"
 	/*if (gl_finish->value)
-		qglFinish()*/;
+		qglFinish();*/
 
 	R_SetupFrame();
 
@@ -747,14 +749,14 @@ void R_RenderView(refdef_t* fd)
 
 	R_Flash();
 
-	/*if (r_speeds->value)
+	if (r_speeds->value)
 	{
 		ri.Con_Printf(PRINT_ALL, "%4i wpoly %4i epoly %i tex %i lmaps\n",
 			c_brush_polys,
 			c_alias_polys,
 			c_visible_textures,
 			c_visible_lightmaps);
-	}*/
+	}
 }
 
 
@@ -861,22 +863,16 @@ R_RenderFrame
 void R_RenderFrame(refdef_t* fd)
 {
 	R_RenderView(fd);
-	model_renderer->Render();
 	R_SetLightLevel();
+	// settuing 2d render mode
 	R_SetGL2D();
-	renderer->Swap();
 }
 
 // reading param from config.txt
 // setting a command
 void R_Register(void)
 {
-	dx11_mode = ri.Cvar_Get("dx11_mode", "3", CVAR_ARCHIVE);
-
-	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
-	vid_gamma = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
-	vid_ref = ri.Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
-
+	// their stuff
 	gl_round_down = ri.Cvar_Get("gl_round_down", "1", 0);
 
 	r_lefthand = ri.Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
@@ -891,7 +887,17 @@ void R_Register(void)
 
 	r_lightlevel = ri.Cvar_Get("r_lightlevel", "0", 0);
 
+	// our stuff
+	dx11_mode = ri.Cvar_Get("dx11_mode", "3", CVAR_ARCHIVE);
+
+	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
+	vid_gamma = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
+	vid_ref = ri.Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
+
 	ri.Cmd_AddCommand("compile_shaders", RecompileShaders);
+	ri.Cmd_AddCommand("imagelist", GL_ImageList_f);
+	ri.Cmd_AddCommand("screenshot", GL_ScreenShot_f);
+	ri.Cmd_AddCommand("modellist", Mod_Modellist_f);
 }
 
 bool R_SetMode(int* width, int* height)
@@ -923,10 +929,8 @@ bool R_SetMode(int* width, int* height)
 	vid.width = *width;
 
 	// setting size of our window
-	//dx11App.SetMode(*width, *height, fullscreen);
 	renderer->SetWindowMode(vid.width, vid.height, fullscreen);
 	
-
 	return true;
 }
 
@@ -938,6 +942,13 @@ R_Init
 qboolean R_Init(void* hinstance, void* hWnd)
 {
 	int width = 1280, height = 720;
+
+	extern float r_turbsin[256];
+
+	for (int j = 0; j < 256; j++)
+	{
+		r_turbsin[j] *= 0.5;
+	}
 
 	// setting palette mapped from 8 byte color to 24 byte color
 	Draw_GetPalette();
@@ -1002,6 +1013,9 @@ R_Shutdown
 void R_Shutdown(void)
 {
 	ri.Cmd_RemoveCommand("compile_shaders");
+	ri.Cmd_RemoveCommand("imagelist");
+	ri.Cmd_RemoveCommand("screenshot");
+	ri.Cmd_RemoveCommand("modellist");
 
 	// free models
 	Mod_FreeAll();
@@ -1061,6 +1075,8 @@ R_BeginFrame
 */
 void R_BeginFrame(float camera_separation)
 {
+	// here we need safe camera_separation
+
 	if (dx11_mode->modified || vid_fullscreen->modified)
 	{	// FIXME: only restart if CDS is required
 		cvar_t* ref;
@@ -1068,8 +1084,14 @@ void R_BeginFrame(float camera_separation)
 		ref = ri.Cvar_Get("vid_ref", "dx11", 0);
 		ref->modified = True;
 	}
+
+	// 
+	// GLimp_BeginFrame( camera_separation );
+
+	// clear
 	renderer->Clear();
 	ui_renderer->Render();
+	model_renderer->Render();
 }
 
 /*

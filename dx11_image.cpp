@@ -1039,7 +1039,6 @@ image_t* DX_LoadPic(char* name, byte* pic, int width, int height, imagetype_t ty
 	if (type == it_skin && bits == 8)
 	{
 		R_FloodFillSkin(pic, width, height);
-		renderer->Test(name, image->width, image->height, 8, (unsigned char*)pic, image->type);
 	}
 
 	if ((image->type == it_pic && bits == 8) && (image->width < 64 && image->height < 64))

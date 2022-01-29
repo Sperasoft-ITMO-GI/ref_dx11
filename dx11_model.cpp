@@ -224,8 +224,6 @@ model_t* Mod_ForName(char* name, qboolean crash)
 	//
 	// load the file
 	//
-	//void* tempBuf = buf;
-	//modfilelen = ri.FS_LoadFile(mod->name, &tempBuf);
 	modfilelen = ri.FS_LoadFile(mod->name, (void**)&buf);
 	if (!buf)
 	{
