@@ -242,6 +242,9 @@
     <ClCompile Include="dx11_light.cpp">
       <Filter>Interface</Filter>
     </ClCompile>
+    <ClCompile Include="dx11_rmisc.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\UITexture.hlsl">

@@ -201,15 +201,24 @@ void Renderer::UpdateTextureInSRV(int width, int height, int bits, unsigned char
 	ReleaseCOM(res);
 }
 
-void Renderer::Test(char* name, int width, int height, int bits, unsigned char* data, int type) {
-		//it_skin = 0
-		//it_sprite = 1
-		//it_wall = 2
-		//it_pic = 3
-		//it_sky = 4
+void Renderer::DeleteTextureFromSRV(int texNum)
+{
+	texture_array_srv[texNum].Get()->Release();
+}
 
+void Renderer::Test(char* name, int width, int height, int bits, unsigned char* data, int type) {
+	//it_skin = 0
+	//it_sprite = 1
+	//it_wall = 2
+	//it_pic = 3
+	//it_sky = 4
+
+	char* newName = "";
+
+	if (name[0] != '*')
+	{
 		int lenName = strlen(name);
-		char* newName = (char*)malloc(lenName + 1);
+		newName = (char*)malloc(lenName + 1);
 		memset(newName, 0, lenName + 1);
 		memcpy(newName, name, lenName);
 		char* extension = strchr(newName, '.');
@@ -217,9 +226,31 @@ void Renderer::Test(char* name, int width, int height, int bits, unsigned char* 
 		extension[1] = 'p';
 		extension[2] = 'n';
 		extension[3] = 'g';
+	}
+	else
+	{
+		int lenName = strlen(name);
+		newName = (char*)malloc(lenName + 8);
+		memset(newName, 0, lenName + 8);
+		newName[0] = 'p';
+		newName[1] = 'i';
+		newName[2] = 'c';
+		newName[3] = 's';
+		newName[4] = '/';
+		memcpy(newName + 5, name, lenName);
+		newName[5] = '_';
+		newName[6] = '_';
+		newName[7] = '_';
+		char* extension = strchr(newName, '*');
 
-		stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
-		free(newName);
+		extension[0] = '.';
+		extension[1] = 'p';
+		extension[2] = 'n';
+		extension[3] = 'g';
+	}
+
+	stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
+	free(newName);
 }
 
 void Renderer::Bind(int texture_index) {
@@ -250,9 +281,7 @@ std::tuple<float, float> Renderer::GetWindowParameters() {
 void Renderer::InitMatrix(int width, int height)
 {
 	orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1000.0f);
-
-	// TODO: выбивает исключение, скорее всего просто неправильно передал параметры
-	perspective = DirectX::XMMatrixPerspectiveOffCenterLH(0.0f, width, 0.0f, height, 1.0f, 1000.f);
+	perspective = DirectX::XMMatrixPerspectiveOffCenterLH(0.0f, width, 0.0f, height, 0.1f, 1000.0f);
 }
 
 DirectX::XMMATRIX Renderer::GetOrthogonal()

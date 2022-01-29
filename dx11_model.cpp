@@ -1189,7 +1189,7 @@ void R_EndRegistration(void)
 		}
 	}
 
-	//DX_FreeUnusedImages();
+	DX_FreeUnusedImages();
 }
 
 

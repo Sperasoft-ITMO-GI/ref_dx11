@@ -246,7 +246,20 @@ void R_ClearSkyBox(void);
 void R_DrawSkyBox(void);
 void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
 
+void COM_StripExtension(char* in, char* out);
 
+void GL_ResampleTexture(unsigned* in, int inwidth, int inheight, unsigned* out, int outwidth, int outheight);
+
+struct image_s* R_RegisterSkin(char* name);
+
+void	GL_TextureMode(char* string);
+void	GL_ImageList_f(void);
+
+void GL_TextureAlphaMode(char* string);
+void GL_TextureSolidMode(char* string);
+
+void LoadPCX(char* filename, byte** pic, byte** palette, int* width, int* height);
+image_t* DX_LoadPic(char* name, byte* pic, int width, int height, imagetype_t type, int bits);
 image_t* DX11_FindImage(char* name, imagetype_t type);
 
 qboolean 	R_Init(void* hinstance, void* hWnd);
@@ -262,6 +275,7 @@ void	Draw_FadeScreen(void);
 void	Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data);
 
 void	R_BeginFrame(float camera_separation);
+void	R_SwapBuffers(int);
 void	R_SetPalette(const unsigned char* palette);
 
 struct image_s* R_RegisterSkin(char* name);

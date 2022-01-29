@@ -987,8 +987,8 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	ri.Vid_MenuInit();
 
 	DX_InitImages();
-	//Mod_Init();
-	//R_InitParticleTexture();
+	Mod_Init();
+	R_InitParticleTexture();
 	Draw_InitLocal();
 
 	return True;
@@ -1004,7 +1004,7 @@ void R_Shutdown(void)
 	ri.Cmd_RemoveCommand("compile_shaders");
 
 	// free models
-	//Mod_FreeAll();
+	Mod_FreeAll();
 
 	// shutdown images
 	DX_ShutdownImages();

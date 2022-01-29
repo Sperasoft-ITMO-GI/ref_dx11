@@ -1204,7 +1204,7 @@ void DX_FreeUnusedImages(void)
 			continue;		// don't free pics
 		// free it
 		// free SRV
-		//qglDeleteTextures(1, &image->texnum);
+		renderer->DeleteTextureFromSRV(image->texnum);
 		memset(image, 0, sizeof(*image));
 	}
 }

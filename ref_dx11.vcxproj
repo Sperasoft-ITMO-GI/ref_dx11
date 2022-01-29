@@ -205,6 +205,7 @@
     <ClCompile Include="dx11_mesh.cpp" />
     <ClCompile Include="dx11_model.cpp" />
     <ClCompile Include="dx11_rmain.cpp" />
+    <ClCompile Include="dx11_rmisc.cpp" />
     <ClCompile Include="dx11_rsurf.cpp" />
     <ClCompile Include="dx11_warp.cpp" />
     <ClCompile Include="dxerr.cpp" />

@@ -27,6 +27,8 @@ public:
 	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool dynamic);
 	void UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum);
 
+	void DeleteTextureFromSRV(int texNum);
+
 	void Test(char* name, int width, int height, int bits, unsigned char* data, int type);
 
 	void InitMatrix(int widht, int height);
