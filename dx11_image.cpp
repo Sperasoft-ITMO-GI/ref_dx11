@@ -884,7 +884,7 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 		GL_ResampleTexture(data, width, height, scaled, scaled_width, scaled_height);
 
 	// 4 param - (!mipmap)
-	GL_LightScaleTexture(scaled, scaled_width, scaled_height, (!mipmap) ? False : True);
+	GL_LightScaleTexture(scaled, scaled_width, scaled_height, (!mipmap) ? True : False);
 
 	if (samples == gl_solid_format)
 	{

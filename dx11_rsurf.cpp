@@ -97,81 +97,6 @@ image_t* R_TextureAnimation(mtexinfo_t* tex)
 	return tex->image;
 }
 
-#if 0
-/*
-=================
-WaterWarpPolyVerts
-
-Mangles the x and y coordinates in a copy of the poly
-so that any drawing routine can be water warped
-=================
-*/
-glpoly_t* WaterWarpPolyVerts(glpoly_t* p)
-{
-	int		i;
-	float* v, * nv;
-	static byte	buffer[1024];
-	glpoly_t* out;
-
-	out = (glpoly_t*)buffer;
-
-	out->numverts = p->numverts;
-	v = p->verts[0];
-	nv = out->verts[0];
-	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE, nv += VERTEXSIZE)
-	{
-		nv[0] = v[0] + 4 * sin(v[1] * 0.05 + r_newrefdef.time) * sin(v[2] * 0.05 + r_newrefdef.time);
-		nv[1] = v[1] + 4 * sin(v[0] * 0.05 + r_newrefdef.time) * sin(v[2] * 0.05 + r_newrefdef.time);
-
-		nv[2] = v[2];
-		nv[3] = v[3];
-		nv[4] = v[4];
-		nv[5] = v[5];
-		nv[6] = v[6];
-	}
-
-	return out;
-}
-
-/*
-================
-DrawGLWaterPoly
-
-Warp the vertex coordinates
-================
-*/
-void DrawGLWaterPoly(glpoly_t* p)
-{
-	int		i;
-	float* v;
-
-	p = WaterWarpPolyVerts(p);
-	qglBegin(GL_TRIANGLE_FAN);
-	v = p->verts[0];
-	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
-	{
-		qglTexCoord2f(v[3], v[4]);
-		qglVertex3fv(v);
-	}
-	qglEnd();
-}
-void DrawGLWaterPolyLightmap(glpoly_t* p)
-{
-	int		i;
-	float* v;
-
-	p = WaterWarpPolyVerts(p);
-	qglBegin(GL_TRIANGLE_FAN);
-	v = p->verts[0];
-	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
-	{
-		qglTexCoord2f(v[5], v[6]);
-		qglVertex3fv(v);
-	}
-	qglEnd();
-}
-#endif
-
 /*
 ================
 DrawGLPoly
@@ -519,27 +444,24 @@ void R_RenderBrushPoly(msurface_t* fa)
 
 	image = R_TextureAnimation(fa->texinfo);
 
-	//if (fa->flags & SURF_DRAWTURB)
-	//{
-	//	GL_Bind(image->texnum);
+	if (fa->flags & SURF_DRAWTURB)
+	{
+		//GL_Bind(image->texnum);
 
-	//	// warp texture, no lightmaps
-	//	GL_TexEnv(GL_MODULATE);
-	//	qglColor4f(gl_state.inverse_intensity,
-	//		gl_state.inverse_intensity,
-	//		gl_state.inverse_intensity,
-	//		1.0F);
-	//	EmitWaterPolys(fa);
-	//	GL_TexEnv(GL_REPLACE);
+		// warp texture, no lightmaps
+		//GL_TexEnv(GL_MODULATE);
+		//qglColor4f(gl_state.inverse_intensity, gl_state.inverse_intensity, gl_state.inverse_intensity, 1.0F);
+		EmitWaterPolys(fa);
+		//GL_TexEnv(GL_REPLACE);
 
-	//	return;
-	//}
-	//else
-	//{
-	//	GL_Bind(image->texnum);
+		return;
+	}
+	else
+	{
+		//GL_Bind(image->texnum);
 
-	//	GL_TexEnv(GL_REPLACE);
-	//}
+		//GL_TexEnv(GL_REPLACE);
+	}
 
 	//======
 	//PGM
@@ -550,27 +472,27 @@ void R_RenderBrushPoly(msurface_t* fa)
 	//PGM
 	//======
 
-		/*
-		** check for lightmap modification
-		*/
-	//for (maps = 0; maps < MAXLIGHTMAPS && fa->styles[maps] != 255; maps++)
-	//{
-	//	if (r_newrefdef.lightstyles[fa->styles[maps]].white != fa->cached_light[maps])
-	//		goto dynamic;
-	//}
+	/*
+	** check for lightmap modification
+	*/
+	for (maps = 0; maps < MAXLIGHTMAPS && fa->styles[maps] != 255; maps++)
+	{
+		if (r_newrefdef.lightstyles[fa->styles[maps]].white != fa->cached_light[maps])
+			goto dynamic;
+	}
 
-	//// dynamic this frame or dynamic previously
-	//if ((fa->dlightframe == r_framecount))
-	//{
-	//dynamic:
-	//	if (gl_dynamic->value)
-	//	{
-	//		if (!(fa->texinfo->flags & (SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP)))
-	//		{
-	//			is_dynamic = True;
-	//		}
-	//	}
-	//}
+	// dynamic this frame or dynamic previously
+	if ((fa->dlightframe == r_framecount))
+	{
+	dynamic:
+		if (/*gl_dynamic->value*/true)
+		{
+			if (!(fa->texinfo->flags & (SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP)))
+			{
+				is_dynamic = True;
+			}
+		}
+	}
 
 	if (is_dynamic)
 	{
@@ -916,55 +838,56 @@ void R_DrawInlineBModel(void)
 	dlight_t* lt;
 
 	// calculate dynamic lighting for bmodel
-	//if (!gl_flashblend->value)
-	//{
-	//	lt = r_newrefdef.dlights;
-	//	for (k = 0; k < r_newrefdef.num_dlights; k++, lt++)
-	//	{
-	//		R_MarkLights(lt, 1 << k, currentmodel->nodes + currentmodel->firstnode);
-	//	}
-	//}
+	if (true/*!gl_flashblend->value*/)
+	{
+		lt = r_newrefdef.dlights;
+		for (k = 0; k < r_newrefdef.num_dlights; k++, lt++)
+		{
+			R_MarkLights(lt, 1 << k, currentmodel->nodes + currentmodel->firstnode);
+		}
+	}
 
 	psurf = &currentmodel->surfaces[currentmodel->firstmodelsurface];
 
-	//if (currententity->flags & RF_TRANSLUCENT)
-	//{
-	//	qglEnable(GL_BLEND);
-	//	qglColor4f(1, 1, 1, 0.25);
-	//	GL_TexEnv(GL_MODULATE);
-	//}
+	// if translucent
+	/*if (currententity->flags & RF_TRANSLUCENT)
+	{
+		qglEnable(GL_BLEND);
+		qglColor4f(1, 1, 1, 0.25);
+		GL_TexEnv(GL_MODULATE);
+	}*/
 
 	//
 	// draw texture
 	//
-	//for (i = 0; i < currentmodel->nummodelsurfaces; i++, psurf++)
-	//{
-	//	// find which side of the node we are on
-	//	pplane = psurf->plane;
+	for (i = 0; i < currentmodel->nummodelsurfaces; i++, psurf++)
+	{
+		// find which side of the node we are on
+		pplane = psurf->plane;
 
-	//	dot = DotProduct(modelorg, pplane->normal) - pplane->dist;
+		dot = DotProduct(modelorg, pplane->normal) - pplane->dist;
 
 		// draw the polygon
-		//if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
-		//	(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
-		//{
-		//	if (psurf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
-		//	{	// add to the translucent chain
-		//		psurf->texturechain = r_alpha_surfaces;
-		//		r_alpha_surfaces = psurf;
-		//	}
-		//	else if (qglMTexCoord2fSGIS && !(psurf->flags & SURF_DRAWTURB))
-		//	{
-		//		GL_RenderLightmappedPoly(psurf);
-		//	}
-		//	else
-		//	{
+		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
+			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
+		{
+			if (psurf->texinfo->flags & (SURF_TRANS33 | SURF_TRANS66))
+			{	// add to the translucent chain
+				psurf->texturechain = r_alpha_surfaces;
+				r_alpha_surfaces = psurf;
+			}
+			else if (/*qglMTexCoord2fSGIS &&*/ !(psurf->flags & SURF_DRAWTURB))
+			{
+				GL_RenderLightmappedPoly(psurf);
+			}
+			else
+			{
 				//GL_EnableMultitexture(False);
 				R_RenderBrushPoly(psurf);
 				//GL_EnableMultitexture(True);
-		//	}
-		//}
-	//}
+			}
+		}
+	}
 
 	/*if (!(currententity->flags & RF_TRANSLUCENT))
 	{
@@ -1032,11 +955,11 @@ void R_DrawBrushModel(entity_t* e)
 	}
 
 	//qglPushMatrix();
-	//e->angles[0] = -e->angles[0];	// stupid quake bug
-	//e->angles[2] = -e->angles[2];	// stupid quake bug
-	//R_RotateForEntity(e);
-	//e->angles[0] = -e->angles[0];	// stupid quake bug
-	//e->angles[2] = -e->angles[2];	// stupid quake bug
+	e->angles[0] = -e->angles[0];	// stupid quake bug
+	e->angles[2] = -e->angles[2];	// stupid quake bug
+	R_RotateForEntity(e);
+	e->angles[0] = -e->angles[0];	// stupid quake bug
+	e->angles[2] = -e->angles[2];	// stupid quake bug
 
 	//GL_EnableMultitexture(True);
 	//GL_SelectTexture(GL_TEXTURE0_SGIS);
