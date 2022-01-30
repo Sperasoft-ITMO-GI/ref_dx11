@@ -25,3 +25,7 @@ void VertexBuffer::Bind() {
 	const UINT offset = 0u;
 	renderer->GetContext()->IASetVertexBuffers(0u, 1u, buffer.GetAddressOf(), &stride, &offset);
 }
+
+UINT VertexBuffer::GetCount() {
+	return count;
+}

@@ -43,7 +43,7 @@ extern	float	r_world_matrix[16];
 //extern InitDX11 dx11App;
 extern Renderer* renderer;
 extern UIRenderer* ui_renderer;
-extern ModelRenderer* model_renderer;
+extern BSPRenderer* model_renderer;
 
 /*
 

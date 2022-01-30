@@ -1,4 +1,4 @@
-#include <ModelRenderer.h>
+#include <BSPRenderer.h>
 
 // Тут нужно заменить дефайны на необходимые (это копипаста UIRenderer)
 
@@ -18,11 +18,11 @@ static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
 	{FADE,  fadeMac},
 };
 
-void  ModelRenderer::Init() {
+void  BSPRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\ModelShader.hlsl", new ModelPSProvider, macro);
 }
 
-void ModelRenderer::Render() {
+void BSPRenderer::Render() {
 	for (auto& polygon : polygons) {
 		SetPipelineState(factory->GetState(1));
 		polygon.Draw();
@@ -31,11 +31,11 @@ void ModelRenderer::Render() {
 	polygons.clear();
 }
 
-void ModelRenderer::AddElement(const BSPPoly& polygon) {
+void BSPRenderer::AddElement(const BSPPoly& polygon) {
 	polygons.push_back(polygon);
 }
 
-void ModelRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int defines) {
+void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int defines) {
 	state->dss = DepthStencilState::DEFAULT;
 	state->bs = BlendState::ALPHA;
 	state->rs = RasterizationState::CULL_BACK;

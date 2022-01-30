@@ -129,7 +129,7 @@
     <ClInclude Include="render\BSPPoly.h">
       <Filter>Render\ModelRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="render\ModelRenderer.h">
+    <ClInclude Include="render\BSPRenderer.h">
       <Filter>Render\ModelRenderer</Filter>
     </ClInclude>
     <ClInclude Include="dx11_model.h">
@@ -144,7 +144,7 @@
     <ClInclude Include="..\ref_gl\warpsin.h">
       <Filter>Interface</Filter>
     </ClInclude>
-    <ClInclude Include="ModelVertex.h">
+    <ClInclude Include="render\BSPVertex.h">
       <Filter>Render\ModelRenderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -224,7 +224,7 @@
     <ClCompile Include="render\BSPPoly.cpp">
       <Filter>Render\ModelRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="render\ModelRenderer.cpp">
+    <ClCompile Include="render\BSPRenderer.cpp">
       <Filter>Render\ModelRenderer</Filter>
     </ClCompile>
     <ClCompile Include="dx11_model.cpp">

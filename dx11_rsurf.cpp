@@ -118,7 +118,6 @@ void DrawGLPoly(glpoly_t* p)
 
 	using namespace DirectX;
 	ConstantBufferPolygon cbp;
-	float a = v[1];
 	cbp.position_transform *= XMMatrixTranspose(XMMatrixScaling(v[0], v[1], v[2]) * renderer->GetPerspective());
 	cbp.texture_transform *= XMMatrixTranspose(XMMatrixTranslation(v[3], v[4], 0));
 

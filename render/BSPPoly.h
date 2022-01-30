@@ -7,11 +7,11 @@
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <ConstantBuffer.h>
-#include <ModelVertex.h>
+#include <BSPVertex.h>
 
 class BSPPoly {
 public:
-	BSPPoly(ConstantBuffer<ConstantBufferPolygon> cb, int flags, int tex_index, int lm_index);
+	BSPPoly(ConstantBuffer<ConstantBufferPolygon> cb, const VertexBuffer& vb, int flags, int tex_index, int lm_index = -1);
 
 	int GetFlags();
 
@@ -21,10 +21,7 @@ private:
 	int texture_index;
 	int lightmap_index;
 
-public:
-	static VertexBuffer vb;
-	static IndexBuffer  ib;
-
 private:
+	VertexBuffer vb;
 	ConstantBuffer<ConstantBufferPolygon> cb;
 };

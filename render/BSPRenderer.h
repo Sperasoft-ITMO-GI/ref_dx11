@@ -14,7 +14,7 @@
 #define TEXTURED 0x002
 #define FADE     0x004
 
-class ModelRenderer {
+class BSPRenderer {
 public:
 
 	void Init();

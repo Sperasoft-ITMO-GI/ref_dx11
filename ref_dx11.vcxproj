@@ -166,15 +166,15 @@
     <ClInclude Include="dx11_local.h" />
     <ClInclude Include="dx11_model.h" />
     <ClInclude Include="dxerr.h" />
-    <ClInclude Include="ModelVertex.h" />
     <ClInclude Include="render\Bindable.h" />
     <ClInclude Include="render\BlendState.h" />
+    <ClInclude Include="render\BSPVertex.h" />
     <ClInclude Include="render\ConstantBuffer.h" />
     <ClInclude Include="render\DepthStencilState.h" />
     <ClInclude Include="render\IndexBuffer.h" />
     <ClInclude Include="render\InputLayout.h" />
     <ClInclude Include="render\IStateProvider.h" />
-    <ClInclude Include="render\ModelRenderer.h" />
+    <ClInclude Include="render\BSPRenderer.h" />
     <ClInclude Include="render\PipelineFactory.h" />
     <ClInclude Include="render\PipelineState.h" />
     <ClInclude Include="render\PixelShader.h" />
@@ -214,7 +214,7 @@
     <ClCompile Include="render\DepthStencilState.cpp" />
     <ClCompile Include="render\IndexBuffer.cpp" />
     <ClCompile Include="render\InputLayout.cpp" />
-    <ClCompile Include="render\ModelRenderer.cpp" />
+    <ClCompile Include="render\BSPRenderer.cpp" />
     <ClCompile Include="render\PipelineFactory.cpp" />
     <ClCompile Include="render\PipelineState.cpp" />
     <ClCompile Include="render\PixelShader.cpp" />
