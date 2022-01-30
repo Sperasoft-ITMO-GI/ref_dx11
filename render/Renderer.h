@@ -23,6 +23,8 @@ public:
 
 public:
 	void SetWindowMode(const uint32_t w, const uint32_t h, const bool fullscreen);
+	void SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far);
+	void SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx);
 
 	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool dynamic);
 	void UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum);
@@ -35,6 +37,7 @@ public:
 
 	DirectX::XMMATRIX GetOrthogonal();
 	DirectX::XMMATRIX GetPerspective();
+	DirectX::XMMATRIX GetModelView();
 
 	void Clear() {
 		context->ClearRenderTargetView(render_target_view.Get(), DirectX::Colors::DodgerBlue);
@@ -80,6 +83,7 @@ private:
 
 	DirectX::XMMATRIX orthogonal;
 	DirectX::XMMATRIX perspective;
+	DirectX::XMMATRIX model_view;
 
 private:
 	static Renderer* renderer;

@@ -144,6 +144,14 @@ void Renderer::SetWindowMode(const uint32_t w, const uint32_t h, const bool full
 	window->SetMode(w, h, fullscreen);
 }
 
+void Renderer::SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far) {
+	perspective = DirectX::XMMatrixPerspectiveFovLH(fov, aspect_ratio, z_near, z_far);
+}
+
+void Renderer::SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx) {
+	model_view = model_view_mx;
+}
+
 void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool dynamic) {
 	using DirectX::XMFLOAT2;
 	using DirectX::XMFLOAT3;
@@ -274,7 +282,7 @@ void Renderer::InitMatrix(int width, int height)
 {
 	const float PI_32 = 3.14159265358979323846f;
 	orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1000.0f);
-	perspective = DirectX::XMMatrixPerspectiveFovLH(0.25f * PI_32, ((float)width / (float)height), 1.0f, 1000.0f);
+	//perspective = DirectX::XMMatrixPerspectiveFovLH(0.25f * PI_32, ((float)width / (float)height), 1.0f, 1000.0f);
 }
 
 DirectX::XMMATRIX Renderer::GetOrthogonal()
@@ -285,6 +293,11 @@ DirectX::XMMATRIX Renderer::GetOrthogonal()
 DirectX::XMMATRIX Renderer::GetPerspective()
 {
 	return perspective;
+}
+
+DirectX::XMMATRIX Renderer::GetModelView()
+{
+	return model_view;
 }
 
 Renderer::~Renderer()

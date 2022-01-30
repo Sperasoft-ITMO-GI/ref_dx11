@@ -1,5 +1,7 @@
 // dx11r_main.c
 
+#define _XM_NO_INTRINSICS_
+
 #include "dx11_local.h"
 
 void R_Clear(void);
@@ -596,8 +598,11 @@ R_SetupGL
 void R_SetupGL(void)
 {
 	float	screenaspect;
-	//	float	yfov;
+	//float	yfov;
 	int		x, x2, y2, y, w, h;
+
+	// Тут каждый раз устанавливается новый вьюпорт
+	// Не ясно, нужно ли это делать
 
 	//
 	// set up viewport
@@ -615,16 +620,30 @@ void R_SetupGL(void)
 	////
 	//// set up projection matrix
 	////
-	//screenaspect = (float)r_newrefdef.width / r_newrefdef.height;
-	////	yfov = 2*atan((float)r_newrefdef.height/r_newrefdef.width)*180/M_PI;
+	
+	screenaspect = (float)r_newrefdef.width / r_newrefdef.height;
+	renderer->SetPerspectiveMatrix(r_newrefdef.fov_y, screenaspect, 4.0f, 4096.0f);
+	//yfov = 2*atan((float)r_newrefdef.height/r_newrefdef.width)*180/M_PI;
 	//qglMatrixMode(GL_PROJECTION);
 	//qglLoadIdentity();
 	//MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
 
 	//qglCullFace(GL_FRONT);
 
+	// Тут считаем матрицу моделвью
+
 	//qglMatrixMode(GL_MODELVIEW);
 	//qglLoadIdentity();
+
+	using namespace DirectX;
+	XMMATRIX model_view = XMMatrixIdentity();
+	model_view *= XMMatrixRotationX(-XM_PI / 2);
+	model_view *= XMMatrixRotationZ(XM_PI / 2);
+	model_view *= XMMatrixRotationX(-r_newrefdef.viewangles[2] * XM_PI / 180);
+	model_view *= XMMatrixRotationY(-r_newrefdef.viewangles[0] * XM_PI / 180);
+	model_view *= XMMatrixRotationZ(-r_newrefdef.viewangles[1] * XM_PI / 180);
+	model_view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
+
 
 	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
 	//qglRotatef(90, 0, 0, 1);	    // put Z going up
@@ -633,9 +652,12 @@ void R_SetupGL(void)
 	//qglRotatef(-r_newrefdef.viewangles[1], 0, 0, 1);
 	//qglTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
 
-	////	if ( gl_state.camera_separation != 0 && gl_state.stereo_enabled )
-	////		qglTranslatef ( gl_state.camera_separation, 0, 0 );
+	// Записываем моделвью матрицу в ворлд матрицу
+	// Может быть нужно траспанировать
 
+	for (int i = 0; i < 16; ++i) {
+		r_world_matrix[i] = model_view.m[i / 4][i % 4];
+	}
 	//qglGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
 
 	////
