@@ -1,8 +1,11 @@
+Texture2D Text_0 : register(t0);
+Texture2D Text_1 : register(t1);
+sampler Sampler : register(s0);
+
 cbuffer Cbuf
 {
     matrix position_transform;
     matrix texture_transform;
-    matrix lightmap_transform;
 };
 
 struct VSOut

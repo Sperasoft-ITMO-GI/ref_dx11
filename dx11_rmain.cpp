@@ -644,6 +644,7 @@ void R_SetupDX(void)
 	model_view *= XMMatrixRotationZ(-r_newrefdef.viewangles[1] * XM_PI / 180);
 	model_view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
 
+	renderer->SetModelViewMatrix(model_view);
 
 	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
 	//qglRotatef(90, 0, 0, 1);	    // put Z going up
