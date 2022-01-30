@@ -6,7 +6,6 @@
 
 struct ConstantBufferQuad {
 	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
-	DirectX::XMMATRIX color_transform = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX texture_transform = DirectX::XMMatrixIdentity();
 };
 

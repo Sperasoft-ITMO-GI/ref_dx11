@@ -4,7 +4,6 @@ sampler Sampler : register(s0);
 cbuffer Cbuf
 {
     matrix position_transform;
-    matrix color_transform;
     matrix texture_transform;
 };
 
@@ -26,7 +25,7 @@ VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
     OUT.pos = mul(float4(IN.pos.x, IN.pos.y, 0.0f, 1.0f), position_transform);
-    OUT.col = mul(IN.col, color_transform);
+    OUT.col = IN.col;
     OUT.texCoord = mul(float4(IN.texCoord.x, IN.texCoord.y, 0.0f, 1.0f), texture_transform).xy;
     return OUT;
 }
