@@ -102,19 +102,40 @@ image_t* R_TextureAnimation(mtexinfo_t* tex)
 DrawGLPoly
 ================
 */
-void DrawGLPoly(glpoly_t* p)
+// Дописал передачу номера текстуры в функцию, возможно в будущем удалим
+void DrawGLPoly(glpoly_t* p, int texNum)
 {
 	int		i;
 	float* v;
 
-	//qglBegin(GL_POLYGON);
+	BSPVertex vert = {};
+	std::vector<BSPVertex> vect;
+
 	v = p->verts[0];
-	//for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
-	//{
-	//	qglTexCoord2f(v[3], v[4]);
-	//	qglVertex3fv(v);
-	//}
-	//qglEnd();
+	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
+	{
+		//qglTexCoord2f(v[3], v[4]);
+		//qglVertex3fv(v);
+
+		vert.position.x = v[0];
+		vert.position.y = v[1];
+		vert.position.z = v[2];
+		vert.texture_coord.x = v[3];
+		vert.texture_coord.y = v[3];
+
+		vect.push_back(vert);
+	}
+
+	VertexBuffer vbp;
+	vbp.Create(vect);
+
+	ConstantBufferPolygon cbp;
+	cbp.position_transform = renderer->GetOrthogonal();
+
+	ConstantBuffer<ConstantBufferPolygon> CB(cbp);
+
+	BSPPoly bspP(CB, vbp, BSP_SOLID, texNum);
+	bsp_renderer->AddElement(bspP);
 }
 
 //============
@@ -433,7 +454,7 @@ void R_RenderBrushPoly(msurface_t* fa)
 	if (fa->texinfo->flags & SURF_FLOWING)
 		DrawGLFlowingPoly(fa);
 	else
-		DrawGLPoly(fa->polys);
+		DrawGLPoly(fa->polys, image->texnum);
 	//PGM
 	//======
 
@@ -815,12 +836,12 @@ void R_DrawInlineBModel(void)
 	psurf = &currentmodel->surfaces[currentmodel->firstmodelsurface];
 
 	// if translucent
-	/*if (currententity->flags & RF_TRANSLUCENT)
+	if (currententity->flags & RF_TRANSLUCENT)
 	{
-		qglEnable(GL_BLEND);
-		qglColor4f(1, 1, 1, 0.25);
-		GL_TexEnv(GL_MODULATE);
-	}*/
+		//qglEnable(GL_BLEND);
+		//qglColor4f(1, 1, 1, 0.25);
+		//GL_TexEnv(GL_MODULATE);
+	}
 
 	//
 	// draw texture
@@ -841,10 +862,6 @@ void R_DrawInlineBModel(void)
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
 			}
-			else if (/*qglMTexCoord2fSGIS &&*/ !(psurf->flags & SURF_DRAWTURB))
-			{
-				GL_RenderLightmappedPoly(psurf);
-			}
 			else
 			{
 				//GL_EnableMultitexture(False);
@@ -854,17 +871,17 @@ void R_DrawInlineBModel(void)
 		}
 	}
 
-	/*if (!(currententity->flags & RF_TRANSLUCENT))
+	if (!(currententity->flags & RF_TRANSLUCENT))
 	{
-		if (!qglMTexCoord2fSGIS)
-			R_BlendLightmaps();
+		//if (!qglMTexCoord2fSGIS)
+		//	R_BlendLightmaps();
 	}
 	else
 	{
-		qglDisable(GL_BLEND);
-		qglColor4f(1, 1, 1, 1);
-		GL_TexEnv(GL_REPLACE);
-	}*/
+		//qglDisable(GL_BLEND);
+		//qglColor4f(1, 1, 1, 1);
+		//GL_TexEnv(GL_REPLACE);
+	}
 }
 
 /*

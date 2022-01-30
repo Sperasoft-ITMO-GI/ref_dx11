@@ -73,7 +73,7 @@ dx11state_t  dx11_state;
 //InitDX11 dx11App = {};
 Renderer* renderer = Renderer::GetInstance();
 UIRenderer* ui_renderer = new UIRenderer(); // Зачем указатель? Ответа на этот вопрос у меня нет...
-BSPRenderer* model_renderer = new BSPRenderer();
+BSPRenderer* bsp_renderer = new BSPRenderer();
 
 States* States::states = nullptr;
 
@@ -990,7 +990,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 		return False;
 	}
 	ui_renderer->Init();
-	model_renderer->Init();
+	bsp_renderer->Init();
 
 	Quad::vb.Create(
 		std::vector<UIVertex>{
@@ -1002,26 +1002,6 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	);
 	
 	Quad::ib.Create({ 2, 1, 0, 0, 3, 2 });
-
-	// ---------------------------------------------------
-	// Пример того, как создавать BSPPoly
-
-	VertexBuffer vbp(
-		std::vector<BSPVertex> {
-			{ {0, 0, 0}, { 0, 0 }}
-	    }
-	);
-
-	ConstantBufferPolygon cbp;
-	cbp.position_transform; //*= необходимые матрицы
-	cbp.texture_transform; //*= необходимые матрицы
-
-	ConstantBuffer<ConstantBufferPolygon> CB(cbp);
-
-	BSPPoly bspP(CB, vbp, 1, 1);
-	// model_renderer->AddPolygon(BSPPoly)
-
-	// ---------------------------------------------------
 
 	// let the sound and input subsystems know about the new window
 	// can be call after creating windows and its context
@@ -1124,7 +1104,7 @@ void R_BeginFrame(float camera_separation)
 	// clear
 	renderer->Clear();
 	ui_renderer->Render();
-	model_renderer->Render();
+	bsp_renderer->Render();
 }
 
 /*

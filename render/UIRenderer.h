@@ -9,9 +9,9 @@
 #include <IStateProvider.h>
 #include <Quad.h>
 
-#define COLORED  0x001
-#define TEXTURED 0x002
-#define FADE     0x004
+#define UI_COLORED  0x001
+#define UI_TEXTURED 0x002
+#define UI_FADE     0x004
 
 class UIRenderer {
 public:

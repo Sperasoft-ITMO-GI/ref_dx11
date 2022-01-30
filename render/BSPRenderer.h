@@ -10,9 +10,7 @@
 #include <BSPPoly.h>
 
 // There should be defines
-#define COLORED  0x001
-#define TEXTURED 0x002
-#define FADE     0x004
+#define BSP_SOLID  0x001
 
 class BSPRenderer {
 public:

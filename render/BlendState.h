@@ -8,7 +8,7 @@
 
 enum BlendState {
 	ALPHA,
-	NOALPHA,
+	NOALPHA
 };
 
 Microsoft::WRL::ComPtr<ID3D11BlendState> MakeAlphaBS();

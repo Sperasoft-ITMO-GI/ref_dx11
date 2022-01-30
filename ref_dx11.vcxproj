@@ -230,8 +230,9 @@
     <ClCompile Include="render\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ModelShader.hlsl">
+    <FxCompile Include="shaders\BSP.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="shaders\UITexture.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

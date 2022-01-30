@@ -1,5 +1,4 @@
 Texture2D Text_0 : register(t0);
-Texture2D Text_1 : register(t1);
 sampler Sampler : register(s0);
 
 cbuffer Cbuf
@@ -12,25 +11,31 @@ struct VSOut
 {
     float4 pos : SV_Position;
     float2 texCoord : TEXCOORD;
-    float2 lightmapCoord : TEXCOORD;
+    float2 lightmapCoord : LMTEXCOORD;
 };
 
 struct VSIn
 {
     float3 pos : Position;
     float2 texCoord : TexCoord;
-    float2 lightmapCoord : TexCoord;
+    float2 lightmapCoord : LmTexCoord;
 };
 
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
     OUT.pos = mul(float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f), position_transform);
-    OUT.texCoord = mul(float4(IN.texCoord.x, IN.texCoord.y, 0.0f, 1.0f), texture_transform).xy;
+    OUT.texCoord = IN.texCoord;
+	OUT.lightmapCoord = IN.lightmapCoord;
     return OUT;
 }
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    return (0.0f, 1.0f, 0.0f, 1.0f);
+    float4 result = float4(0.5f, 0.0f, 0.5f, 1.0f);
+
+#ifdef SOLID
+	result = Text_0.Sample(Sampler, IN.texCoord);
+#endif
+    return result;
 }

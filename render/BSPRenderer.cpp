@@ -2,29 +2,25 @@
 
 // Тут нужно заменить дефайны на необходимые (это копипаста UIRenderer)
 
-static D3D_SHADER_MACRO colMac[] = {
-	"COLORED", "1", NULL, NULL
-};
-static D3D_SHADER_MACRO texMac[] = {
-	"TEXTURED", "2", NULL, NULL
-};
-static D3D_SHADER_MACRO fadeMac[] = {
-	"FADE", "4", NULL, NULL
+static D3D_SHADER_MACRO solMac[] = {
+	"SOLID", "1", NULL, NULL
 };
 
 static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
-	{COLORED, colMac},
-	{TEXTURED,  texMac},
-	{FADE,  fadeMac},
+	{BSP_SOLID, solMac}
 };
 
 void  BSPRenderer::Init() {
-	factory = new PipelineFactory(L"ref_dx11\\shaders\\ModelShader.hlsl", new ModelPSProvider, macro);
+	factory = new PipelineFactory(L"ref_dx11\\shaders\\BSP.hlsl", new ModelPSProvider, macro);
 }
 
 void BSPRenderer::Render() {
 	for (auto& polygon : polygons) {
-		SetPipelineState(factory->GetState(1));
+
+		if (polygon.GetFlags() & BSP_SOLID) {
+			SetPipelineState(factory->GetState(BSP_SOLID));
+		}
+
 		polygon.Draw();
 	}
 
@@ -36,8 +32,13 @@ void BSPRenderer::AddElement(const BSPPoly& polygon) {
 }
 
 void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int defines) {
-	state->dss = DepthStencilState::DEFAULT;
-	state->bs = BlendState::ALPHA;
-	state->rs = RasterizationState::CULL_BACK;
-	state->layout = Layout::POLYGON;
+
+	if (defines & BSP_SOLID)
+	{
+		state->dss = DepthStencilState::DEFAULT;
+		state->bs = BlendState::NOALPHA;
+		state->rs = RasterizationState::CULL_NONE;
+		state->layout = Layout::POLYGON;
+	}
+	
 }
