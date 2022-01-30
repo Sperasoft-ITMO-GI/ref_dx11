@@ -865,17 +865,9 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 	{
 		if (!mipmap)
 		{
-			if (samples == gl_solid_format)
-			{
-				uploaded_paletted = True;
-				renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
-				renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
-			}
-			else
-			{
-				renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum, false);
-				renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)data, img->type);
-			}
+			renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum, false);
+			renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)data, img->type);
+
 			goto done;
 		}
 		memcpy(scaled, data, width * height * 4);
@@ -886,17 +878,8 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 	// 4 param - (!mipmap)
 	GL_LightScaleTexture(scaled, scaled_width, scaled_height, (!mipmap) ? True : False);
 
-	if (samples == gl_solid_format)
-	{
-		uploaded_paletted = True;
-		renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
-		renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
-	}
-	else
-	{
-		renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
-		renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
-	}
+	renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
+	renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
 
 	if (mipmap)
 	{
@@ -913,24 +896,7 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 			if (scaled_height < 1)
 				scaled_height = 1;
 			miplevel++;
-			if (samples == gl_solid_format)
-			{
-				//uploaded_paletted = True;
-				//GL_BuildPalettedTexture(paletted_texture, (unsigned char*)scaled, scaled_width, scaled_height);
-				/*qglTexImage2D(GL_TEXTURE_2D,
-					miplevel,
-					GL_COLOR_INDEX8_EXT,
-					scaled_width,
-					scaled_height,
-					0,
-					GL_COLOR_INDEX,
-					GL_UNSIGNED_BYTE,
-					paletted_texture);*/
-			}
-			else
-			{
-				//qglTexImage2D(GL_TEXTURE_2D, miplevel, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
-			}
+			//qglTexImage2D(GL_TEXTURE_2D, miplevel, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 		}
 	}
 done:;

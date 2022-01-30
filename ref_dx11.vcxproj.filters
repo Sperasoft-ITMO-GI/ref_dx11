@@ -26,7 +26,7 @@
     <Filter Include="Interface">
       <UniqueIdentifier>{9d61d061-0617-46aa-94a3-ef3379b0ff65}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\ModelRenderer">
+    <Filter Include="Render\BSPRenderer">
       <UniqueIdentifier>{99ac3113-0604-4795-bfc1-3f677f111c9e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -127,10 +127,10 @@
       <Filter>Interface</Filter>
     </ClInclude>
     <ClInclude Include="render\BSPPoly.h">
-      <Filter>Render\ModelRenderer</Filter>
+      <Filter>Render\BSPRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\BSPRenderer.h">
-      <Filter>Render\ModelRenderer</Filter>
+      <Filter>Render\BSPRenderer</Filter>
     </ClInclude>
     <ClInclude Include="dx11_model.h">
       <Filter>Interface</Filter>
@@ -145,7 +145,7 @@
       <Filter>Interface</Filter>
     </ClInclude>
     <ClInclude Include="render\BSPVertex.h">
-      <Filter>Render\ModelRenderer</Filter>
+      <Filter>Render\BSPRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -222,10 +222,10 @@
       <Filter>Interface</Filter>
     </ClCompile>
     <ClCompile Include="render\BSPPoly.cpp">
-      <Filter>Render\ModelRenderer</Filter>
+      <Filter>Render\BSPRenderer</Filter>
     </ClCompile>
     <ClCompile Include="render\BSPRenderer.cpp">
-      <Filter>Render\ModelRenderer</Filter>
+      <Filter>Render\BSPRenderer</Filter>
     </ClCompile>
     <ClCompile Include="dx11_model.cpp">
       <Filter>Interface</Filter>
