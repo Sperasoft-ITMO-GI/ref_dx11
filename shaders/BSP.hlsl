@@ -4,7 +4,6 @@ sampler Sampler : register(s0);
 cbuffer Cbuf
 {
     matrix position_transform;
-    matrix texture_transform;
 };
 
 struct VSOut

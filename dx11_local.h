@@ -136,6 +136,9 @@ typedef enum
 #define MAX_DXSCRAPTEXTURES 400
 #define CINEMATIC_PICTURE 1300
 
+// 1024 this a number from OpenGL, this may call error
+#define	TEXNUM_LIGHTMAPS	1024
+
 extern	image_t		dxtextures[MAX_DXTEXTURES];
 extern	int			numdxtextures;
 extern	int			scrapNum;

@@ -579,15 +579,15 @@ void R_SetupFrame(void)
 	c_alias_polys = 0;
 
 	// clear out the portion of the screen that the NOWORLDMODEL defines
-	/*if (r_newrefdef.rdflags & RDF_NOWORLDMODEL)
+	if (r_newrefdef.rdflags & RDF_NOWORLDMODEL)
 	{
-		qglEnable(GL_SCISSOR_TEST);
-		qglClearColor(0.3, 0.3, 0.3, 1);
-		qglScissor(r_newrefdef.x, vid.height - r_newrefdef.height - r_newrefdef.y, r_newrefdef.width, r_newrefdef.height);
-		qglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		qglClearColor(1, 0, 0.5, 0.5);
-		qglDisable(GL_SCISSOR_TEST);
-	}*/
+		//qglEnable(GL_SCISSOR_TEST);
+		//qglClearColor(0.3, 0.3, 0.3, 1);
+		//qglScissor(r_newrefdef.x, vid.height - r_newrefdef.height - r_newrefdef.y, r_newrefdef.width, r_newrefdef.height);
+		//qglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//qglClearColor(1, 0, 0.5, 0.5);
+		//qglDisable(GL_SCISSOR_TEST);
+	}
 }
 
 /*
@@ -813,10 +813,10 @@ static void GL_DrawStereoPattern(void)
 {
 	/*int i;
 
-	if (!(gl_config.renderer & GL_RENDERER_INTERGRAPH))
+	if (!(dx11_config.renderer & GL_RENDERER_INTERGRAPH))
 		return;
 
-	if (!gl_state.stereo_enabled)
+	if (!dx11_state.stereo_enabled)
 		return;
 
 	R_SetGL2D();
