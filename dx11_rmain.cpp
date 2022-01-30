@@ -595,7 +595,7 @@ void R_SetupFrame(void)
 R_SetupGL
 =============
 */
-void R_SetupGL(void)
+void R_SetupDX(void)
 {
 	float	screenaspect;
 	//float	yfov;
@@ -755,7 +755,7 @@ void R_RenderView(refdef_t* fd)
 
 	R_SetFrustum();
 
-	R_SetupGL();
+	R_SetupDX();
 
 	R_MarkLeaves();	// done here so we know if we're in water
 
