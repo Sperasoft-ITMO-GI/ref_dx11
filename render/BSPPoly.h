@@ -11,7 +11,7 @@
 
 class BSPPoly {
 public:
-	BSPPoly(ConstantBuffer<ConstantBufferPolygon> cb, const VertexBuffer& vb, int flags, int tex_index, int lm_index = -1);
+	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, int flags, int tex_index, int lm_index = -1);
 
 	int GetFlags();
 

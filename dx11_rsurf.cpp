@@ -115,15 +115,6 @@ void DrawGLPoly(glpoly_t* p)
 	//	qglVertex3fv(v);
 	//}
 	//qglEnd();
-
-	using namespace DirectX;
-	ConstantBufferPolygon cbp;
-	cbp.position_transform *= XMMatrixTranspose(XMMatrixScaling(v[0], v[1], v[2]) * renderer->GetPerspective());
-	cbp.texture_transform *= XMMatrixTranspose(XMMatrixTranslation(v[3], v[4], 0));
-
-	ConstantBuffer<ConstantBufferPolygon> cb(cbp);
-	BSPPoly polygon(cb, 0, -1, -1);
-	model_renderer->AddElement(polygon);
 }
 
 //============

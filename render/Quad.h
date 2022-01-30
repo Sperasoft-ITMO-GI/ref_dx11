@@ -11,7 +11,7 @@
 
 class Quad {
 public:
-	Quad(ConstantBuffer<ConstantBufferQuad> cb, int flags, int index);
+	Quad(ConstantBuffer<ConstantBufferQuad>& cb, int flags, int index);
 
 	int GetFlags();
 

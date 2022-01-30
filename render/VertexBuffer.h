@@ -12,7 +12,7 @@
 class VertexBuffer : public Bindable {
 public:
 
-	VertexBuffer() {
+	VertexBuffer() : stride(0), count(0), buffer(NULL), shader(NULL) {
 	}
 
 	template<typename T>

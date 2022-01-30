@@ -3,7 +3,7 @@
 VertexBuffer Quad::vb;
 IndexBuffer  Quad::ib;
 
-Quad::Quad(ConstantBuffer<ConstantBufferQuad> cb, int flags, int index) 
+Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, int flags, int index) 
 	: cb(cb), flags(flags), texture_index(index) {
 }
 
