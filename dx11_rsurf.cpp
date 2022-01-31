@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include "dx11_local.h"
+#include <algorithm>
 
 static vec3_t	modelorg;		// relative to viewpoint
 
@@ -108,16 +109,27 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 
 		vect.push_back(vert);
 	}
+	std::sort(vect.begin(), vect.end(), [](const BSPVertex& l, const BSPVertex& r) {
+		return l.position.x < r.position.x&& l.position.y < r.position.y;
+	});
 
-	VertexBuffer vbp;
-	vbp.Create(vect);
+	VertexBuffer vbp(vect);
+
+	std::vector<uint16_t> indexes;
+	for (int i = 0; i < p->numverts - 2; ++i) {
+		indexes.push_back(i);
+		indexes.push_back(i + 2);
+		indexes.push_back(i + 1);
+	}
+	IndexBuffer ib(indexes);
 
 	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetPerspective();
+	//cbp.position_transform = renderer->GetModelView();
+	cbp.position_transform = DirectX::XMMatrixTranspose(renderer->GetPerspective());
 
 	ConstantBuffer<ConstantBufferPolygon> CB(cbp);
 
-	BSPPoly bspP(CB, vbp, BSP_SOLID, texNum);
+	BSPPoly bspP(CB, vbp, ib, BSP_SOLID, texNum);
 	bsp_renderer->AddElement(bspP);
 }
 

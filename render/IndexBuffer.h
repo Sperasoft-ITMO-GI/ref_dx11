@@ -17,7 +17,9 @@ public:
 	void Create(std::vector<uint16_t> indexes);
 
 	virtual void Bind() override;
-
+	
+	uint16_t GetCount();
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
+	uint16_t count;
 };

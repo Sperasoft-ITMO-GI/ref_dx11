@@ -205,6 +205,16 @@ void R_DrawSpriteModel(entity_t* e)
 		qglDisable(GL_BLEND);
 
 	qglColor4f(1, 1, 1, 1);*/
+	VectorMA(e->origin, -frame->origin_y, up, point);
+	VectorMA(point, frame->width - frame->origin_x, right, point);
+	using namespace DirectX;
+	ConstantBufferQuad cbq;
+	//cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(8, 8, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
+	cbq.texture_transform *= XMMatrixTranslation(0, 1, 0);
+
+	ConstantBuffer<ConstantBufferQuad> cb(cbq);
+	//Quad textured_quad(cb, UI_TEXTURED, draw_chars->texnum);
+	//ui_renderer->AddElement(textured_quad);
 }
 
 //==================================================================================

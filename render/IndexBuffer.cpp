@@ -1,6 +1,6 @@
 #include "IndexBuffer.h"
 
-IndexBuffer::IndexBuffer(std::vector<uint16_t> indexes) {
+IndexBuffer::IndexBuffer(std::vector<uint16_t> indexes) : count(indexes.size()) {
 	Renderer* renderer = Renderer::GetInstance();
 
 	D3D11_BUFFER_DESC index_buffer_desc{};
@@ -19,6 +19,7 @@ IndexBuffer::IndexBuffer(std::vector<uint16_t> indexes) {
 }
 
 void IndexBuffer::Create(std::vector<uint16_t> indexes) {
+	count = indexes.size();
 	if (!buffer) {
 		Renderer* renderer = Renderer::GetInstance();
 
@@ -42,4 +43,9 @@ void IndexBuffer::Bind() {
 	Renderer* renderer = Renderer::GetInstance();
 	const UINT offset = 0u;
 	renderer->GetContext()->IASetIndexBuffer(buffer.Get(), DXGI_FORMAT_R16_UINT, offset);
+}
+
+uint16_t IndexBuffer::GetCount()
+{
+	return count;
 }
