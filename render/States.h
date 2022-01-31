@@ -7,6 +7,7 @@
 #include <BlendState.h>
 #include <RasterizationState.h>
 #include <InputLayout.h>
+#include <Topology.h>
 
 class States {
 public:
@@ -25,12 +26,12 @@ public:
 		{DEFAULT, MakeDefaultDSS()},
 	};
 	const std::unordered_map<RasterizationState, Microsoft::WRL::ComPtr<ID3D11RasterizerState>> rasterization_states{
-		{CULL_NONE, MakeCullNoneRS()},
-		{CULL_BACK, MakeCullBackRS()},
+		{CULL_NONE,  MakeCullNoneRS()},
+		{CULL_BACK,  MakeCullBackRS()},
 		{CULL_FRONT, MakeCullFrontRS()},
 	};
 	const std::unordered_map<BlendState, Microsoft::WRL::ComPtr<ID3D11BlendState>> blend_states{
-		{ALPHA, MakeAlphaBS()},
+		{ALPHA,   MakeAlphaBS()},
 		{NOALPHA, MakeNoAlphaBS()},
 	};
 	const std::unordered_map<Layout, std::vector<D3D11_INPUT_ELEMENT_DESC>> input_layouts{
@@ -50,6 +51,12 @@ public:
 				{"LmTexCoord",  0, DXGI_FORMAT_R32G32_FLOAT,	0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 			}
 		},	
+	};
+	const std::unordered_map<Topology, D3D_PRIMITIVE_TOPOLOGY> topology{
+		{POINT_LISTS,    D3D11_PRIMITIVE_TOPOLOGY_POINTLIST     },
+		{LINE_LISTS,     D3D11_PRIMITIVE_TOPOLOGY_LINELIST      },
+		{TRIANGLE_LISTS, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST  },
+		{TRIANGLE_STRIP, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP	}
 	};
 
 private:

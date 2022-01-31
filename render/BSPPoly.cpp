@@ -16,8 +16,9 @@ void BSPPoly::Draw() {
 	renderer->Bind(texture_index);
 
 	vb.Bind();
-	ib.Bind();
+	//ib.Bind();
 	cb.Bind<ConstantBufferPolygon>();
 
-	renderer->GetContext()->DrawIndexed(ib.GetCount(), 0u, 0u);
+	//renderer->GetContext()->DrawIndexed(ib.GetCount(), 0u, 0u);
+	renderer->GetContext()->Draw(vb.GetCount(), 0u);
 }

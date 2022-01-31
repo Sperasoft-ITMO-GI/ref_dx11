@@ -60,5 +60,6 @@ void UIRenderer::UIPSProvider::PatchPipelineState(PipelineState* state, int defi
 	state->bs = BlendState::ALPHA;
 	state->rs = RasterizationState::CULL_NONE;
 	state->layout = Layout::QUAD;
+	state->topology = Topology::TRIANGLE_LISTS;
 }
 

@@ -109,17 +109,20 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 
 		vect.push_back(vert);
 	}
-	std::sort(vect.begin(), vect.end(), [](const BSPVertex& l, const BSPVertex& r) {
-		return l.position.x < r.position.x&& l.position.y < r.position.y;
-	});
 
 	VertexBuffer vbp(vect);
 
 	std::vector<uint16_t> indexes;
 	for (int i = 0; i < p->numverts - 2; ++i) {
-		indexes.push_back(i);
-		indexes.push_back(i + 2);
-		indexes.push_back(i + 1);
+		if (i % 2 == 0) {
+			indexes.push_back(i);
+			indexes.push_back(i + 1);
+			indexes.push_back(i + 2);
+		} else {
+			indexes.push_back(i);
+			indexes.push_back(i + 2);
+			indexes.push_back(i + 1);
+		}
 	}
 	IndexBuffer ib(indexes);
 

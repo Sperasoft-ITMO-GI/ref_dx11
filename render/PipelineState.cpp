@@ -19,5 +19,5 @@ void SetPipelineState(PipelineState* state) {
 	context->RSSetState(states->rasterization_states.at(state->rs).Get());
 
 	context->IASetInputLayout(MakeLayout(state->vs->GetBlob(), states->input_layouts.at(state->layout)).Get());
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->IASetPrimitiveTopology(states->topology.at(state->topology));
 }

@@ -7,6 +7,7 @@
 #include "RasterizationState.h"
 #include "BlendState.h"
 #include <InputLayout.h>
+#include <Topology.h>
 #include <States.h>
 
 struct PipelineState {
@@ -18,6 +19,7 @@ struct PipelineState {
 	RasterizationState rs;
 
 	Layout layout;
+	Topology topology;
 };
 
 void SetPipelineState(PipelineState* state);
