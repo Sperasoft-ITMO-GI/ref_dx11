@@ -96,6 +96,32 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 	assert(context);
 	assert(swap_chain);
 
+	D3D11_TEXTURE2D_DESC depth_stencil_view_desc;
+	ZeroMemory(&depth_stencil_view_desc, sizeof(D3D11_TEXTURE2D_DESC));
+	depth_stencil_view_desc.Width = window->GetWidth();
+	depth_stencil_view_desc.Height = window->GetHeight();
+	depth_stencil_view_desc.MipLevels = 1;
+	depth_stencil_view_desc.ArraySize = 1;
+	depth_stencil_view_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depth_stencil_view_desc.SampleDesc.Count = IsMsaaEnable() ? 4 : 1;
+	depth_stencil_view_desc.SampleDesc.Quality = IsMsaaEnable() ? (GetMSAAQuality() - 1) : 0;
+	depth_stencil_view_desc.Usage = D3D11_USAGE_DEFAULT;
+	depth_stencil_view_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depth_stencil_view_desc.CPUAccessFlags = 0;
+	depth_stencil_view_desc.MiscFlags = 0;
+
+	ID3D11Texture2D* buffer;
+
+	DXCHECK(device->CreateTexture2D(&depth_stencil_view_desc, 0, &buffer));
+	DXCHECK(device->CreateDepthStencilView(buffer, 0, &depth_stencil_view));
+
+	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
+	ZeroMemory(&depth_stencil_desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	depth_stencil_desc.DepthEnable = FALSE;
+	depth_stencil_desc.StencilEnable = FALSE;
+
+	DXCHECK(device->CreateDepthStencilState(&depth_stencil_desc, &depth_stencil_state));
+
 	// It is default render target view 
 	// Do we need it there???
 	ID3D11Texture2D* back_buffer;
@@ -103,7 +129,8 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 	DXCHECK(device->CreateRenderTargetView(back_buffer, 0, &render_target_view));
 	back_buffer->Release();
 
-	context->OMSetRenderTargets(1, render_target_view.GetAddressOf(), NULL);
+	context->OMSetRenderTargets(1, render_target_view.GetAddressOf(), depth_stencil_view.Get());
+	context->OMSetDepthStencilState(depth_stencil_state.Get(), 1);
 
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;

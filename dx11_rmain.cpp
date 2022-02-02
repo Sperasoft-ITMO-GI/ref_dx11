@@ -631,7 +631,7 @@ void R_SetupDX(void)
 	////
 	
 	screenaspect = (float)r_newrefdef.width / r_newrefdef.height;
-	renderer->SetPerspectiveMatrix(r_newrefdef.fov_y, screenaspect, 0.1f, 4096.0f);
+	renderer->SetPerspectiveMatrix(r_newrefdef.fov_y, screenaspect, 4.0f, 4096.0f);
 
 	//qglMatrixMode(GL_PROJECTION);
 	//qglLoadIdentity();
