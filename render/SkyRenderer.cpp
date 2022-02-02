@@ -1,7 +1,15 @@
 #include <SkyRenderer.h>
 
+static D3D_SHADER_MACRO defMac[] = {
+	"DEFAULT", "1", NULL, NULL
+};
+
+static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
+	{DEFAULT, defMac},
+};
+
 void SkyRenderer::Init() {
-	factory = new PipelineFactory(L"ref_dx11\\shaders\\Sky.hlsl", new SkyPSProvider(), std::vector<D3D_SHADER_MACRO>{});
+	factory = new PipelineFactory(L"ref_dx11\\shaders\\Sky.hlsl", new SkyPSProvider(), macro);
 }
 
 void SkyRenderer::Render() {
@@ -16,7 +24,7 @@ void SkyRenderer::Render() {
 	quads.clear();
 }
 
-void SkyRenderer::AddElement(const Quad& quad) {
+void SkyRenderer::AddElement(const SkyQuad& quad) {
 	quads.push_back(quad);
 }
 

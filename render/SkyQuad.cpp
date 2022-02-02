@@ -1,10 +1,8 @@
 #include <SkyQuad.h>
 
-VertexBuffer SkyQuad::vb;
-IndexBuffer  SkyQuad::ib;
-
-SkyQuad::SkyQuad(ConstantBuffer<ConstantBufferQuad>& cb, int flags, int index)
-	: cb(cb), flags(flags), texture_index(index) {
+SkyQuad::SkyQuad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer& ib,
+	             int flags, int index)
+	: cb(cb), vb(vb), ib(ib), flags(flags), texture_index(index) {
 }
 
 int SkyQuad::GetFlags() {

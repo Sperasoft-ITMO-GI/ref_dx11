@@ -1,11 +1,5 @@
 #include <UIRenderer.h>
 
-//static std::vector<D3D_SHADER_MACRO> sm{
-//	{"COLORED", "1"},
-//	{"TEXTURED", "2"},
-//	{"NULL", "NULL"}
-//};
-
 static D3D_SHADER_MACRO colMac[] = {
 	"COLORED", "1", NULL, NULL
 };

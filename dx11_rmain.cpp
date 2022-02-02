@@ -71,8 +71,9 @@ dx11config_t dx11_config;
 dx11state_t  dx11_state;
 
 Renderer* renderer = Renderer::GetInstance();
-UIRenderer* ui_renderer = new UIRenderer(); // Зачем указатель? Ответа на этот вопрос у меня нет...
+UIRenderer* ui_renderer =   new UIRenderer(); // Зачем указатель? Ответа на этот вопрос у меня нет...
 BSPRenderer* bsp_renderer = new BSPRenderer();
+SkyRenderer* sky_renderer = new SkyRenderer();
 
 States* States::states = nullptr;
 
@@ -1028,6 +1029,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	}
 	ui_renderer->Init();
 	bsp_renderer->Init();
+	sky_renderer->Init();
 
 	Quad::vb.Create(
 		std::vector<UIVertex>{
@@ -1142,6 +1144,7 @@ void R_BeginFrame(float camera_separation)
 	renderer->Clear();
 	ui_renderer->Render();
 	bsp_renderer->Render();
+	sky_renderer->Render();
 }
 
 /*

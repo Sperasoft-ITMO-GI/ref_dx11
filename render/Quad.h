@@ -15,9 +15,6 @@ public:
 	int GetFlags();
 
 	void Draw();
-private:
-	int flags;
-	int texture_index;
 
 public:
 	static VertexBuffer vb;
@@ -25,5 +22,9 @@ public:
 
 private:
 	ConstantBuffer<ConstantBufferQuad> cb;
+
+private:
+	int flags;
+	int texture_index;
 };
 

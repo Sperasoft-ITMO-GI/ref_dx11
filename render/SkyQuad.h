@@ -10,20 +10,20 @@
 
 class SkyQuad {
 public:
-	SkyQuad(ConstantBuffer<ConstantBufferQuad>& cb, int flags, int index);
+	SkyQuad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer& ib,
+		     int flags, int index);
 
 	int GetFlags();
 
 	void Draw();
-private:
-	int flags;
-	int texture_index;
-
-public:
-	static VertexBuffer vb;
-	static IndexBuffer  ib;
 
 private:
 	ConstantBuffer<ConstantBufferQuad> cb;
+	VertexBuffer vb;
+	IndexBuffer  ib;
+
+private:
+	int flags;
+	int texture_index;
 };
 

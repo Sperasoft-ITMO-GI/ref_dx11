@@ -490,7 +490,7 @@ void R_ClearSkyBox(void)
 }
 
 
-void MakeSkyVec(float s, float t, int axis)
+SkyVertex MakeSkyVec(float s, float t, int axis)
 {
 	vec3_t		v, b;
 	int			j, k;
@@ -498,15 +498,6 @@ void MakeSkyVec(float s, float t, int axis)
 	b[0] = s * 2300;
 	b[1] = t * 2300;
 	b[2] = 2300;
-
-	for (j = 0; j < 3; j++)
-	{
-		k = st_to_vec[axis][j];
-		if (k < 0)
-			v[j] = -b[-k - 1];
-		else
-			v[j] = b[k - 1];
-	}
 
 	// avoid bilerp seam
 	s = (s + 1) * 0.5;
@@ -522,6 +513,22 @@ void MakeSkyVec(float s, float t, int axis)
 		t = sky_max;
 
 	t = 1.0 - t;
+
+	using namespace DirectX;
+	SkyVertex vert;
+
+	for (j = 0; j < 3; j++)
+	{
+		k = st_to_vec[axis][j];
+		if (k < 0)
+			v[j] = -b[-k - 1];
+		else
+			v[j] = b[k - 1];
+	}
+	vert.position = XMFLOAT3(v);
+	vert.texture_coord = XMFLOAT2(s, t);
+
+	return vert;
 	//qglTexCoord2f(s, t);
 	//qglVertex3fv(v);
 }
@@ -567,10 +574,18 @@ void R_DrawSkyBox(void)
 		//GL_Bind(sky_images[skytexorder[i]]->texnum);
 
 		//qglBegin(GL_QUADS);
-		MakeSkyVec(skymins[0][i], skymins[1][i], i);
-		MakeSkyVec(skymins[0][i], skymaxs[1][i], i);
-		MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i);
-		MakeSkyVec(skymaxs[0][i], skymins[1][i], i);
+		IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
+		ConstantBufferQuad cbq;
+		cbq.position_transform = renderer->GetPerspective();
+		ConstantBuffer<ConstantBufferQuad> cb(cbq);
+		std::vector<SkyVertex> vect;
+		vect.push_back(MakeSkyVec(skymins[0][i], skymins[1][i], i));
+		vect.push_back(MakeSkyVec(skymins[0][i], skymaxs[1][i], i));
+		vect.push_back(MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i));
+		vect.push_back(MakeSkyVec(skymaxs[0][i], skymins[1][i], i));
+		VertexBuffer vb(vect);
+		SkyQuad sky_quad(cb, vb, ib, DEFAULT, sky_images[skytexorder[i]]->texnum);
+		sky_renderer->AddElement(sky_quad);
 		//qglEnd();
 	}
 	//qglPopMatrix();

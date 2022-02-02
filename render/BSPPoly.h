@@ -16,13 +16,16 @@ public:
 	int GetFlags();
 
 	void Draw();
-private:
-	int flags;
-	int texture_index;
-	int lightmap_index;
 
 private:
 	VertexBuffer vb;
 	IndexBuffer ib;
 	ConstantBuffer<ConstantBufferPolygon> cb;
+
+private:
+	int flags;
+	int texture_index;
+	int lightmap_index;
+
+
 };

@@ -41,9 +41,10 @@ extern	int		c_visible_textures;
 extern	float	r_world_matrix[16];
 
 //extern InitDX11 dx11App;
-extern Renderer* renderer;
-extern UIRenderer* ui_renderer;
+extern Renderer*    renderer;
+extern UIRenderer*  ui_renderer;
 extern BSPRenderer* bsp_renderer;
+extern SkyRenderer* sky_renderer;
 
 /*
 
