@@ -2,8 +2,11 @@
 
 #include <string>
 
-#include "WndDxIncludes.h"
-#include "Shader.h"
+#include <WndDxIncludes.h>
+#include <Shader.h>
+#include <Topology.h>
+#include <VertexShader.h>
+#include <PixelShader.h>
 
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
 

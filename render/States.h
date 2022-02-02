@@ -3,7 +3,6 @@
 #include <unordered_map>
 
 #include <WndDxIncludes.h>
-#include <DepthStencilState.h>
 #include <BlendState.h>
 #include <RasterizationState.h>
 #include <InputLayout.h>
@@ -22,9 +21,6 @@ public:
 		return states;
 	}
 
-	const std::unordered_map<DepthStencilState, Microsoft::WRL::ComPtr<ID3D11DepthStencilView>> dssStates{
-		{DEFAULT, MakeDefaultDSS()}
-	};
 	const std::unordered_map<RasterizationState, Microsoft::WRL::ComPtr<ID3D11RasterizerState>> rasterization_states{
 		{CULL_NONE,  MakeCullNoneRS()},
 		{CULL_BACK,  MakeCullBackRS()},
@@ -34,13 +30,20 @@ public:
 		{ALPHA,   MakeAlphaBS()},
 		{NOALPHA, MakeNoAlphaBS()}
 	};
-	const std::unordered_map<Layout, std::vector<D3D11_INPUT_ELEMENT_DESC>> input_layouts{
+	const std::unordered_map<Layout, std::vector<D3D11_INPUT_ELEMENT_DESC>> input_layouts{		
 		{
-			QUAD, 
+			UI_QUAD, 
 			{
 				{"Position", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 				{"Color",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 				{"TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+			}
+		},
+		{
+			SKY_QUAD,
+			{
+				{"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+				{"TexCoord", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 			}
 		},
 		{

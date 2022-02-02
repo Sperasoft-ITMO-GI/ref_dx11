@@ -56,10 +56,9 @@ void UIRenderer::UIPSProvider::PatchPipelineState(PipelineState* state, int defi
 		there are will be "if" statements to chose it
 	*/
 
-	state->dss = DepthStencilState::DEFAULT;
 	state->bs = BlendState::ALPHA;
 	state->rs = RasterizationState::CULL_NONE;
-	state->layout = Layout::QUAD;
+	state->layout = Layout::UI_QUAD;
 	state->topology = Topology::TRIANGLE_LISTS;
 }
 

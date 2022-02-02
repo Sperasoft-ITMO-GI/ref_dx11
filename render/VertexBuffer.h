@@ -8,6 +8,8 @@
 #include <Renderer.h>
 #include <Shader.h>
 #include <UIVertex.h>
+#include <BSPVertex.h>
+#include <SkyVertex.h>
 
 class VertexBuffer : public Bindable {
 public:

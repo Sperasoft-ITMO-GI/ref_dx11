@@ -6,7 +6,8 @@
 #include <Renderer.h>
 
 enum Layout {
-	QUAD,
+	UI_QUAD,
+	SKY_QUAD,
 	POLYGON
 };
 

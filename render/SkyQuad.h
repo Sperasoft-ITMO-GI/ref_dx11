@@ -8,9 +8,9 @@
 #include <IndexBuffer.h>
 #include <ConstantBuffer.h>
 
-class Quad {
+class SkyQuad {
 public:
-	Quad(ConstantBuffer<ConstantBufferQuad>& cb, int flags, int index);
+	SkyQuad(ConstantBuffer<ConstantBufferQuad>& cb, int flags, int index);
 
 	int GetFlags();
 

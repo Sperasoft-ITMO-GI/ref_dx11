@@ -125,3 +125,7 @@ DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync) 
 
 	return refreshRate;
 };
+
+
+
+
