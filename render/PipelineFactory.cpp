@@ -16,8 +16,8 @@ PipelineState* PipelineFactory::GetState(int defs) {
 	else {
 		ps = new PipelineState();
 
-		ps->vs->Create(CompileShader(shader_path.c_str(), NULL, "VSMain", "vs_5_0"));
-		ps->ps->Create(CompileShader(shader_path.c_str(), NULL, "PSMain", "ps_5_0"));
+		ps->vs->Create(CompileShader(shader_path.c_str(), definesMap.at(defs), "VSMain", "vs_5_0"));
+		ps->ps->Create(CompileShader(shader_path.c_str(), definesMap.at(defs), "PSMain", "ps_5_0"));
 		
 		provider->PatchPipelineState(ps, defs);
 

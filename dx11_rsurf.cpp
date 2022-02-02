@@ -95,6 +95,8 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 	BSPVertex vert = {};
 	std::vector<BSPVertex> vect;
 
+	//printf("\n");
+
 	v = p->verts[0];
 	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
 	{
@@ -108,6 +110,8 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 		vert.texture_coord.y = v[4];
 
 		vect.push_back(vert);
+
+		//printf("%.3f   %.3f   %.3f\n", v[0], v[1], v[2]);
 	}
 
 	VertexBuffer vbp(vect);
@@ -127,8 +131,8 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 	IndexBuffer ib(indexes);
 
 	ConstantBufferPolygon cbp;
-	//cbp.position_transform = renderer->GetModelView();
-	cbp.position_transform = DirectX::XMMatrixTranspose(renderer->GetPerspective());
+	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	//cbp.position_transform = renderer->GetPerspective() * renderer->GetModelView();
 
 	ConstantBuffer<ConstantBufferPolygon> CB(cbp);
 
