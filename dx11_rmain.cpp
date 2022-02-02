@@ -70,7 +70,6 @@ cvar_t* vid_ref;
 dx11config_t dx11_config;
 dx11state_t  dx11_state;
 
-//InitDX11 dx11App = {};
 Renderer* renderer = Renderer::GetInstance();
 UIRenderer* ui_renderer = new UIRenderer(); // Зачем указатель? Ответа на этот вопрос у меня нет...
 BSPRenderer* bsp_renderer = new BSPRenderer();
