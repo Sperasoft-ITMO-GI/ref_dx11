@@ -23,6 +23,7 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
+	IN.pos = normalize(IN.pos);
     OUT.pos = mul(float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f), position_transform);
     OUT.texCoord = IN.texCoord;
 	OUT.lightmapCoord = IN.lightmapCoord;

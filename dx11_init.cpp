@@ -525,7 +525,7 @@ void InitDX11::ClearScene()
 {
 	assert(d3dImmediateContext);
 
-	d3dImmediateContext->ClearRenderTargetView(renderTargetView, DirectX::Colors::DodgerBlue);
+	d3dImmediateContext->ClearRenderTargetView(renderTargetView, DirectX::Colors::Black);
 	d3dImmediateContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 

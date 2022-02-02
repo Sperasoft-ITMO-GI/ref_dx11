@@ -40,7 +40,7 @@ public:
 	DirectX::XMMATRIX GetModelView();
 
 	void Clear() {
-		context->ClearRenderTargetView(render_target_view.Get(), DirectX::Colors::DodgerBlue);
+		context->ClearRenderTargetView(render_target_view.Get(), DirectX::Colors::Black);
 	}
 
 	void Swap() {

@@ -95,8 +95,6 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 	BSPVertex vert = {};
 	std::vector<BSPVertex> vect;
 
-	//printf("\n");
-
 	v = p->verts[0];
 	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
 	{
@@ -108,26 +106,57 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 		vert.position.z = v[2];
 		vert.texture_coord.x = v[3];
 		vert.texture_coord.y = v[4];
+		vert.lightmap_texture_coord.x = v[5];
+		vert.lightmap_texture_coord.x = v[6];
 
 		vect.push_back(vert);
+	}
 
-		//printf("%.3f   %.3f   %.3f\n", v[0], v[1], v[2]);
+	std::vector<uint16_t> indexes;
+
+	switch (p->numverts)
+	{
+		case 4:
+		{
+			indexes.push_back(0);
+			indexes.push_back(3);
+			indexes.push_back(2);
+			indexes.push_back(2);
+			indexes.push_back(1);
+			indexes.push_back(0);
+		} break;
+
+		case 5:
+		{
+			indexes.push_back(0);
+			indexes.push_back(4);
+			indexes.push_back(3);
+			indexes.push_back(0);
+			indexes.push_back(3);
+			indexes.push_back(2);
+			indexes.push_back(0);
+			indexes.push_back(2);
+			indexes.push_back(1);
+		} break;
+
+		default:
+		{
+			for (int i = 0; i < p->numverts - 2; ++i) {
+				if (i % 2 == 0) {
+					indexes.push_back(i);
+					indexes.push_back(i + 1);
+					indexes.push_back(i + 2);
+				}
+				else {
+					indexes.push_back(i);
+					indexes.push_back(i + 2);
+					indexes.push_back(i + 1);
+				}
+			}
+		} break;
 	}
 
 	VertexBuffer vbp(vect);
-
-	std::vector<uint16_t> indexes;
-	for (int i = 0; i < p->numverts - 2; ++i) {
-		if (i % 2 == 0) {
-			indexes.push_back(i);
-			indexes.push_back(i + 1);
-			indexes.push_back(i + 2);
-		} else {
-			indexes.push_back(i);
-			indexes.push_back(i + 2);
-			indexes.push_back(i + 1);
-		}
-	}
 	IndexBuffer ib(indexes);
 
 	ConstantBufferPolygon cbp;
