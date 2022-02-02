@@ -35,7 +35,6 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 
 	if (defines & BSP_SOLID)
 	{
-		state->dss = DepthStencilState::DEFAULT;
 		state->bs = BlendState::NOALPHA;
 		state->rs = RasterizationState::CULL_NONE;
 		state->layout = Layout::POLYGON;

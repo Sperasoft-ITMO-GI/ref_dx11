@@ -29,6 +29,12 @@
     <Filter Include="Render\BSPRenderer">
       <UniqueIdentifier>{99ac3113-0604-4795-bfc1-3f677f111c9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render\Utilites">
+      <UniqueIdentifier>{292974b1-70a4-41d6-9172-3c058d712e58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\SkyRenderer">
+      <UniqueIdentifier>{cc301a4c-90ba-4641-bafe-bb90d86d1a22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ref_dx11.def">
@@ -78,9 +84,6 @@
     <ClInclude Include="render\IndexBuffer.h">
       <Filter>Render\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="render\DepthStencilState.h">
-      <Filter>Render\States</Filter>
-    </ClInclude>
     <ClInclude Include="render\ConstantBuffer.h">
       <Filter>Render\Bindable</Filter>
     </ClInclude>
@@ -90,9 +93,6 @@
     <ClInclude Include="render\States.h">
       <Filter>Render\States</Filter>
     </ClInclude>
-    <ClInclude Include="render\Quad.h">
-      <Filter>Render\UIRenderer</Filter>
-    </ClInclude>
     <ClInclude Include="render\Renderer.h">
       <Filter>Render</Filter>
     </ClInclude>
@@ -101,9 +101,6 @@
     </ClInclude>
     <ClInclude Include="render\UIVertex.h">
       <Filter>Render\UIRenderer</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Utils.h">
-      <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="render\Textute.h">
       <Filter>Render</Filter>
@@ -126,9 +123,6 @@
     <ClInclude Include="..\client\ref.h">
       <Filter>Interface</Filter>
     </ClInclude>
-    <ClInclude Include="render\BSPPoly.h">
-      <Filter>Render\BSPRenderer</Filter>
-    </ClInclude>
     <ClInclude Include="render\BSPRenderer.h">
       <Filter>Render\BSPRenderer</Filter>
     </ClInclude>
@@ -147,6 +141,24 @@
     <ClInclude Include="render\BSPVertex.h">
       <Filter>Render\BSPRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="render\Utils.h">
+      <Filter>Render\Utilites</Filter>
+    </ClInclude>
+    <ClInclude Include="render\SkyRenderer.h">
+      <Filter>Render\SkyRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\SkyVertex.h">
+      <Filter>Render\SkyRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Quad.h">
+      <Filter>Render\UIRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\BSPPoly.h">
+      <Filter>Render\BSPRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\SkyQuad.h">
+      <Filter>Render\SkyRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">
@@ -154,9 +166,6 @@
     </ClCompile>
     <ClCompile Include="render\ConstantBuffer.cpp">
       <Filter>Render\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="render\DepthStencilState.cpp">
-      <Filter>Render\States</Filter>
     </ClCompile>
     <ClCompile Include="render\IndexBuffer.cpp">
       <Filter>Render\Bindable</Filter>
@@ -173,9 +182,6 @@
     <ClCompile Include="render\PixelShader.cpp">
       <Filter>Render\Bindable</Filter>
     </ClCompile>
-    <ClCompile Include="render\Quad.cpp">
-      <Filter>Render\UIRenderer</Filter>
-    </ClCompile>
     <ClCompile Include="render\RasterizationState.cpp">
       <Filter>Render\States</Filter>
     </ClCompile>
@@ -187,9 +193,6 @@
     </ClCompile>
     <ClCompile Include="render\UIRenderer.cpp">
       <Filter>Render\UIRenderer</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Utils.cpp">
-      <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="render\VertexBuffer.cpp">
       <Filter>Render\Bindable</Filter>
@@ -221,9 +224,6 @@
     <ClCompile Include="..\win32\q_shwin.c">
       <Filter>Interface</Filter>
     </ClCompile>
-    <ClCompile Include="render\BSPPoly.cpp">
-      <Filter>Render\BSPRenderer</Filter>
-    </ClCompile>
     <ClCompile Include="render\BSPRenderer.cpp">
       <Filter>Render\BSPRenderer</Filter>
     </ClCompile>
@@ -245,12 +245,30 @@
     <ClCompile Include="dx11_rmisc.cpp">
       <Filter>Interface</Filter>
     </ClCompile>
+    <ClCompile Include="render\Utils.cpp">
+      <Filter>Render\Utilites</Filter>
+    </ClCompile>
+    <ClCompile Include="render\SkyRenderer.cpp">
+      <Filter>Render\SkyRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Quad.cpp">
+      <Filter>Render\UIRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\BSPPoly.cpp">
+      <Filter>Render\BSPRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\SkyQuad.cpp">
+      <Filter>Render\SkyRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\UITexture.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="shaders\BSP.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\Sky.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

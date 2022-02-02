@@ -7,7 +7,6 @@
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <ConstantBuffer.h>
-#include <BSPVertex.h>
 
 class BSPPoly {
 public:

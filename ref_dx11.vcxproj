@@ -170,7 +170,6 @@
     <ClInclude Include="render\BlendState.h" />
     <ClInclude Include="render\BSPVertex.h" />
     <ClInclude Include="render\ConstantBuffer.h" />
-    <ClInclude Include="render\DepthStencilState.h" />
     <ClInclude Include="render\IndexBuffer.h" />
     <ClInclude Include="render\InputLayout.h" />
     <ClInclude Include="render\IStateProvider.h" />
@@ -184,6 +183,9 @@
     <ClInclude Include="render\Renderer.h" />
     <ClInclude Include="render\RendererIncludes.h" />
     <ClInclude Include="render\Shader.h" />
+    <ClInclude Include="render\SkyQuad.h" />
+    <ClInclude Include="render\SkyRenderer.h" />
+    <ClInclude Include="render\SkyVertex.h" />
     <ClInclude Include="render\States.h" />
     <ClInclude Include="render\Textute.h" />
     <ClInclude Include="render\Topology.h" />
@@ -211,7 +213,6 @@
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="render\BlendState.cpp" />
     <ClCompile Include="render\ConstantBuffer.cpp" />
-    <ClCompile Include="render\DepthStencilState.cpp" />
     <ClCompile Include="render\IndexBuffer.cpp" />
     <ClCompile Include="render\InputLayout.cpp" />
     <ClCompile Include="render\BSPRenderer.cpp" />
@@ -222,6 +223,8 @@
     <ClCompile Include="render\Quad.cpp" />
     <ClCompile Include="render\RasterizationState.cpp" />
     <ClCompile Include="render\Renderer.cpp" />
+    <ClCompile Include="render\SkyQuad.cpp" />
+    <ClCompile Include="render\SkyRenderer.cpp" />
     <ClCompile Include="render\Texture.cpp" />
     <ClCompile Include="render\UIRenderer.cpp" />
     <ClCompile Include="render\Utils.cpp" />
@@ -233,6 +236,9 @@
     <FxCompile Include="shaders\BSP.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="shaders\Sky.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="shaders\UITexture.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

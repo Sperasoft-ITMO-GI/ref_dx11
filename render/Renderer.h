@@ -70,7 +70,10 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> swap_chain;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depth_stencil_view;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depth_stencil_state;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view;
+
 	D3D11_VIEWPORT viewport;
 
 	D3D_DRIVER_TYPE driver_type;
