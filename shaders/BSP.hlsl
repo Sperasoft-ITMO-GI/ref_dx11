@@ -23,8 +23,10 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
+	IN.texCoord = normalize(IN.texCoord);
 	IN.pos = normalize(IN.pos);
     OUT.pos = mul(float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f), position_transform);
+	//OUT.pos = float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f);
     OUT.texCoord = IN.texCoord;
 	OUT.lightmapCoord = IN.lightmapCoord;
     return OUT;
@@ -32,7 +34,7 @@ VSOut VSMain(VSIn IN)
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    float4 result = float4(0.5f, 0.0f, 0.5f, 1.0f);
+    float4 result = float4(0.5f, 0.0f, 0.5f, 0.0f);
 
 #ifdef SOLID
 	result = Text_0.Sample(Sampler, IN.texCoord);

@@ -141,18 +141,7 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 
 		default:
 		{
-			for (int i = 0; i < p->numverts - 2; ++i) {
-				if (i % 2 == 0) {
-					indexes.push_back(i);
-					indexes.push_back(i + 1);
-					indexes.push_back(i + 2);
-				}
-				else {
-					indexes.push_back(i);
-					indexes.push_back(i + 2);
-					indexes.push_back(i + 1);
-				}
-			}
+			return;
 		} break;
 	}
 
