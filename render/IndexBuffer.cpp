@@ -8,7 +8,7 @@ IndexBuffer::IndexBuffer(std::vector<uint16_t> indexes) : count(indexes.size()) 
 
 	index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-	index_buffer_desc.ByteWidth = sizeof(indexes);
+	index_buffer_desc.ByteWidth = sizeof(indexes) * count;
 
 	D3D11_SUBRESOURCE_DATA index_subresource_data{};
 	ZeroMemory(&index_subresource_data, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -28,7 +28,7 @@ void IndexBuffer::Create(std::vector<uint16_t> indexes) {
 
 		index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-		index_buffer_desc.ByteWidth = sizeof(indexes);
+		index_buffer_desc.ByteWidth = sizeof(indexes) * count;
 
 		D3D11_SUBRESOURCE_DATA index_subresource_data{};
 		ZeroMemory(&index_subresource_data, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -45,7 +45,7 @@ void IndexBuffer::Bind() {
 	renderer->GetContext()->IASetIndexBuffer(buffer.Get(), DXGI_FORMAT_R16_UINT, offset);
 }
 
-uint16_t IndexBuffer::GetCount()
+int IndexBuffer::GetCount()
 {
 	return count;
 }
