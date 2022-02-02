@@ -631,8 +631,8 @@ void R_SetupDX(void)
 	////
 	
 	screenaspect = (float)r_newrefdef.width / r_newrefdef.height;
-	renderer->SetPerspectiveMatrix(r_newrefdef.fov_y, screenaspect, 4.0f, 4096.0f);
-	//yfov = 2*atan((float)r_newrefdef.height/r_newrefdef.width)*180/M_PI;
+	renderer->SetPerspectiveMatrix(r_newrefdef.fov_y, screenaspect, 0.1f, 4096.0f);
+
 	//qglMatrixMode(GL_PROJECTION);
 	//qglLoadIdentity();
 	//MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
@@ -644,14 +644,42 @@ void R_SetupDX(void)
 	//qglMatrixMode(GL_MODELVIEW);
 	//qglLoadIdentity();
 
+	// id's system:
+	//	- X axis = Left/Right
+	//	- Y axis = Forward/Backward
+	//	- Z axis = Up/Down
+	//
+	// DirectX coordinate system:
+	//	- X axis = Left/Right
+	//	- Y axis = Up/Down
+	//	- Z axis = Forward/Backward
+
+	// vieworg - postition
+	// viewangles - point view
+
 	using namespace DirectX;
+
 	XMMATRIX model_view = XMMatrixIdentity();
-	model_view *= XMMatrixRotationX(-XM_PI / 2);
-	model_view *= XMMatrixRotationZ(XM_PI / 2);
-	model_view *= XMMatrixRotationX(-r_newrefdef.viewangles[2] * XM_PI / 180);
-	model_view *= XMMatrixRotationY(-r_newrefdef.viewangles[0] * XM_PI / 180);
-	model_view *= XMMatrixRotationZ(-r_newrefdef.viewangles[1] * XM_PI / 180);
+	/*model_view *= XMMatrixRotationX(XMConvertToRadians(-90.0f));
+	model_view *= XMMatrixRotationZ(XMConvertToRadians(90.0f));
+
+	model_view *= XMMatrixRotationX(XMConvertToRadians(-r_newrefdef.viewangles[2]));
+	model_view *= XMMatrixRotationY(XMConvertToRadians(-r_newrefdef.viewangles[0]));
+	model_view *= XMMatrixRotationZ(XMConvertToRadians(-r_newrefdef.viewangles[1]));
+
+	model_view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);*/
+
+
 	model_view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
+
+	model_view *= XMMatrixRotationZ(XMConvertToRadians(-r_newrefdef.viewangles[1]));
+	model_view *= XMMatrixRotationY(XMConvertToRadians(-r_newrefdef.viewangles[0]));
+	model_view *= XMMatrixRotationX(XMConvertToRadians(-r_newrefdef.viewangles[2]));
+
+	model_view *= XMMatrixRotationZ(XMConvertToRadians(90.0f));
+	model_view *= XMMatrixRotationX(XMConvertToRadians(-90.0f));
+
+	//model_view = XMMatrixTranspose(model_view);
 
 	renderer->SetModelViewMatrix(model_view);
 

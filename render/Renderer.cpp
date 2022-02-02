@@ -145,7 +145,8 @@ void Renderer::SetWindowMode(const uint32_t w, const uint32_t h, const bool full
 }
 
 void Renderer::SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far) {
-	perspective = DirectX::XMMatrixPerspectiveFovLH(fov, aspect_ratio, z_near, z_far);
+	using namespace DirectX;
+	perspective = DirectX::XMMatrixPerspectiveFovRH(XMConvertToRadians(fov), aspect_ratio, z_near, z_far);
 }
 
 void Renderer::SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx) {
@@ -216,7 +217,7 @@ void Renderer::DeleteTextureFromSRV(int texNum)
 
 void Renderer::Test(char* name, int width, int height, int bits, unsigned char* data, int type) 
 {
-	char* newName = (char*)malloc(256);
+	/*char* newName = (char*)malloc(256);
 	memset(newName, 0, 256);
 	strcpy(newName, "pics/");
 
@@ -250,7 +251,7 @@ void Renderer::Test(char* name, int width, int height, int bits, unsigned char* 
 	strcat(newName, ".png\0");
 
 	stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
-	free(newName);
+	free(newName);*/
 }
 
 void Renderer::Bind(int texture_index) {
@@ -282,7 +283,6 @@ void Renderer::InitMatrix(int width, int height)
 {
 	const float PI_32 = 3.14159265358979323846f;
 	orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1000.0f);
-	//perspective = DirectX::XMMatrixPerspectiveFovLH(0.25f * PI_32, ((float)width / (float)height), 1.0f, 1000.0f);
 }
 
 DirectX::XMMATRIX Renderer::GetOrthogonal()
