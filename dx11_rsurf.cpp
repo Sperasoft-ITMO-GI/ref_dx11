@@ -50,7 +50,7 @@ extern void R_SetCacheState(msurface_t* surf);
 extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 
 
-
+// Это ужасный костыль, его необходимо будет удалить
 void DummyTriangulation(std::vector<uint16_t>* ind, int num)
 {
 	switch (num)
@@ -67,6 +67,7 @@ void DummyTriangulation(std::vector<uint16_t>* ind, int num)
 		ind->push_back(0);
 		ind->push_back(3);
 		ind->push_back(2);
+
 		ind->push_back(2);
 		ind->push_back(1);
 		ind->push_back(0);
@@ -77,9 +78,11 @@ void DummyTriangulation(std::vector<uint16_t>* ind, int num)
 		ind->push_back(0);
 		ind->push_back(4);
 		ind->push_back(3);
+
 		ind->push_back(0);
 		ind->push_back(3);
 		ind->push_back(2);
+
 		ind->push_back(0);
 		ind->push_back(2);
 		ind->push_back(1);
@@ -90,12 +93,15 @@ void DummyTriangulation(std::vector<uint16_t>* ind, int num)
 		ind->push_back(0);
 		ind->push_back(2);
 		ind->push_back(1);
+
 		ind->push_back(0);
 		ind->push_back(3);
 		ind->push_back(2);
+
 		ind->push_back(0);
 		ind->push_back(4);
 		ind->push_back(3);
+
 		ind->push_back(0);
 		ind->push_back(5);
 		ind->push_back(4);
@@ -106,15 +112,19 @@ void DummyTriangulation(std::vector<uint16_t>* ind, int num)
 		ind->push_back(0);
 		ind->push_back(2);
 		ind->push_back(1);
+
 		ind->push_back(0);
 		ind->push_back(3);
 		ind->push_back(2);
+
 		ind->push_back(0);
 		ind->push_back(4);
 		ind->push_back(3);
+
 		ind->push_back(0);
 		ind->push_back(5);
 		ind->push_back(4);
+
 		ind->push_back(0);
 		ind->push_back(6);
 		ind->push_back(5);
@@ -123,54 +133,59 @@ void DummyTriangulation(std::vector<uint16_t>* ind, int num)
 	case 8:
 	{
 		ind->push_back(2);
-		ind->push_back(0);
 		ind->push_back(1);
-		ind->push_back(2);
-		ind->push_back(7);
 		ind->push_back(0);
+
 		ind->push_back(2);
-		ind->push_back(6);
+		ind->push_back(0);
 		ind->push_back(7);
+
 		ind->push_back(2);
-		ind->push_back(5);
+		ind->push_back(7);
 		ind->push_back(6);
+
 		ind->push_back(2);
-		ind->push_back(4);
+		ind->push_back(6);
 		ind->push_back(5);
+
 		ind->push_back(2);
-		ind->push_back(3);
+		ind->push_back(5);
 		ind->push_back(4);
+
+		ind->push_back(2);
+		ind->push_back(4);
+		ind->push_back(3);
 	} break;
 
 	case 9:
 	{
-		ind->push_back(2);
 		ind->push_back(0);
+		ind->push_back(2);
 		ind->push_back(1);
 
 		ind->push_back(2);
-		ind->push_back(8);
 		ind->push_back(0);
-
-		ind->push_back(2);
-		ind->push_back(7);
 		ind->push_back(8);
 
 		ind->push_back(2);
-		ind->push_back(6);
+		ind->push_back(8);
 		ind->push_back(7);
 
 		ind->push_back(2);
-		ind->push_back(5);
+		ind->push_back(7);
 		ind->push_back(6);
 
 		ind->push_back(2);
-		ind->push_back(4);
+		ind->push_back(6);
 		ind->push_back(5);
 
 		ind->push_back(2);
-		ind->push_back(3);
+		ind->push_back(5);
 		ind->push_back(4);
+
+		ind->push_back(2);
+		ind->push_back(4);
+		ind->push_back(3);
 	} break;
 
 	case 10:
@@ -211,40 +226,40 @@ void DummyTriangulation(std::vector<uint16_t>* ind, int num)
 	case 11:
 	{
 		ind->push_back(0);
+		ind->push_back(2);
 		ind->push_back(1);
-		ind->push_back(2);
-
-		ind->push_back(0);
-		ind->push_back(2);
-		ind->push_back(3);
 
 		ind->push_back(0);
 		ind->push_back(3);
-		ind->push_back(4);
+		ind->push_back(2);
 
 		ind->push_back(0);
 		ind->push_back(4);
-		ind->push_back(5);
+		ind->push_back(3);
 
 		ind->push_back(0);
 		ind->push_back(5);
-		ind->push_back(6);
+		ind->push_back(4);
 
 		ind->push_back(0);
 		ind->push_back(6);
-		ind->push_back(7);
+		ind->push_back(5);
 
 		ind->push_back(0);
 		ind->push_back(7);
-		ind->push_back(8);
+		ind->push_back(6);
 
 		ind->push_back(0);
 		ind->push_back(8);
-		ind->push_back(9);
+		ind->push_back(7);
 
 		ind->push_back(0);
 		ind->push_back(9);
+		ind->push_back(8);
+
+		ind->push_back(0);
 		ind->push_back(10);
+		ind->push_back(9);
 	} break;
 
 	case 12:
@@ -338,6 +353,57 @@ void DummyTriangulation(std::vector<uint16_t>* ind, int num)
 
 	} break;
 
+	case 14:
+	{
+		ind->push_back(1);
+		ind->push_back(13);
+		ind->push_back(0);
+
+		ind->push_back(1);
+		ind->push_back(12);
+		ind->push_back(13);
+
+		ind->push_back(1);
+		ind->push_back(11);
+		ind->push_back(12);
+
+		ind->push_back(1);
+		ind->push_back(10);
+		ind->push_back(11);
+
+		ind->push_back(1);
+		ind->push_back(9);
+		ind->push_back(10);
+
+		ind->push_back(1);
+		ind->push_back(8);
+		ind->push_back(9);
+
+		ind->push_back(1);
+		ind->push_back(7);
+		ind->push_back(8);
+
+		ind->push_back(1);
+		ind->push_back(6);
+		ind->push_back(7);
+
+		ind->push_back(1);
+		ind->push_back(5);
+		ind->push_back(6);
+
+		ind->push_back(5);
+		ind->push_back(1);
+		ind->push_back(2);
+
+		ind->push_back(5);
+		ind->push_back(2);
+		ind->push_back(3);
+
+		ind->push_back(5);
+		ind->push_back(3);
+		ind->push_back(4);
+	} break;
+
 	case 15:
 	{
 		ind->push_back(0);
@@ -394,10 +460,69 @@ void DummyTriangulation(std::vector<uint16_t>* ind, int num)
 
 	} break;
 
+	case 17:
+	{
+		ind->push_back(0);
+		ind->push_back(1);
+		ind->push_back(2);
+
+		ind->push_back(0);
+		ind->push_back(2);
+		ind->push_back(3);
+
+		ind->push_back(0);
+		ind->push_back(3);
+		ind->push_back(4);
+
+		ind->push_back(0);
+		ind->push_back(4);
+		ind->push_back(5);
+
+		ind->push_back(0);
+		ind->push_back(5);
+		ind->push_back(6);
+
+		ind->push_back(6);
+		ind->push_back(7);
+		ind->push_back(8);
+
+		ind->push_back(6);
+		ind->push_back(8);
+		ind->push_back(9);
+
+		ind->push_back(6);
+		ind->push_back(9);
+		ind->push_back(10);
+
+		ind->push_back(6);
+		ind->push_back(10);
+		ind->push_back(11);
+
+		ind->push_back(6);
+		ind->push_back(11);
+		ind->push_back(12);
+
+		ind->push_back(6);
+		ind->push_back(12);
+		ind->push_back(13);
+
+		ind->push_back(6);
+		ind->push_back(13);
+		ind->push_back(14);
+
+		ind->push_back(6);
+		ind->push_back(14);
+		ind->push_back(15);
+
+		ind->push_back(6);
+		ind->push_back(15);
+		ind->push_back(0);
+	} break;
+
 	default:
 	{
-		ind->push_back(2);
 		ind->push_back(0);
+		ind->push_back(2);
 		ind->push_back(1);
 		printf("unsetting indexes: %i\n", num);
 		//return;

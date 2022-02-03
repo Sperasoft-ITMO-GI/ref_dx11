@@ -8,7 +8,7 @@
 enum RasterizationState {
 	CULL_NONE,
 	CULL_BACK,
-	CULL_FRONT,
+	CULL_FRONT
 };
 
 Microsoft::WRL::ComPtr<ID3D11RasterizerState> MakeCullNoneRS();
