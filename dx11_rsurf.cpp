@@ -51,354 +51,354 @@ extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 
 
 
-void DummyTriangulation(std::vector<uint16_t>* ind, int num)
+void DummyTriangulation(std::vector<uint16_t>& ind, int num)
 {
 	switch (num)
 	{
 	case 3:
 	{
-		ind->push_back(0);
-		ind->push_back(2);
-		ind->push_back(1);
+		ind.push_back(0);
+		ind.push_back(2);
+		ind.push_back(1);
 	} break;
 
 	case 4:
 	{
-		ind->push_back(0);
-		ind->push_back(3);
-		ind->push_back(2);
-		ind->push_back(2);
-		ind->push_back(1);
-		ind->push_back(0);
+		ind.push_back(0);
+		ind.push_back(3);
+		ind.push_back(2);
+		ind.push_back(2);
+		ind.push_back(1);
+		ind.push_back(0);
 	} break;
 
 	case 5:
 	{
-		ind->push_back(0);
-		ind->push_back(4);
-		ind->push_back(3);
-		ind->push_back(0);
-		ind->push_back(3);
-		ind->push_back(2);
-		ind->push_back(0);
-		ind->push_back(2);
-		ind->push_back(1);
+		ind.push_back(0);
+		ind.push_back(4);
+		ind.push_back(3);
+		ind.push_back(0);
+		ind.push_back(3);
+		ind.push_back(2);
+		ind.push_back(0);
+		ind.push_back(2);
+		ind.push_back(1);
 	} break;
 
 	case 6:
 	{
-		ind->push_back(0);
-		ind->push_back(2);
-		ind->push_back(1);
-		ind->push_back(0);
-		ind->push_back(3);
-		ind->push_back(2);
-		ind->push_back(0);
-		ind->push_back(4);
-		ind->push_back(3);
-		ind->push_back(0);
-		ind->push_back(5);
-		ind->push_back(4);
+		ind.push_back(0);
+		ind.push_back(2);
+		ind.push_back(1);
+		ind.push_back(0);
+		ind.push_back(3);
+		ind.push_back(2);
+		ind.push_back(0);
+		ind.push_back(4);
+		ind.push_back(3);
+		ind.push_back(0);
+		ind.push_back(5);
+		ind.push_back(4);
 	} break;
 
 	case 7:
 	{
-		ind->push_back(0);
-		ind->push_back(2);
-		ind->push_back(1);
-		ind->push_back(0);
-		ind->push_back(3);
-		ind->push_back(2);
-		ind->push_back(0);
-		ind->push_back(4);
-		ind->push_back(3);
-		ind->push_back(0);
-		ind->push_back(5);
-		ind->push_back(4);
-		ind->push_back(0);
-		ind->push_back(6);
-		ind->push_back(5);
+		ind.push_back(0);
+		ind.push_back(2);
+		ind.push_back(1);
+		ind.push_back(0);
+		ind.push_back(3);
+		ind.push_back(2);
+		ind.push_back(0);
+		ind.push_back(4);
+		ind.push_back(3);
+		ind.push_back(0);
+		ind.push_back(5);
+		ind.push_back(4);
+		ind.push_back(0);
+		ind.push_back(6);
+		ind.push_back(5);
 	} break;
 
 	case 8:
 	{
-		ind->push_back(2);
-		ind->push_back(0);
-		ind->push_back(1);
-		ind->push_back(2);
-		ind->push_back(7);
-		ind->push_back(0);
-		ind->push_back(2);
-		ind->push_back(6);
-		ind->push_back(7);
-		ind->push_back(2);
-		ind->push_back(5);
-		ind->push_back(6);
-		ind->push_back(2);
-		ind->push_back(4);
-		ind->push_back(5);
-		ind->push_back(2);
-		ind->push_back(3);
-		ind->push_back(4);
+		ind.push_back(2);
+		ind.push_back(0);
+		ind.push_back(1);
+		ind.push_back(2);
+		ind.push_back(7);
+		ind.push_back(0);
+		ind.push_back(2);
+		ind.push_back(6);
+		ind.push_back(7);
+		ind.push_back(2);
+		ind.push_back(5);
+		ind.push_back(6);
+		ind.push_back(2);
+		ind.push_back(4);
+		ind.push_back(5);
+		ind.push_back(2);
+		ind.push_back(3);
+		ind.push_back(4);
 	} break;
 
 	case 9:
 	{
-		ind->push_back(2);
-		ind->push_back(0);
-		ind->push_back(1);
+		ind.push_back(2);
+		ind.push_back(0);
+		ind.push_back(1);
 
-		ind->push_back(2);
-		ind->push_back(8);
-		ind->push_back(0);
+		ind.push_back(2);
+		ind.push_back(8);
+		ind.push_back(0);
 
-		ind->push_back(2);
-		ind->push_back(7);
-		ind->push_back(8);
+		ind.push_back(2);
+		ind.push_back(7);
+		ind.push_back(8);
 
-		ind->push_back(2);
-		ind->push_back(6);
-		ind->push_back(7);
+		ind.push_back(2);
+		ind.push_back(6);
+		ind.push_back(7);
 
-		ind->push_back(2);
-		ind->push_back(5);
-		ind->push_back(6);
+		ind.push_back(2);
+		ind.push_back(5);
+		ind.push_back(6);
 
-		ind->push_back(2);
-		ind->push_back(4);
-		ind->push_back(5);
+		ind.push_back(2);
+		ind.push_back(4);
+		ind.push_back(5);
 
-		ind->push_back(2);
-		ind->push_back(3);
-		ind->push_back(4);
+		ind.push_back(2);
+		ind.push_back(3);
+		ind.push_back(4);
 	} break;
 
 	case 10:
 	{
-		ind->push_back(0);
-		ind->push_back(9);
-		ind->push_back(8);
+		ind.push_back(0);
+		ind.push_back(9);
+		ind.push_back(8);
 
-		ind->push_back(0);
-		ind->push_back(8);
-		ind->push_back(7);
+		ind.push_back(0);
+		ind.push_back(8);
+		ind.push_back(7);
 
-		ind->push_back(0);
-		ind->push_back(7);
-		ind->push_back(6);
+		ind.push_back(0);
+		ind.push_back(7);
+		ind.push_back(6);
 
-		ind->push_back(0);
-		ind->push_back(6);
-		ind->push_back(5);
+		ind.push_back(0);
+		ind.push_back(6);
+		ind.push_back(5);
 
-		ind->push_back(0);
-		ind->push_back(5);
-		ind->push_back(4);
+		ind.push_back(0);
+		ind.push_back(5);
+		ind.push_back(4);
 
-		ind->push_back(0);
-		ind->push_back(4);
-		ind->push_back(1);
+		ind.push_back(0);
+		ind.push_back(4);
+		ind.push_back(1);
 
-		ind->push_back(1);
-		ind->push_back(4);
-		ind->push_back(2);
+		ind.push_back(1);
+		ind.push_back(4);
+		ind.push_back(2);
 
-		ind->push_back(2);
-		ind->push_back(4);
-		ind->push_back(3);
+		ind.push_back(2);
+		ind.push_back(4);
+		ind.push_back(3);
 	} break;
 
 	case 11:
 	{
-		ind->push_back(0);
-		ind->push_back(1);
-		ind->push_back(2);
+		ind.push_back(0);
+		ind.push_back(1);
+		ind.push_back(2);
 
-		ind->push_back(0);
-		ind->push_back(2);
-		ind->push_back(3);
+		ind.push_back(0);
+		ind.push_back(2);
+		ind.push_back(3);
 
-		ind->push_back(0);
-		ind->push_back(3);
-		ind->push_back(4);
+		ind.push_back(0);
+		ind.push_back(3);
+		ind.push_back(4);
 
-		ind->push_back(0);
-		ind->push_back(4);
-		ind->push_back(5);
+		ind.push_back(0);
+		ind.push_back(4);
+		ind.push_back(5);
 
-		ind->push_back(0);
-		ind->push_back(5);
-		ind->push_back(6);
+		ind.push_back(0);
+		ind.push_back(5);
+		ind.push_back(6);
 
-		ind->push_back(0);
-		ind->push_back(6);
-		ind->push_back(7);
+		ind.push_back(0);
+		ind.push_back(6);
+		ind.push_back(7);
 
-		ind->push_back(0);
-		ind->push_back(7);
-		ind->push_back(8);
+		ind.push_back(0);
+		ind.push_back(7);
+		ind.push_back(8);
 
-		ind->push_back(0);
-		ind->push_back(8);
-		ind->push_back(9);
+		ind.push_back(0);
+		ind.push_back(8);
+		ind.push_back(9);
 
-		ind->push_back(0);
-		ind->push_back(9);
-		ind->push_back(10);
+		ind.push_back(0);
+		ind.push_back(9);
+		ind.push_back(10);
 	} break;
 
 	case 12:
 	{
-		ind->push_back(10);
-		ind->push_back(0);
-		ind->push_back(11);
+		ind.push_back(10);
+		ind.push_back(0);
+		ind.push_back(11);
 
-		ind->push_back(10);
-		ind->push_back(1);
-		ind->push_back(0);
+		ind.push_back(10);
+		ind.push_back(1);
+		ind.push_back(0);
 
-		ind->push_back(10);
-		ind->push_back(2);
-		ind->push_back(1);
+		ind.push_back(10);
+		ind.push_back(2);
+		ind.push_back(1);
 
-		ind->push_back(10);
-		ind->push_back(3);
-		ind->push_back(2);
+		ind.push_back(10);
+		ind.push_back(3);
+		ind.push_back(2);
 
-		ind->push_back(10);
-		ind->push_back(5);
-		ind->push_back(3);
+		ind.push_back(10);
+		ind.push_back(5);
+		ind.push_back(3);
 
-		ind->push_back(5);
-		ind->push_back(4);
-		ind->push_back(3);
+		ind.push_back(5);
+		ind.push_back(4);
+		ind.push_back(3);
 
-		ind->push_back(10);
-		ind->push_back(9);
-		ind->push_back(5);
+		ind.push_back(10);
+		ind.push_back(9);
+		ind.push_back(5);
 
-		ind->push_back(9);
-		ind->push_back(8);
-		ind->push_back(5);
+		ind.push_back(9);
+		ind.push_back(8);
+		ind.push_back(5);
 
-		ind->push_back(8);
-		ind->push_back(7);
-		ind->push_back(5);
+		ind.push_back(8);
+		ind.push_back(7);
+		ind.push_back(5);
 
-		ind->push_back(7);
-		ind->push_back(6);
-		ind->push_back(5);
+		ind.push_back(7);
+		ind.push_back(6);
+		ind.push_back(5);
 	} break;
 
 	case 13:
 	{
-		ind->push_back(1);
-		ind->push_back(0);
-		ind->push_back(12);
+		ind.push_back(1);
+		ind.push_back(0);
+		ind.push_back(12);
 
-		ind->push_back(1);
-		ind->push_back(12);
-		ind->push_back(11);
+		ind.push_back(1);
+		ind.push_back(12);
+		ind.push_back(11);
 
-		ind->push_back(1);
-		ind->push_back(11);
-		ind->push_back(10);
+		ind.push_back(1);
+		ind.push_back(11);
+		ind.push_back(10);
 
-		ind->push_back(1);
-		ind->push_back(10);
-		ind->push_back(9);
+		ind.push_back(1);
+		ind.push_back(10);
+		ind.push_back(9);
 
-		ind->push_back(1);
-		ind->push_back(9);
-		ind->push_back(8);
+		ind.push_back(1);
+		ind.push_back(9);
+		ind.push_back(8);
 
-		ind->push_back(1);
-		ind->push_back(8);
-		ind->push_back(7);
+		ind.push_back(1);
+		ind.push_back(8);
+		ind.push_back(7);
 
-		ind->push_back(1);
-		ind->push_back(7);
-		ind->push_back(6);
+		ind.push_back(1);
+		ind.push_back(7);
+		ind.push_back(6);
 
-		ind->push_back(1);
-		ind->push_back(6);
-		ind->push_back(5);
+		ind.push_back(1);
+		ind.push_back(6);
+		ind.push_back(5);
 
-		ind->push_back(1);
-		ind->push_back(5);
-		ind->push_back(4);
+		ind.push_back(1);
+		ind.push_back(5);
+		ind.push_back(4);
 
-		ind->push_back(1);
-		ind->push_back(4);
-		ind->push_back(3);
+		ind.push_back(1);
+		ind.push_back(4);
+		ind.push_back(3);
 
-		ind->push_back(1);
-		ind->push_back(3);
-		ind->push_back(2);
+		ind.push_back(1);
+		ind.push_back(3);
+		ind.push_back(2);
 
 	} break;
 
 	case 15:
 	{
-		ind->push_back(0);
-		ind->push_back(2);
-		ind->push_back(1);
+		ind.push_back(0);
+		ind.push_back(2);
+		ind.push_back(1);
 
-		ind->push_back(0);
-		ind->push_back(3);
-		ind->push_back(2);
+		ind.push_back(0);
+		ind.push_back(3);
+		ind.push_back(2);
 
-		ind->push_back(0);
-		ind->push_back(4);
-		ind->push_back(3);
+		ind.push_back(0);
+		ind.push_back(4);
+		ind.push_back(3);
 
-		ind->push_back(0);
-		ind->push_back(5);
-		ind->push_back(4);
+		ind.push_back(0);
+		ind.push_back(5);
+		ind.push_back(4);
 
-		ind->push_back(0);
-		ind->push_back(6);
-		ind->push_back(5);
+		ind.push_back(0);
+		ind.push_back(6);
+		ind.push_back(5);
 
-		ind->push_back(0);
-		ind->push_back(7);
-		ind->push_back(6);
+		ind.push_back(0);
+		ind.push_back(7);
+		ind.push_back(6);
 
-		ind->push_back(0);
-		ind->push_back(14);
-		ind->push_back(7);
+		ind.push_back(0);
+		ind.push_back(14);
+		ind.push_back(7);
 
-		ind->push_back(14);
-		ind->push_back(8);
-		ind->push_back(7);
+		ind.push_back(14);
+		ind.push_back(8);
+		ind.push_back(7);
 
-		ind->push_back(14);
-		ind->push_back(9);
-		ind->push_back(8);
+		ind.push_back(14);
+		ind.push_back(9);
+		ind.push_back(8);
 
-		ind->push_back(14);
-		ind->push_back(10);
-		ind->push_back(9);
+		ind.push_back(14);
+		ind.push_back(10);
+		ind.push_back(9);
 
-		ind->push_back(14);
-		ind->push_back(11);
-		ind->push_back(10);
+		ind.push_back(14);
+		ind.push_back(11);
+		ind.push_back(10);
 
-		ind->push_back(14);
-		ind->push_back(12);
-		ind->push_back(11);
+		ind.push_back(14);
+		ind.push_back(12);
+		ind.push_back(11);
 
-		ind->push_back(14);
-		ind->push_back(13);
-		ind->push_back(12);
+		ind.push_back(14);
+		ind.push_back(13);
+		ind.push_back(12);
 
 	} break;
 
 	default:
 	{
-		ind->push_back(2);
-		ind->push_back(0);
-		ind->push_back(1);
+		ind.push_back(2);
+		ind.push_back(0);
+		ind.push_back(1);
 		printf("unsetting indexes: %i\n", num);
 		//return;
 	} break;
@@ -472,7 +472,7 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 	std::vector<uint16_t> indexes;
 
 	// Временно, пока не придумаем чего-нибудь получше
-	DummyTriangulation(&indexes, p->numverts);
+	DummyTriangulation(indexes, p->numverts);
 
 	VertexBuffer vbp(vect);
 	IndexBuffer ib(indexes);

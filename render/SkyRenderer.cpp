@@ -36,7 +36,7 @@ void SkyRenderer::SkyPSProvider::PatchPipelineState(PipelineState* state, int de
 	*/
 
 	state->bs = BlendState::ALPHA;
-	state->rs = RasterizationState::CULL_NONE;
+	state->rs = RasterizationState::CULL_FRONT;
 	state->layout = Layout::SKY_QUAD;
 	state->topology = Topology::TRIANGLE_LISTS;
 }

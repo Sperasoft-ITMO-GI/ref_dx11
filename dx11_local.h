@@ -29,6 +29,9 @@ extern cvar_t* vid_fullscreen;
 extern cvar_t* vid_gamma;
 extern cvar_t* vid_ref;
 
+extern cvar_t* gl_skymip;
+extern cvar_t* gl_picmip;
+
 extern	cvar_t* intensity;
 
 extern	int		c_visible_lightmaps;
