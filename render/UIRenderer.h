@@ -8,6 +8,7 @@
 #include <Renderer.h>
 #include <IStateProvider.h>
 #include <Quad.h>
+#include <Utils.hpp>
 
 #define UI_COLORED  0x001
 #define UI_TEXTURED 0x002

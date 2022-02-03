@@ -7,25 +7,28 @@
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <ConstantBuffer.h>
+#include <Primitive.h>
 
-class BSPPoly {
+class BSPPoly : public Primitive {
 public:
+	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, int flags, int tex_index = -1, int lm_index = -1);
 	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, IndexBuffer& ib,
-		    int flags, int tex_index, int lm_index = -1);
+		int flags, int tex_index = -1, int lm_index = -1);
+	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb,
+		int flags, int tex_index = -1, int lm_index = -1);
 
 	int GetFlags();
 
 	void Draw();
 
+	void DrawIndexed();
+
+	void DrawStatic();
+
 private:
-	VertexBuffer vb;
-	IndexBuffer ib;
+	static VertexBuffer vb;
+	static IndexBuffer ib;
+
+private:
 	ConstantBuffer<ConstantBufferPolygon> cb;
-
-private:
-	int flags;
-	int texture_index;
-	int lightmap_index;
-
-
 };

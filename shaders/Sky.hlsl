@@ -22,7 +22,7 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
-    OUT.pos = mul(float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f), position_transform);
+    OUT.pos = mul(position_transform, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
     OUT.texCoord = mul(float4(IN.texCoord.x, IN.texCoord.y, 0.0f, 1.0f), texture_transform).xy;
     return OUT;
 }

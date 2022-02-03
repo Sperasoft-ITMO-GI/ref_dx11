@@ -23,9 +23,9 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
-	IN.texCoord = normalize(IN.texCoord);
-	IN.pos = normalize(IN.pos);
-    OUT.pos = mul(float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f), position_transform);
+	//IN.texCoord = normalize(IN.texCoord);
+	//IN.pos = normalize(IN.pos);
+    OUT.pos = mul(position_transform, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
 	//OUT.pos = float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f);
     OUT.texCoord = IN.texCoord;
 	OUT.lightmapCoord = IN.lightmapCoord;
