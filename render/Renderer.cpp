@@ -41,6 +41,8 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		UINT debug_flags = 0;
 #if defined(DEBUG) || defined(_DEBUG)  
 		debug_flags |= D3D11_CREATE_DEVICE_DEBUG;
+#else
+		debug_flags |= NULL;
 #endif
 
 		D3D_FEATURE_LEVEL feature_level;

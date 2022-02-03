@@ -11,6 +11,7 @@
 #define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
 
 #if defined(DEBUG) | defined(_DEBUG)
+
 #ifndef DXCHECK
 #define DXCHECK(x)                                                   \
 	{                                                           \
@@ -21,6 +22,11 @@
 		}                                                       \
 	}
 #endif
+
+#else
+
+#define DXCHECK(x) x
+
 #endif
 
 std::wstring ToWide(const std::string& narrow);
