@@ -102,14 +102,8 @@
     <ClInclude Include="render\UIVertex.h">
       <Filter>Render\UIRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="render\Textute.h">
-      <Filter>Render</Filter>
-    </ClInclude>
     <ClInclude Include="render\Topology.h">
       <Filter>Render\States</Filter>
-    </ClInclude>
-    <ClInclude Include="dx11_init.h">
-      <Filter>Interface</Filter>
     </ClInclude>
     <ClInclude Include="dx11_local.h">
       <Filter>Interface</Filter>
@@ -159,13 +153,13 @@
     <ClInclude Include="render\SkyQuad.h">
       <Filter>Render\SkyRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="render\Drawable.h">
+      <Filter>Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">
       <Filter>Render\States</Filter>
-    </ClCompile>
-    <ClCompile Include="render\ConstantBuffer.cpp">
-      <Filter>Render\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="render\IndexBuffer.cpp">
       <Filter>Render\Bindable</Filter>
@@ -188,9 +182,6 @@
     <ClCompile Include="render\Renderer.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="render\Texture.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
     <ClCompile Include="render\UIRenderer.cpp">
       <Filter>Render\UIRenderer</Filter>
     </ClCompile>
@@ -207,9 +198,6 @@
       <Filter>Interface</Filter>
     </ClCompile>
     <ClCompile Include="dx11_image.cpp">
-      <Filter>Interface</Filter>
-    </ClCompile>
-    <ClCompile Include="dx11_init.cpp">
       <Filter>Interface</Filter>
     </ClCompile>
     <ClCompile Include="dx11_rmain.cpp">
