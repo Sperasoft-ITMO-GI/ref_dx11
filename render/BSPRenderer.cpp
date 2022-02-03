@@ -21,7 +21,7 @@ void BSPRenderer::Render() {
 			SetPipelineState(factory->GetState(BSP_SOLID));
 		}
 
-		polygon.Draw();
+		Draw(polygon);
 	}
 
 	polygons.clear();
@@ -38,7 +38,7 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 		state->bs = BlendState::NOALPHA;
 		state->rs = RasterizationState::CULL_NONE;
 		state->layout = Layout::POLYGON;
-		state->topology = Topology::TRIANGLE_LISTS; // I'm not sure
+		state->topology = Topology::TRIANGLE_LISTS;
 	}
 	
 }

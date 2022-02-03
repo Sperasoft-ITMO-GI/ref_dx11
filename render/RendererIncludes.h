@@ -8,4 +8,3 @@
 #include <SkyRenderer.h>
 #include <Quad.h>
 #include <BSPPoly.h>
-#include <SkyQuad.h>

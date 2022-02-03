@@ -7,7 +7,8 @@
 #include <PipelineFactory.h>
 #include <Renderer.h>
 #include <IStateProvider.h>
-#include <SkyQuad.h>
+#include <Quad.h>
+#include <Utils.hpp>
 
 #define DEFAULT  0x001
 
@@ -18,9 +19,7 @@ public:
 
 	void Render();
 
-	//void Swap();
-
-	void AddElement(const SkyQuad& quad); // должен принимать Quad или что то типо такого
+	void AddElement(const Quad& quad); // должен принимать Quad или что то типо такого
 
 private:
 	class SkyPSProvider : public IStateProvider {
@@ -30,5 +29,5 @@ private:
 
 private:
 	PipelineFactory* factory;
-	std::vector<SkyQuad> quads;
+	std::vector<Quad> quads;
 };

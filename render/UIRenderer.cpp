@@ -32,7 +32,7 @@ void UIRenderer::Render() {
 			SetPipelineState(factory->GetState(UI_FADE));
 		}
 
-		quad.Draw();
+		Draw(quad);
 	}
 
 	quads.clear();

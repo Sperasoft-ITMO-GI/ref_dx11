@@ -18,13 +18,13 @@ void SkyRenderer::Render() {
 			SetPipelineState(factory->GetState(DEFAULT));
 		}
 
-		quad.Draw();
+		Draw(quad);
 	}
 
 	quads.clear();
 }
 
-void SkyRenderer::AddElement(const SkyQuad& quad) {
+void SkyRenderer::AddElement(const Quad& quad) {
 	quads.push_back(quad);
 }
 

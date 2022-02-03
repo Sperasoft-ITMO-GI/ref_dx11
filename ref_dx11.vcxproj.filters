@@ -150,11 +150,11 @@
     <ClInclude Include="render\BSPPoly.h">
       <Filter>Render\BSPRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="render\SkyQuad.h">
-      <Filter>Render\SkyRenderer</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Drawable.h">
+    <ClInclude Include="render\Primitive.h">
       <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Utils.hpp">
+      <Filter>Render\Utilites</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -245,8 +245,8 @@
     <ClCompile Include="render\BSPPoly.cpp">
       <Filter>Render\BSPRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="render\SkyQuad.cpp">
-      <Filter>Render\SkyRenderer</Filter>
+    <ClCompile Include="render\Primitive.cpp">
+      <Filter>Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
