@@ -61,6 +61,10 @@ cvar_t* r_lefthand;
 
 cvar_t* r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
+cvar_t* gl_skymip;
+cvar_t* gl_picmip;
+
+
 cvar_t* dx11_mode;
 
 cvar_t* vid_fullscreen;
@@ -947,7 +951,8 @@ void R_Register(void)
 	r_speeds = ri.Cvar_Get("r_speeds", "0", 0);
 
 	r_lightlevel = ri.Cvar_Get("r_lightlevel", "0", 0);
-
+	gl_picmip = ri.Cvar_Get("gl_picmip", "0", 0);
+	gl_skymip = ri.Cvar_Get("gl_skymip", "0", 0);
 	// our stuff
 	dx11_mode = ri.Cvar_Get("dx11_mode", "3", CVAR_ARCHIVE);
 
@@ -1142,9 +1147,12 @@ void R_BeginFrame(float camera_separation)
 
 	// clear
 	renderer->Clear();
-	ui_renderer->Render();
 	bsp_renderer->Render();
 	sky_renderer->Render();
+
+	renderer->UnSetDepthBuffer();
+	ui_renderer->Render();
+	renderer->SetDepthBuffer();
 }
 
 /*

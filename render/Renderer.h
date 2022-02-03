@@ -41,10 +41,19 @@ public:
 
 	void Clear() {
 		context->ClearRenderTargetView(render_target_view.Get(), DirectX::Colors::Black);
+		context->ClearDepthStencilView(depth_stencil_view.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 	}
 
 	void Swap() {
 		swap_chain->Present(1, 0);
+	}
+
+	void SetDepthBuffer() {
+		context->OMSetRenderTargets(1, render_target_view.GetAddressOf(), depth_stencil_view.Get());
+	}
+
+	void UnSetDepthBuffer() {
+		context->OMSetRenderTargets(1, render_target_view.GetAddressOf(), nullptr);
 	}
 
 	void Bind(int texture_index);
