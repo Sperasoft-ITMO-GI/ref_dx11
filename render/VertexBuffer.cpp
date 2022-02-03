@@ -3,6 +3,9 @@
 using std::vector;
 using Microsoft::WRL::ComPtr;
 
+VertexBuffer::VertexBuffer() : stride(0), count(0), buffer(nullptr), shader(nullptr) {
+}
+
 VertexBuffer::VertexBuffer(UIVertex vertices[]) : stride(sizeof(UIVertex)) {
 	Renderer* renderer = Renderer::GetInstance();
 	D3D11_BUFFER_DESC buffer_desc{};

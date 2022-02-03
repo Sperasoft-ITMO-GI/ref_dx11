@@ -1,7 +1,7 @@
 #pragma once
 
-#include "WndDxIncludes.h"
-#include "Renderer.h"
+#include <WndDxIncludes.h>
+#include <Renderer.h>
 
 enum BlendState {
 	ALPHA,

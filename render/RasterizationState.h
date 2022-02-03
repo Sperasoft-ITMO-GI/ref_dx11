@@ -2,8 +2,8 @@
 
 #include <unordered_map>
 
-#include "WndDxIncludes.h"
-#include "Renderer.h"
+#include <WndDxIncludes.h>
+#include <Renderer.h>
 
 enum RasterizationState {
 	CULL_NONE,

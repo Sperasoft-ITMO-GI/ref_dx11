@@ -1,4 +1,4 @@
-#include "dx11_local.h"
+#include <dx11_local.h>
 
 image_t* draw_chars;
 

@@ -1,4 +1,7 @@
-#include "IndexBuffer.h"
+#include <IndexBuffer.h>
+
+IndexBuffer::IndexBuffer() : count(0), buffer(nullptr) {
+}
 
 IndexBuffer::IndexBuffer(std::vector<uint16_t> indexes) : count(indexes.size()) {
 	Renderer* renderer = Renderer::GetInstance();
@@ -45,7 +48,6 @@ void IndexBuffer::Bind() {
 	renderer->GetContext()->IASetIndexBuffer(buffer.Get(), DXGI_FORMAT_R16_UINT, offset);
 }
 
-int IndexBuffer::GetCount()
-{
+uint16_t IndexBuffer::GetCount() {
 	return count;
 }

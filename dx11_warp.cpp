@@ -1,6 +1,6 @@
 // gl_warp.c -- sky and water polygons
 
-#include "dx11_local.h"
+#include <dx11_local.h>
 
 extern	model_t* loadmodel;
 

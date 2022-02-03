@@ -1,4 +1,4 @@
-#include "BlendState.h"
+#include <BlendState.h>
 
 using Microsoft::WRL::ComPtr;
 

@@ -1,8 +1,8 @@
 // GL_RSURF.C: surface-related refresh code
 #include <assert.h>
-
-#include "dx11_local.h"
 #include <algorithm>
+
+#include <dx11_local.h>
 
 static vec3_t	modelorg;		// relative to viewpoint
 

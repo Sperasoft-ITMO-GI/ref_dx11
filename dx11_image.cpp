@@ -1,4 +1,4 @@
-#include "dx11_local.h"
+#include <dx11_local.h>
 
 int			scrapNum;
 image_t		dxtextures[MAX_DXTEXTURES];

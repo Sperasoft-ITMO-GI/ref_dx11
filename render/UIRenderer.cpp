@@ -10,7 +10,6 @@ static D3D_SHADER_MACRO fadeMac[] = {
 	"FADE", "4", NULL, NULL
 };
 
-
 static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
 	{UI_COLORED, colMac},
 	{UI_TEXTURED,  texMac},

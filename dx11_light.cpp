@@ -1,6 +1,6 @@
 // r_light.c
 
-#include "dx11_local.h"
+#include <dx11_local.h>
 
 int	r_dlightframecount;
 

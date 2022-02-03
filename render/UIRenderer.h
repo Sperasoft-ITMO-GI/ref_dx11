@@ -20,8 +20,6 @@ public:
 
 	void Render();
 
-	//void Swap();
-
 	void AddElement(const Quad& quad); // должен принимать Quad или что то типо такого
 
 private:

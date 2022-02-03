@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WndDxIncludes.h"
+#include <WndDxIncludes.h>
 
 class Shader {
 public:

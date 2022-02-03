@@ -14,8 +14,7 @@
 class VertexBuffer : public Bindable {
 public:
 
-	VertexBuffer() : stride(0), count(0), buffer(NULL), shader(NULL) {
-	}
+	VertexBuffer();
 
 	template<typename T>
 	VertexBuffer(std::vector<T> vertices) : stride(sizeof(T)), count(vertices.size()) {

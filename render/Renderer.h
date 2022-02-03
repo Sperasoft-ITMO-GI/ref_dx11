@@ -79,9 +79,9 @@ private:
 	D3D_DRIVER_TYPE driver_type;
 	UINT msaa_quality;
 	bool is_4xmsaa_enable;
+	bool is_initialized;
 	
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler;
-
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture_array_srv[1600];
 
 	DirectX::XMMATRIX orthogonal;

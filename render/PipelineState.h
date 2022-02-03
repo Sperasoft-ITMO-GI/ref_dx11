@@ -1,10 +1,10 @@
 #pragma once
 
-#include "WndDxIncludes.h"
-#include "VertexShader.h"
-#include "PixelShader.h"
-#include "RasterizationState.h"
-#include "BlendState.h"
+#include <WndDxIncludes.h>
+#include <VertexShader.h>
+#include <PixelShader.h>
+#include <RasterizationState.h>
+#include <BlendState.h>
 #include <InputLayout.h>
 #include <Topology.h>
 #include <States.h>

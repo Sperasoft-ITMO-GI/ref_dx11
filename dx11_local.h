@@ -2,16 +2,12 @@
 
 #include <windows.h>
 #include <assert.h>
-
 #include <stdio.h>
-
 #include <math.h>
 
 // specific things for Q2_Engine
-#include "../client/ref.h"
-#include "../win32/winquake.h"
-
-//#include "dx11_init.h"
+#include <../client/ref.h>
+#include <../win32/winquake.h>
 
 #include <RendererIncludes.h>
 

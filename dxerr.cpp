@@ -9,7 +9,7 @@
 
 // This version only supports UNICODE.
 
-#include "dxerr.h"
+#include <dxerr.h>
 
 #include <cstdio>
 

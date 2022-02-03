@@ -1,4 +1,4 @@
-#include "VertexShader.h"
+#include <VertexShader.h>
 
 using Microsoft::WRL::ComPtr;
 using std::string;
