@@ -28,7 +28,7 @@ public:
 	};
 	const std::unordered_map<BlendState, Microsoft::WRL::ComPtr<ID3D11BlendState>> blend_states{
 		{ALPHA,   MakeAlphaBS()},
-		{NOALPHA, MakeNoAlphaBS()}
+		{NOBS, MakeNoBS()}
 	};
 	const std::unordered_map<Layout, std::vector<D3D11_INPUT_ELEMENT_DESC>> input_layouts{		
 		{

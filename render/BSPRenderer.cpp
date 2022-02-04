@@ -35,7 +35,7 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 
 	if (defines & BSP_SOLID)
 	{
-		state->bs = BlendState::NOALPHA;
+		state->bs = BlendState::NOBS;
 		state->rs = RasterizationState::CULL_FRONT;
 		state->layout = Layout::POLYGON;
 		state->topology = Topology::TRIANGLE_LISTS;

@@ -150,7 +150,7 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic)
 	//dx11App.DummyDrawingPicture(&info, gl->texnum);
 	using namespace DirectX;
 	ConstantBufferQuad cbq;
-	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(gl->width, gl->height, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
+	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(w, h, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
 
 	ConstantBuffer<ConstantBufferQuad> cb(cbq);
 	Quad textured_quad(cb, UI_TEXTURED, gl->texnum);
