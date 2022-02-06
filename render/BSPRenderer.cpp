@@ -32,13 +32,13 @@ void BSPRenderer::AddElement(const BSPPoly& polygon) {
 }
 
 void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int defines) {
-
+	States* states = States::GetInstance();
 	if (defines & BSP_SOLID)
 	{
-		state->bs = BlendState::NOBS;
-		state->rs = RasterizationState::CULL_FRONT;
-		state->layout = Layout::POLYGON;
-		state->topology = Topology::TRIANGLE_LISTS;
+		state->bs = states->blend_states.at(BlendState::NOBS);
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
+		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::POLYGON));
+		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 	}
 	
 }

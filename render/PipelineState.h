@@ -12,10 +12,10 @@
 struct PipelineState {
 	VertexShader* vs = new VertexShader();
 	PixelShader* ps = new PixelShader();
-	BlendState bs;
-	RasterizationState rs;
-	Layout layout;
-	Topology topology;
+	ID3D11BlendState* bs = nullptr;
+	ID3D11RasterizerState* rs = nullptr;
+	ID3D11InputLayout* layout = nullptr;
+	D3D_PRIMITIVE_TOPOLOGY topology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
 };
 
 void SetPipelineState(PipelineState* state);

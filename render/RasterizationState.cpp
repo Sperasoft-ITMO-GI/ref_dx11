@@ -1,8 +1,6 @@
 #include <RasterizationState.h>
 
-using Microsoft::WRL::ComPtr;
-
-ComPtr<ID3D11RasterizerState> MakeCullNoneRS() {
+ID3D11RasterizerState* MakeCullNoneRS() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	D3D11_RASTERIZER_DESC rasterizer_description;
@@ -19,14 +17,14 @@ ComPtr<ID3D11RasterizerState> MakeCullNoneRS() {
 	rasterizer_description.ScissorEnable = FALSE;
 	rasterizer_description.SlopeScaledDepthBias = 0.0f;
 
-	ComPtr<ID3D11RasterizerState> state;
+	ID3D11RasterizerState* state;
 
 	renderer->GetDevice()->CreateRasterizerState(&rasterizer_description, &state);
 
 	return state;
 }
 
-ComPtr<ID3D11RasterizerState> MakeCullBackRS() {
+ID3D11RasterizerState* MakeCullBackRS() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	D3D11_RASTERIZER_DESC rasterizer_description;
@@ -43,14 +41,14 @@ ComPtr<ID3D11RasterizerState> MakeCullBackRS() {
 	rasterizer_description.ScissorEnable = FALSE;
 	rasterizer_description.SlopeScaledDepthBias = 0.0f;
 
-	ComPtr<ID3D11RasterizerState> state;
+	ID3D11RasterizerState* state;
 
 	renderer->GetDevice()->CreateRasterizerState(&rasterizer_description, &state);
 
 	return state;
 }
 
-ComPtr<ID3D11RasterizerState> MakeCullFrontRS() {
+ID3D11RasterizerState* MakeCullFrontRS() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	D3D11_RASTERIZER_DESC rasterizer_description;
@@ -67,7 +65,7 @@ ComPtr<ID3D11RasterizerState> MakeCullFrontRS() {
 	rasterizer_description.ScissorEnable = FALSE;
 	rasterizer_description.SlopeScaledDepthBias = 0.0f;
 
-	ComPtr<ID3D11RasterizerState> state;
+	ID3D11RasterizerState* state;
 
 	renderer->GetDevice()->CreateRasterizerState(&rasterizer_description, &state);
 

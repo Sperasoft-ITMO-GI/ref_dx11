@@ -48,10 +48,11 @@ void UIRenderer::UIPSProvider::PatchPipelineState(PipelineState* state, int defi
 		but if for different defines we have to have different state  
 		there are will be "if" statements to chose it
 	*/
+	States* states = States::GetInstance();
 
-	state->bs = BlendState::ALPHA;
-	state->rs = RasterizationState::CULL_NONE;
-	state->layout = Layout::UI_QUAD;
-	state->topology = Topology::TRIANGLE_LISTS;
+	state->bs = states->blend_states.at(BlendState::ALPHA);
+	state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
+	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::UI_QUAD));
+	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 }
 

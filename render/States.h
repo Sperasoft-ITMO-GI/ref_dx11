@@ -21,14 +21,14 @@ public:
 		return states;
 	}
 
-	const std::unordered_map<RasterizationState, Microsoft::WRL::ComPtr<ID3D11RasterizerState>> rasterization_states{
+	const std::unordered_map<BlendState, ID3D11BlendState*> blend_states{
+		{ALPHA,   MakeAlphaBS()},
+		{NOBS, MakeNoBS()}
+	};
+	const std::unordered_map<RasterizationState, ID3D11RasterizerState*> rasterization_states{
 		{CULL_NONE,  MakeCullNoneRS()},
 		{CULL_BACK,  MakeCullBackRS()},
 		{CULL_FRONT, MakeCullFrontRS()}
-	};
-	const std::unordered_map<BlendState, Microsoft::WRL::ComPtr<ID3D11BlendState>> blend_states{
-		{ALPHA,   MakeAlphaBS()},
-		{NOBS, MakeNoBS()}
 	};
 	const std::unordered_map<Layout, std::vector<D3D11_INPUT_ELEMENT_DESC>> input_layouts{		
 		{

@@ -35,9 +35,11 @@ void SkyRenderer::SkyPSProvider::PatchPipelineState(PipelineState* state, int de
 		there are will be "if" statements to chose it
 	*/
 
-	state->bs = BlendState::ALPHA;
-	state->rs = RasterizationState::CULL_FRONT;
-	state->layout = Layout::SKY_QUAD;
-	state->topology = Topology::TRIANGLE_LISTS;
+	States* states = States::GetInstance();
+
+	state->bs = states->blend_states.at(BlendState::ALPHA);
+	state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
+	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::SKY_QUAD));
+	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 }
 

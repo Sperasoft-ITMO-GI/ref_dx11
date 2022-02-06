@@ -1,8 +1,6 @@
 #include <BlendState.h>
 
-using Microsoft::WRL::ComPtr;
-
-ComPtr<ID3D11BlendState> MakeAlphaBS() {
+ID3D11BlendState* MakeAlphaBS() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	D3D11_BLEND_DESC state_desc;
@@ -19,13 +17,13 @@ ComPtr<ID3D11BlendState> MakeAlphaBS() {
 	state_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	state_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	ComPtr<ID3D11BlendState> state;
+	ID3D11BlendState* state;
 	renderer->GetDevice()->CreateBlendState(&state_desc, &state);
 
 	return state;
 };
 
-ComPtr<ID3D11BlendState> MakeNoBS() {
+ID3D11BlendState* MakeNoBS() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	D3D11_BLEND_DESC state_desc;
@@ -42,7 +40,7 @@ ComPtr<ID3D11BlendState> MakeNoBS() {
 	state_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	state_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	ComPtr<ID3D11BlendState> state;
+    ID3D11BlendState* state;
 	renderer->GetDevice()->CreateBlendState(&state_desc, &state);
 
 	return state;

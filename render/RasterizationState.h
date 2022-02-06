@@ -11,7 +11,7 @@ enum RasterizationState {
 	CULL_FRONT
 };
 
-Microsoft::WRL::ComPtr<ID3D11RasterizerState> MakeCullNoneRS();
-Microsoft::WRL::ComPtr<ID3D11RasterizerState> MakeCullBackRS();
-Microsoft::WRL::ComPtr<ID3D11RasterizerState> MakeCullFrontRS();
+ID3D11RasterizerState* MakeCullNoneRS();
+ID3D11RasterizerState* MakeCullBackRS();
+ID3D11RasterizerState* MakeCullFrontRS();
 
