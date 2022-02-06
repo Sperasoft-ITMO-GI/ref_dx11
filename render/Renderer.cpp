@@ -192,8 +192,8 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 	return false;
 }
 
-void Renderer::SetWindowMode(const uint32_t w, const uint32_t h, const bool fullscreen) {
-	window->SetMode(w, h, fullscreen);
+void Renderer::SetWindowMode(const int posX, const int posY, const int w, const int h, const bool fullscreen) {
+	window->SetMode(posX, posY, w, h, fullscreen);
 }
 
 void Renderer::SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far) {
@@ -355,8 +355,12 @@ DirectX::XMMATRIX Renderer::GetModelView()
 Renderer::~Renderer()
 {
 	// release SRV's
-	for (int i = 0; i < 1600; ++i) {
-		texture_array_srv[i]->Release();
+	for (int i = 0; i < 1600; ++i) 
+	{
+		if (texture_array_srv[i])
+		{
+			texture_array_srv[i]->Release();
+		}
 	}
 	sampler->Release();
 	render_target_view->Release();

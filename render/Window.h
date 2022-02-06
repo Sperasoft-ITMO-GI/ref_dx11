@@ -11,10 +11,8 @@ public:
 	Window();
 	~Window();
 
-	bool Initialize(const HINSTANCE inst, const WNDPROC proc);
-	void SetMode(const uint32_t w, const uint32_t h, const bool fullscreen);
-
-	//void DestroyWindow();
+	bool Initialize(HINSTANCE inst, WNDPROC proc);
+	void SetMode(const int x, const int y, const int w, const int h, const bool fullscreen);
 
 	HWND GetWindow();
 	HINSTANCE GetInstance();
@@ -29,8 +27,10 @@ private:
 	WNDPROC wndproc;
 
 private:
-	uint32_t width;
-	uint32_t height;
+	int width;
+	int height;
+	int posX;
+	int posY;
 
 	bool is_fullscreen;
 

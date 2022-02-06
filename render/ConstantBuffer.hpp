@@ -7,6 +7,7 @@
 struct ConstantBufferQuad {
 	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX texture_transform = DirectX::XMMatrixIdentity();
+	float color[4];
 };
 
 struct ConstantBufferPolygon {

@@ -46,27 +46,14 @@ void Draw_Char(int x, int y, int num)
 	fcol = col * 0.0625;
 	size = 0.0625;
 
-	/*Vertex_PosTexCol_Info info = {};
-	info.pos.x = x;
-	info.pos.y = y;
-	info.pos.width = 8;
-	info.pos.height = 8;
-
-	info.tex.xl = fcol;
-	info.tex.xr = fcol + size;
-	info.tex.yt = frow;
-	info.tex.yb = frow + size;
-
-	info.col.x = 1.0;
-	info.col.y = 1.0;
-	info.col.z = 1.0;
-	info.col.w = 1.0;*/
-
-	//dx11App.DummyDrawingPicture(&info, draw_chars->texnum);
 	using namespace DirectX;
 	ConstantBufferQuad cbq;
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(8, 8, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
 	cbq.texture_transform *= XMMatrixTranspose(XMMatrixScaling(size, size, 0) * XMMatrixTranslation(fcol, frow, 0));
+	cbq.color[0] = 1.0f;
+	cbq.color[1] = 1.0f;
+	cbq.color[2] = 1.0f;
+	cbq.color[3] = 1.0f;
 
 	ui_renderer->Add(QuadDefinitions{ cbq, UI_TEXTURED, draw_chars->texnum });
 }
@@ -127,28 +114,14 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic)
 		return;
 	}
 
-	// TODO: check for alpha test if image->hax_alpha then enable it
-
-	//Vertex_PosTexCol_Info info = {};
-	//info.pos.x = x;
-	//info.pos.y = y;
-	//info.pos.width = gl->width;
-	//info.pos.height = gl->height;
-
-	//info.tex.xl = 0.0f;
-	//info.tex.xr = 1.0f;
-	//info.tex.yt = 0.0f;
-	//info.tex.yb = 1.0f;
-
-	//info.col.x = 1.0;
-	//info.col.y = 1.0;
-	//info.col.z = 1.0;
-	//info.col.w = 1.0;
-
-	//dx11App.DummyDrawingPicture(&info, gl->texnum);
 	using namespace DirectX;
 	ConstantBufferQuad cbq;
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(w, h, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
+	cbq.color[0] = 1.0f;
+	cbq.color[1] = 1.0f;
+	cbq.color[2] = 1.0f;
+	cbq.color[3] = 1.0f;
+
 	ui_renderer->Add(QuadDefinitions{ cbq, UI_TEXTURED, gl->texnum });
 }
 
@@ -169,28 +142,14 @@ void Draw_Pic(int x, int y, char* pic)
 		return;
 	}
 
-	// TODO: check for alpha test if image->hax_alpha then enable it
-
-	//Vertex_PosTexCol_Info info = {};
-	//info.pos.x = x;
-	//info.pos.y = y;
-	//info.pos.width = gl->width;
-	//info.pos.height = gl->height;
-
-	//info.tex.xl = 0.0f;
-	//info.tex.xr = 1.0f;
-	//info.tex.yt = 0.0f;
-	//info.tex.yb = 1.0f;
-
-	//info.col.x = 1.0;
-	//info.col.y = 1.0;
-	//info.col.z = 1.0;
-	//info.col.w = 1.0;
-
-	//dx11App.DummyDrawingPicture(&info, gl->texnum);
 	using namespace DirectX;
 	ConstantBufferQuad cbq;
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(gl->width, gl->height, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
+	cbq.color[0] = 1.0f;
+	cbq.color[1] = 1.0f;
+	cbq.color[2] = 1.0f;
+	cbq.color[3] = 1.0f;
+
 	ui_renderer->Add(QuadDefinitions{ cbq, UI_TEXTURED, gl->texnum });
 }
 
@@ -213,29 +172,15 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic)
 		return;
 	}
 
-	// TODO: check for alpha test if image->hax_alpha then enable it
-
-	//Vertex_PosTexCol_Info info = {};
-	//info.pos.x = x;
-	//info.pos.y = y;
-	//info.pos.width = w;
-	//info.pos.height = h;
-
-	//info.tex.xl = x / 64.0f;
-	//info.tex.xr = (x + w) / 64.0f;
-	//info.tex.yt = y / 64.0f;
-	//info.tex.yb = (y + h) / 64.0f;
-
-	//info.col.x = 1.0;
-	//info.col.y = 1.0;
-	//info.col.z = 1.0;
-	//info.col.w = 1.0;
-
-	//dx11App.DummyDrawingPicture(&info, image->texnum);
 	using namespace DirectX;
 	ConstantBufferQuad cbq;
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0) * renderer->GetOrthogonal());
 	cbq.texture_transform *= XMMatrixTranspose(XMMatrixScaling(w / 64.0f, h / 64.0f, 0) * XMMatrixTranslation(x / 64.0f, y / 64.0f, 0));
+	cbq.color[0] = 1.0f;
+	cbq.color[1] = 1.0f;
+	cbq.color[2] = 1.0f;
+	cbq.color[3] = 1.0f;
+
 	ui_renderer->Add(QuadDefinitions{ cbq, UI_TEXTURED, image->texnum });
 }
 
@@ -259,20 +204,14 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 
 	color.c = d_8to24table[c];
 
-	//std::array<std::pair<float, float>, 4> pos = {
-	//	std::make_pair(x, y),
-	//	std::make_pair(x + w, y),
-	//	std::make_pair(x, y + h),
-	//	std::make_pair(x + w, y + h),
-	//};
-
-	//std::array<float, 4> col = { color.v[0] / 255, color.v[1] / 255, color.v[2] / 255, 1.0f };
-
-	//dx11App.DrawColored2D(pos, col);
 	using namespace DirectX;
 	ConstantBufferQuad cbq;
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0) * renderer->GetOrthogonal());
-	//cbq.color_transform *= (XMMatrixScaling(color.v[0] / 255, color.v[1] / 255, color.v[2] / 255) * XMMatrixTranspose(orthogonal));
+	cbq.color[0] = color.v[0] / 255;
+	cbq.color[1] = color.v[1] / 255;
+	cbq.color[2] = color.v[2] / 255;
+	cbq.color[3] = 1.0f;
+
 	ui_renderer->Add(QuadDefinitions{ cbq, UI_COLORED, -1 });
 }
 
@@ -284,20 +223,15 @@ Draw_FadeScreen
 */
 void Draw_FadeScreen(void)
 {
-	//std::array<std::pair<float, float>, 4> pos = {
-	//	std::make_pair(0.0f, 0.0f),
-	//	std::make_pair(vid.width, 0.0f),
-	//	std::make_pair(0.0f, vid.height),
-	//	std::make_pair(vid.width, vid.height),
-	//};
-
-	//std::array<float, 4> col = { 0.0f, 0.0f, 0.0f, 0.8f };
-
-	//dx11App.DrawColored2D(pos, col);
 	using namespace DirectX;
 	ConstantBufferQuad cbq;
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(vid.width, vid.height, 0) * renderer->GetOrthogonal());
-	ui_renderer->Add(QuadDefinitions{ cbq, UI_FADE, -1 });
+	cbq.color[0] = 0.0f;
+	cbq.color[1] = 0.0f;
+	cbq.color[2] = 0.0f;
+	cbq.color[3] = 0.8f;
+
+	ui_renderer->Add(QuadDefinitions{ cbq, UI_COLORED, -1 });
 }
 
 /*
@@ -349,49 +283,24 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 		}
 	}
 
-	//dx11App.DummyTest("pics/test.pcx", 256, 256, 32, (unsigned char*)image32, 1);
-
 	if (firstLoading)
 	{
-		//dx11App.AddTexturetoSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE, true);
 		renderer->AddTexturetoSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE, true);
 		firstLoading = false;
 	}
 	else
 	{
-		//dx11App.UpdateTextureInSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE);
 		renderer->UpdateTextureInSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE);
 	}
 
-
-	//qglTexImage2D(GL_TEXTURE_2D, 0, gl_tex_solid_format, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, image32);
-
-	//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// TODO: ENABLE ALPHA TEST
-
-	//Vertex_PosTexCol_Info info = {};
-	//info.pos.x = x;
-	//info.pos.y = y;
-	//info.pos.width = w;
-	//info.pos.height = h;
-
-	//info.tex.xl = 0.0f;
-	//info.tex.xr = 1.0f;
-	//info.tex.yt = 0.0f;
-	//info.tex.yb = t;
-
-	//info.col.x = 1.0;
-	//info.col.y = 1.0;
-	//info.col.z = 1.0;
-	//info.col.w = 1.0;
-
-	//dx11App.DummyDrawingPicture(&info, CINEMATIC_PICTURE);
 	using namespace DirectX;
 	ConstantBufferQuad cbq;
-	auto orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, vid.width, vid.height, 0.0f, 0.0f, 100.0f);
-	cbq.position_transform *= XMMatrixTranspose((XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0)) * orthogonal);
+	cbq.position_transform *= XMMatrixTranspose((XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0)) * renderer->GetOrthogonal());
 	cbq.texture_transform *= XMMatrixTranspose(XMMatrixScaling(1.0f, t, 0));
+	cbq.color[0] = 1.0f;
+	cbq.color[1] = 1.0f;
+	cbq.color[2] = 1.0f;
+	cbq.color[3] = 1.0f;
+
 	ui_renderer->Add(QuadDefinitions{ cbq, UI_TEXTURED, CINEMATIC_PICTURE });
 }

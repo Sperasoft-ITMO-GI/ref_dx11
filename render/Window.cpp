@@ -17,13 +17,13 @@ Window::~Window() {
 
 bool Window::Initialize(const HINSTANCE inst, const WNDPROC proc) {
 	WNDCLASSA wc;
-	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.style = 0;
 	wc.lpfnWndProc = proc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = inst;
-	wc.hIcon = LoadIcon(0, IDI_APPLICATION);
-	wc.hCursor = LoadCursor(0, IDC_ARROW);
+	wc.hIcon = 0;
+	wc.hCursor = LoadCursor(0, IDC_ARROW);;
 	wc.hbrBackground = (HBRUSH)COLOR_GRAYTEXT;
 	wc.lpszMenuName = 0;
 	wc.lpszClassName = window_class_name;
@@ -34,14 +34,46 @@ bool Window::Initialize(const HINSTANCE inst, const WNDPROC proc) {
 		return false;
 	}
 
+	int	stylebits = 0;
+	int	exstyle = 0;
+
+	if (is_fullscreen)
+	{
+		exstyle = WS_EX_TOPMOST;
+		stylebits = WS_POPUP | WS_VISIBLE;
+	}
+	else
+	{
+		exstyle = 0;
+		stylebits = (WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_VISIBLE);
+	}
+
 	// Compute window rectangle dimensions based on requested client area dimensions.
 	RECT R = { 0, 0, width, height };
 	AdjustWindowRect(&R, WS_OVERLAPPEDWINDOW, false);
 	int width = R.right - R.left;
 	int height = R.bottom - R.top;
 
-	window = CreateWindowExA(0, window_class_name, title,
-		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, inst, 0);
+	if (is_fullscreen)
+	{
+		posX = 0;
+		posY = 0;
+	}
+
+	window = CreateWindowExA(	
+		exstyle,
+		window_class_name, 
+		title,
+		stylebits,
+		posX,
+		posY,
+		width,
+		height,
+		NULL,
+		NULL,
+		inst,
+		NULL);
+	
 	if (!window) {
 		printf("[DX11]: CreateWindow Failed");
 		MessageBoxA(0, "CreateWindow Failed.", 0, 0);
@@ -59,10 +91,12 @@ bool Window::Initialize(const HINSTANCE inst, const WNDPROC proc) {
 	return true;
 }
 
-void Window::SetMode(const uint32_t w, const uint32_t h, const bool fullscreen) {
+void Window::SetMode(const int x, const int y, const int w, const int h, const bool fullscreen) {
 	width = w;
 	height = h;
 	is_fullscreen = fullscreen;
+	posX = x;
+	posY = y;
 }
 
 HWND Window::GetWindow() {

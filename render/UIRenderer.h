@@ -12,7 +12,6 @@
 
 #define UI_COLORED  0x001
 #define UI_TEXTURED 0x002
-#define UI_FADE     0x004
 
 struct QuadDefinitions {
 	ConstantBufferQuad cbq;

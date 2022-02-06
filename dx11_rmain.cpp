@@ -994,8 +994,17 @@ bool R_SetMode(int* width, int* height)
 	vid.height = *height;
 	vid.width = *width;
 
+	int posX = 0;
+	int posY = 0;
+
+	if (!fullscreen)
+	{
+		posX = (ri.Cvar_Get("vid_xpos", "0", 0))->value;
+		posY = (ri.Cvar_Get("vid_ypos", "0", 0))->value;
+	}
+	
 	// setting size of our window
-	renderer->SetWindowMode(vid.width, vid.height, fullscreen);
+	renderer->SetWindowMode(posX, posY, vid.width, vid.height, fullscreen);
 	
 	return true;
 }
@@ -1038,10 +1047,10 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 	Quad::vb.Create(
 		std::vector<UIVertex>{
-			{ {0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f} },
-			{ {1.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f} },
-			{ {1.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f} },
-			{ {0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} }
+			{ {0.0f, 0.0f}, {0.0f, 0.0f} },
+			{ {1.0f, 0.0f}, {1.0f, 0.0f} },
+			{ {1.0f, 1.0f}, {1.0f, 1.0f} },
+			{ {0.0f, 1.0f}, {0.0f, 1.0f} }
 		}
 	);
 	

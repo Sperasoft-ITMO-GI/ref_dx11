@@ -6,14 +6,10 @@ static D3D_SHADER_MACRO colMac[] = {
 static D3D_SHADER_MACRO texMac[] = {
 	"TEXTURED", "2", NULL, NULL
 };
-static D3D_SHADER_MACRO fadeMac[] = {
-	"FADE", "4", NULL, NULL
-};
 
 static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
 	{UI_COLORED, colMac},
-	{UI_TEXTURED,  texMac},
-	{UI_FADE,  fadeMac}
+	{UI_TEXTURED,  texMac}
 };
 
 UIRenderer::~UIRenderer() {
@@ -35,9 +31,6 @@ void UIRenderer::Render() {
 		}
 		if (qd.flags & UI_TEXTURED) {
 			SetPipelineState(factory->GetState(UI_TEXTURED));
-		}
-		if (qd.flags & UI_FADE) {
-			SetPipelineState(factory->GetState(UI_FADE));
 		}
 
 		renderer->Bind(qd.teture_index);

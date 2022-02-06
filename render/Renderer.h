@@ -22,7 +22,7 @@ public:
 	bool Initialize(const HINSTANCE instance, const WNDPROC wndproc);
 
 public:
-	void SetWindowMode(const uint32_t w, const uint32_t h, const bool fullscreen);
+	void SetWindowMode(const int posX, const int posY, const int w, const int h, const bool fullscreen);
 	void SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far);
 	void SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx);
 
