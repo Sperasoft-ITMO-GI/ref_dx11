@@ -11,7 +11,8 @@
 
 class Quad : public Primitive {
 public:
-	Quad(ConstantBufferQuad& cbq, int flags, int tex_index = -1, int lm_index = -1);
+
+	Quad(ConstantBufferQuad& cbq);
 	Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer& ib,
 		 int flags, int tex_index = -1, int lm_index = -1);	
 	Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb,
@@ -26,6 +27,8 @@ public:
 	void DrawIndexed();
 
 	void DrawStatic();
+
+	void UpdateCB(ConstantBufferQuad& cbq);
 
 public:
 	static VertexBuffer vb;

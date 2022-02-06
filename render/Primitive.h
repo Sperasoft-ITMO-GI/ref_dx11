@@ -6,7 +6,7 @@
 
 class Primitive {
 public:
-	Primitive(int flags, int tex_index, int lm_index, bool is_indexed);
+	Primitive(bool is_indexed);
 	Primitive(VertexBuffer& vb, IndexBuffer& ib, int flags, int tex_index, int lm_index, bool is_indexed);
 
 	~Primitive();

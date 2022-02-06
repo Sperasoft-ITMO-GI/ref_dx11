@@ -14,14 +14,22 @@
 #define UI_TEXTURED 0x002
 #define UI_FADE     0x004
 
+struct QuadDefinitions {
+	ConstantBufferQuad cbq;
+	int flags;
+	int teture_index;
+};
+
 class UIRenderer {
 public:
+
+	~UIRenderer();
 
 	void Init();
 
 	void Render();
 
-	void AddElement(const Quad& quad); // должен принимать Quad или что то типо такого
+	void Add(const QuadDefinitions& qd);
 
 private:
 	class UIPSProvider : public IStateProvider {
@@ -31,5 +39,6 @@ private:
 
 private:
 	PipelineFactory* factory;
-	std::vector<Quad> quads;
+	Quad* quad;
+	std::vector<QuadDefinitions> qds;
 };

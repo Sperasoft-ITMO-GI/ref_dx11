@@ -16,30 +16,40 @@ static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
 	{UI_FADE,  fadeMac}
 };
 
+UIRenderer::~UIRenderer() {
+	delete factory;
+	quad->~Quad();
+}
+
 void UIRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\UITexture.hlsl", new UIPSProvider(), macro);
+	quad = new Quad(ConstantBufferQuad{});
 }
 
 void UIRenderer::Render() {
-	for (auto& quad : quads) {
-		if (quad.GetFlags() & UI_COLORED) {
+	Renderer* renderer = Renderer::GetInstance();
+
+	for (auto& qd : qds) {
+		if (qd.flags & UI_COLORED) {
 			SetPipelineState(factory->GetState(UI_COLORED));
 		}
-		if (quad.GetFlags() & UI_TEXTURED) {
+		if (qd.flags & UI_TEXTURED) {
 			SetPipelineState(factory->GetState(UI_TEXTURED));
 		}
-		if (quad.GetFlags() & UI_FADE) {
+		if (qd.flags & UI_FADE) {
 			SetPipelineState(factory->GetState(UI_FADE));
 		}
 
-		Draw(quad);
+		renderer->Bind(qd.teture_index);
+		quad->UpdateCB(qd.cbq);
+		quad->DrawStatic();
 	}
 
-	quads.clear();
+	qds.clear();
 }
 
-void UIRenderer::AddElement(const Quad& quad) {
-	quads.push_back(quad);
+void UIRenderer::Add(const QuadDefinitions& qd) {
+	qds.push_back(qd);
 }
 
 void UIRenderer::UIPSProvider::PatchPipelineState(PipelineState* state, int defines) {

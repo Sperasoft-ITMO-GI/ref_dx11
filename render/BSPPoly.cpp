@@ -4,7 +4,7 @@ VertexBuffer BSPPoly::vb;
 IndexBuffer  BSPPoly::ib;
 
 BSPPoly::BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, int flags, int tex_index, int lm_index)
-	: Primitive(flags, tex_index, lm_index, true), cb(cb) {
+	: Primitive(true), cb(cb) {
 }
 
 BSPPoly::BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, IndexBuffer& ib,

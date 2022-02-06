@@ -3,8 +3,8 @@
 VertexBuffer Quad::vb;
 IndexBuffer  Quad::ib;
 
-Quad::Quad(ConstantBufferQuad& cbq, int flags, int tex_index, int lm_index) 
-	: Primitive(flags, tex_index, lm_index, true), cb(cbq) {
+Quad::Quad(ConstantBufferQuad& cbq) 
+	: Primitive(true), cb(cbq) {
 }
 
 Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer& ib, 
@@ -18,7 +18,7 @@ Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb,
 }
 
 Quad::~Quad() {
-	cb.~ConstantBuffer();
+	//cb.~ConstantBuffer();
 }
 
 int Quad::GetFlags() {
@@ -51,11 +51,13 @@ void Quad::DrawIndexed() {
 void Quad::DrawStatic() {
 	Renderer* renderer = Renderer::GetInstance();
 
-	renderer->Bind(texture_index);
-
 	vb.Bind();
 	ib.Bind();
 	cb.Bind<ConstantBufferQuad>();
 
 	renderer->GetContext()->DrawIndexed(ib.GetCount(), 0u, 0u);
+}
+
+void Quad::UpdateCB(ConstantBufferQuad& cbq) {
+	cb.Update(cbq);
 }
