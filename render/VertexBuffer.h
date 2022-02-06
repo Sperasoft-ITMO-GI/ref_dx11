@@ -16,6 +16,8 @@ public:
 
 	VertexBuffer();
 
+	~VertexBuffer();
+
 	template<typename T>
 	VertexBuffer(std::vector<T> vertices) : stride(sizeof(T)), count(vertices.size()) {
 		Renderer* renderer = Renderer::GetInstance();
@@ -64,6 +66,6 @@ public:
 private:
 	UINT stride;
 	UINT count;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> shader;
+	ID3D11Buffer* buffer;
+	ID3D11VertexShader* shader;
 };

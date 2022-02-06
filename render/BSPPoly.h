@@ -6,7 +6,7 @@
 #include <WndDxIncludes.h>
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
-#include <ConstantBuffer.h>
+#include <ConstantBuffer.hpp>
 #include <Primitive.h>
 
 class BSPPoly : public Primitive {

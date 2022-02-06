@@ -12,13 +12,15 @@ class VertexShader : public Shader, public Bindable {
 public:
 	VertexShader();
 
+	~VertexShader();
+
 	virtual void Create(Microsoft::WRL::ComPtr<ID3DBlob> blob) override;
 
 	virtual void Bind() override;
 
-	ID3DBlob* GetBlob();
+	Microsoft::WRL::ComPtr<ID3DBlob> GetBlob();
 
 private:
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> shader;
+	ID3D11VertexShader* shader;
 	Microsoft::WRL::ComPtr<ID3DBlob> blob;
 };

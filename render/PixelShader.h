@@ -12,10 +12,12 @@ class PixelShader : public Shader,  public Bindable {
 public:
 	PixelShader();
 
+	~PixelShader();
+
 	virtual void Bind() override;
 
 	virtual void Create(Microsoft::WRL::ComPtr<ID3DBlob> blob) override;
 
 private:
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> shader;
+	ID3D11PixelShader* shader;
 };

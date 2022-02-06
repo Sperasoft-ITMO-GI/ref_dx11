@@ -21,7 +21,10 @@ Renderer::Renderer()
 	  msaa_quality(0u),
 	  is_4xmsaa_enable(false),
       is_initialized(false),
-      sampler(nullptr) {
+      sampler(nullptr), 
+	  model_view(DirectX::XMMatrixIdentity()),
+      orthogonal(DirectX::XMMatrixIdentity()), 
+      perspective(DirectX::XMMatrixIdentity()){
 }
 
 Renderer* Renderer::GetInstance() {
@@ -88,13 +91,17 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-		ComPtr<IDXGIDevice> dxgi_device;
-		ComPtr<IDXGIAdapter> adapter;
-		ComPtr<IDXGIFactory> factory;
+		IDXGIDevice* dxgi_device;
+		IDXGIAdapter* adapter;
+		IDXGIFactory* factory;
 		DXCHECK(device->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgi_device));
 		DXCHECK(dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void**)&adapter));
 		DXCHECK(adapter->GetParent(__uuidof(IDXGIFactory), (void**)&factory));
-		DXCHECK(factory->CreateSwapChain(device.Get(), &swap_chain_desc, &swap_chain));
+		DXCHECK(factory->CreateSwapChain(device, &swap_chain_desc, &swap_chain));
+
+		dxgi_device->Release();
+		adapter->Release();
+		factory->Release();
 
 		// DO we really need it?
 		assert(device);
@@ -142,8 +149,10 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 
 		DXCHECK(device->CreateDepthStencilView(buffer, &depth_stencil_view_desc, &depth_stencil_view));
 
-		context->OMSetRenderTargets(1, render_target_view.GetAddressOf(), depth_stencil_view.Get());
-		context->OMSetDepthStencilState(depth_stencil_state.Get(), 1);
+		buffer->Release();
+
+		context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
+		context->OMSetDepthStencilState(depth_stencil_state, 1);
 
 		viewport.TopLeftX = 0.0f;
 		viewport.TopLeftY = 0.0f;
@@ -173,7 +182,7 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 
 		device->CreateSamplerState(&sampler_desc, &sampler);
 
-		context->PSSetSamplers(0, 1, sampler.GetAddressOf());
+		context->PSSetSamplers(0, 1, &sampler);
 
 		InitMatrix(width, height);
 
@@ -239,14 +248,14 @@ void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* d
 	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	SRVDesc.Texture2D.MipLevels = 1;
 
-	DXCHECK(device->CreateShaderResourceView(tex.Get(), &SRVDesc, texture_array_srv[texNum].GetAddressOf()));
+	DXCHECK(device->CreateShaderResourceView(tex.Get(), &SRVDesc, &texture_array_srv[texNum]));
 }
 
 void Renderer::UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum) {
 	using Microsoft::WRL::ComPtr;
 
 	ID3D11Resource* res = nullptr;
-	texture_array_srv[texNum].Get()->GetResource(&res);
+	texture_array_srv[texNum]->GetResource(&res);
 
 	context->UpdateSubresource(res, NULL, NULL, data, width * (bits / 8), 0);
 
@@ -255,7 +264,7 @@ void Renderer::UpdateTextureInSRV(int width, int height, int bits, unsigned char
 
 void Renderer::DeleteTextureFromSRV(int texNum)
 {
-	texture_array_srv[texNum].Get()->Release();
+	texture_array_srv[texNum]->Release();
 }
 
 void Renderer::Test(char* name, int width, int height, int bits, unsigned char* data, int type) 
@@ -299,22 +308,22 @@ void Renderer::Test(char* name, int width, int height, int bits, unsigned char* 
 
 void Renderer::Bind(int texture_index) {
 	if(texture_index != -1)
-		context->PSSetShaderResources(0, 1, texture_array_srv[texture_index].GetAddressOf());
+		context->PSSetShaderResources(0, 1, &texture_array_srv[texture_index]);
 }
 
-ComPtr<ID3D11Device> Renderer::GetDevice() {
+ID3D11Device* Renderer::GetDevice() {
 	return device;
 }
 
-ComPtr<ID3D11DeviceContext> Renderer::GetContext() {
+ID3D11DeviceContext* Renderer::GetContext() {
 	return context;
 }
 
-ComPtr<IDXGISwapChain> Renderer::GetSwapChain() {
+IDXGISwapChain* Renderer::GetSwapChain() {
 	return swap_chain;
 }
 
-Microsoft::WRL::ComPtr<ID3D11RenderTargetView> Renderer::GetRenderTargetView() {
+ID3D11RenderTargetView* Renderer::GetRenderTargetView() {
 	return render_target_view;
 }
 
@@ -346,7 +355,16 @@ DirectX::XMMATRIX Renderer::GetModelView()
 Renderer::~Renderer()
 {
 	// release SRV's
-	
+	for (int i = 0; i < 1600; ++i) {
+		texture_array_srv[i]->Release();
+	}
+	sampler->Release();
+	render_target_view->Release();
+	depth_stencil_state->Release();
+	depth_stencil_view->Release();
+	swap_chain->Release();
+	context->Release();
+	device->Release();
 
 	// destroy window
 	window.get()->~Window();

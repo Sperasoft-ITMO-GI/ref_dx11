@@ -6,6 +6,13 @@ using Microsoft::WRL::ComPtr;
 VertexBuffer::VertexBuffer() : stride(0), count(0), buffer(nullptr), shader(nullptr) {
 }
 
+VertexBuffer::~VertexBuffer() {
+	if (buffer)
+		buffer->Release();
+	if (shader)
+		shader->Release();
+}
+
 VertexBuffer::VertexBuffer(UIVertex vertices[]) : stride(sizeof(UIVertex)) {
 	Renderer* renderer = Renderer::GetInstance();
 	D3D11_BUFFER_DESC buffer_desc{};
@@ -26,7 +33,7 @@ VertexBuffer::VertexBuffer(UIVertex vertices[]) : stride(sizeof(UIVertex)) {
 void VertexBuffer::Bind() {
 	Renderer* renderer = Renderer::GetInstance();
 	const UINT offset = 0u;
-	renderer->GetContext()->IASetVertexBuffers(0u, 1u, buffer.GetAddressOf(), &stride, &offset);
+	renderer->GetContext()->IASetVertexBuffers(0u, 1u, &buffer, &stride, &offset);
 }
 
 UINT VertexBuffer::GetCount() {

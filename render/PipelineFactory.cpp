@@ -12,8 +12,8 @@ PipelineState* PipelineFactory::GetState(int defs) {
 	else {
 		ps = new PipelineState();
 
-		ps->vs->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "VSMain", "vs_5_0"));
-		ps->ps->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "PSMain", "ps_5_0"));
+		ps->vs->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "VSMain", "vs_5_0").Get());
+		ps->ps->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "PSMain", "ps_5_0").Get());
 		
 		provider->PatchPipelineState(ps, defs);
 

@@ -84,7 +84,7 @@
     <ClInclude Include="render\IndexBuffer.h">
       <Filter>Render\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="render\ConstantBuffer.h">
+    <ClInclude Include="render\ConstantBuffer.hpp">
       <Filter>Render\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="render\BlendState.h">

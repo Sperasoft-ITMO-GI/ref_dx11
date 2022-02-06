@@ -6,16 +6,18 @@
 #include <WndDxIncludes.h>
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
-#include <ConstantBuffer.h>
+#include <ConstantBuffer.hpp>
 #include <Primitive.h>
 
 class Quad : public Primitive {
 public:
-	Quad(ConstantBuffer<ConstantBufferQuad>& cb, int flags, int tex_index = -1, int lm_index = -1);
+	Quad(ConstantBufferQuad& cbq, int flags, int tex_index = -1, int lm_index = -1);
 	Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer& ib,
 		 int flags, int tex_index = -1, int lm_index = -1);	
 	Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb,
 		 int flags, int tex_index = -1, int lm_index = -1);
+
+	~Quad();
 
 	int GetFlags();
 

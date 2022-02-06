@@ -13,6 +13,8 @@ public:
 
 	IndexBuffer(std::vector<uint16_t> indexes); // maybe uint16_t too small for store indixes;
 
+	~IndexBuffer();
+
 	void Create(std::vector<uint16_t> indexes);
 
 	virtual void Bind() override;
@@ -20,5 +22,5 @@ public:
 	uint16_t GetCount();
 private:
 	uint16_t count;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
+	ID3D11Buffer* buffer;
 };

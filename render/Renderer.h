@@ -40,8 +40,8 @@ public:
 	DirectX::XMMATRIX GetModelView();
 
 	void Clear() {
-		context->ClearRenderTargetView(render_target_view.Get(), DirectX::Colors::Black);
-		context->ClearDepthStencilView(depth_stencil_view.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+		context->ClearRenderTargetView(render_target_view, DirectX::Colors::Black);
+		context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH, 1.0f, 0u);
 	}
 
 	void Swap() {
@@ -49,19 +49,19 @@ public:
 	}
 
 	void SetDepthBuffer() {
-		context->OMSetRenderTargets(1, render_target_view.GetAddressOf(), depth_stencil_view.Get());
+		context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
 	}
 
 	void UnSetDepthBuffer() {
-		context->OMSetRenderTargets(1, render_target_view.GetAddressOf(), nullptr);
+		context->OMSetRenderTargets(1, &render_target_view, nullptr);
 	}
 
 	void Bind(int texture_index);
 
-	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
-	Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain();
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> GetRenderTargetView();
+	ID3D11Device* GetDevice();
+	ID3D11DeviceContext* GetContext();
+	IDXGISwapChain* GetSwapChain();
+	ID3D11RenderTargetView* GetRenderTargetView();
 	std::tuple<float, float> GetWindowParameters();
 	UINT GetMSAAQuality() {
 		return msaa_quality;
@@ -76,12 +76,12 @@ private:
 private:
 	std::unique_ptr<Window> window;
 
-	Microsoft::WRL::ComPtr<ID3D11Device> device;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
-	Microsoft::WRL::ComPtr<IDXGISwapChain> swap_chain;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depth_stencil_view;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depth_stencil_state;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view;
+	ID3D11Device* device;
+	ID3D11DeviceContext* context;
+	IDXGISwapChain* swap_chain;
+	ID3D11DepthStencilView* depth_stencil_view;
+	ID3D11DepthStencilState* depth_stencil_state;
+	ID3D11RenderTargetView* render_target_view;
 
 	D3D11_VIEWPORT viewport;
 
@@ -90,8 +90,8 @@ private:
 	bool is_4xmsaa_enable;
 	bool is_initialized;
 	
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture_array_srv[1600];
+	ID3D11SamplerState* sampler;
+	ID3D11ShaderResourceView* texture_array_srv[1600];
 
 	DirectX::XMMATRIX orthogonal;
 	DirectX::XMMATRIX perspective;

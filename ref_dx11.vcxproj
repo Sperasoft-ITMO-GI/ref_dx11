@@ -174,7 +174,7 @@
     <ClInclude Include="render\Bindable.h" />
     <ClInclude Include="render\BlendState.h" />
     <ClInclude Include="render\BSPVertex.h" />
-    <ClInclude Include="render\ConstantBuffer.h" />
+    <ClInclude Include="render\ConstantBuffer.hpp" />
     <ClInclude Include="render\IndexBuffer.h" />
     <ClInclude Include="render\InputLayout.h" />
     <ClInclude Include="render\IStateProvider.h" />

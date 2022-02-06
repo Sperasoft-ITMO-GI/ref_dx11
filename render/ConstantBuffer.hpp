@@ -17,8 +17,12 @@ struct ConstantBufferPolygon {
 template<typename T>
 class ConstantBuffer {
 public:
+
+	ConstantBuffer() :transforms(T()), buffer(nullptr){
+	}
+
 	template<typename T>
-	ConstantBuffer(const T& trans) : transfroms(trans) {
+	ConstantBuffer(const T& trans) : transforms(trans) {
 		Renderer* renderer = Renderer::GetInstance();
 
 		D3D11_BUFFER_DESC constant_buffer_desc{ 0 };
@@ -33,26 +37,31 @@ public:
 		renderer->GetDevice()->CreateBuffer(&constant_buffer_desc, &constant_subresource_data, &buffer);
 	}
 
+	~ConstantBuffer() {
+		//if (buffer)
+			//buffer->Release();
+	}
+
 	template<typename T>
 	void Update(const T& transforms) {
 		Renderer* renderer = Renderer::GetInstance();
 		
-		Microsoft::WRL::ComPtr<ID3D11DeviceContext> context = renderer->GetContext();
+		ID3D11DeviceContext* context = renderer->GetContext();
 
 		T data = transforms;
 		D3D11_MAPPED_SUBRESOURCE mapped_subresource;
 		ZeroMemory(&mapped_subresource, sizeof(D3D11_MAPPED_SUBRESOURCE));
-		DXCHECK(context->Map(buffer.Get(), 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapped_subresource));
+		DXCHECK(context->Map(buffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapped_subresource));
 		CopyMemory(mapped_subresource.pData, data, sizeof(T));
-		context->Unmap(buffer.Get(), 0u);
+		context->Unmap(buffer, 0u);
 	}
 
 	template<typename T>
 	void Bind() {
 		Renderer* renderer = Renderer::GetInstance();
-		renderer->GetContext()->VSSetConstantBuffers(0u, 1u, buffer.GetAddressOf());
+		renderer->GetContext()->VSSetConstantBuffers(0u, 1u, &buffer);
 	}
 private:
-	T transfroms;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
+	T transforms;
+	ID3D11Buffer* buffer;
 };

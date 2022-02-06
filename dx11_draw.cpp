@@ -68,8 +68,7 @@ void Draw_Char(int x, int y, int num)
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(8, 8, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
 	cbq.texture_transform *= XMMatrixTranspose(XMMatrixScaling(size, size, 0) * XMMatrixTranslation(fcol, frow, 0));
 
-	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad textured_quad(cb, UI_TEXTURED, draw_chars->texnum);
+	Quad textured_quad(cbq, UI_TEXTURED, draw_chars->texnum);
 	ui_renderer->AddElement(textured_quad);
 }
 
@@ -152,8 +151,7 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic)
 	ConstantBufferQuad cbq;
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(w, h, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
 
-	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad textured_quad(cb, UI_TEXTURED, gl->texnum);
+	Quad textured_quad(cbq, UI_TEXTURED, gl->texnum);
 	ui_renderer->AddElement(textured_quad);
 }
 
@@ -197,8 +195,7 @@ void Draw_Pic(int x, int y, char* pic)
 	ConstantBufferQuad cbq;
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(gl->width, gl->height, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
 
-	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad textured_quad(cb, UI_TEXTURED, gl->texnum);
+	Quad textured_quad(cbq, UI_TEXTURED, gl->texnum);
 	ui_renderer->AddElement(textured_quad);
 }
 
@@ -245,8 +242,7 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic)
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0) * renderer->GetOrthogonal());
 	cbq.texture_transform *= XMMatrixTranspose(XMMatrixScaling(w / 64.0f, h / 64.0f, 0) * XMMatrixTranslation(x / 64.0f, y / 64.0f, 0));
 
-	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad textured_quad(cb, UI_TEXTURED, image->texnum);
+	Quad textured_quad(cbq, UI_TEXTURED, image->texnum);
 	ui_renderer->AddElement(textured_quad);
 }
 
@@ -285,8 +281,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0) * renderer->GetOrthogonal());
 	//cbq.color_transform *= (XMMatrixScaling(color.v[0] / 255, color.v[1] / 255, color.v[2] / 255) * XMMatrixTranspose(orthogonal));
 
-	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad quad(cb, UI_COLORED, -1);
+	Quad quad(cbq, UI_COLORED, -1);
 	ui_renderer->AddElement(quad);
 }
 
@@ -311,8 +306,7 @@ void Draw_FadeScreen(void)
 	using namespace DirectX;
 	ConstantBufferQuad cbq;
 	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(vid.width, vid.height, 0) * renderer->GetOrthogonal());
-	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad quad(cb, UI_FADE, -1);
+	Quad quad(cbq, UI_FADE, -1);
 	ui_renderer->AddElement(quad);
 }
 
@@ -410,7 +404,6 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 	cbq.position_transform *= XMMatrixTranspose((XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0)) * orthogonal);
 	cbq.texture_transform *= XMMatrixTranspose(XMMatrixScaling(1.0f, t, 0));
 
-	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	Quad textured_quad(cb, UI_TEXTURED, CINEMATIC_PICTURE);
+	Quad textured_quad(cbq, UI_TEXTURED, CINEMATIC_PICTURE);
 	ui_renderer->AddElement(textured_quad);
 }

@@ -3,8 +3,8 @@
 VertexBuffer Quad::vb;
 IndexBuffer  Quad::ib;
 
-Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, int flags, int tex_index, int lm_index) 
-	: Primitive(flags, tex_index, lm_index, true), cb(cb) {
+Quad::Quad(ConstantBufferQuad& cbq, int flags, int tex_index, int lm_index) 
+	: Primitive(flags, tex_index, lm_index, true), cb(cbq) {
 }
 
 Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer& ib, 
@@ -15,6 +15,10 @@ Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer
 Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, 
 	       int flags, int tex_index, int lm_index) 
 	: Primitive(vb, ib, flags, tex_index, lm_index, false), cb(cb) {
+}
+
+Quad::~Quad() {
+	cb.~ConstantBuffer();
 }
 
 int Quad::GetFlags() {

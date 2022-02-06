@@ -21,6 +21,11 @@ IndexBuffer::IndexBuffer(std::vector<uint16_t> indexes) : count(indexes.size()) 
 	DXCHECK(renderer->GetDevice()->CreateBuffer(&index_buffer_desc, &index_subresource_data, &buffer));
 }
 
+IndexBuffer::~IndexBuffer() {
+	if (buffer)
+		buffer->Release();
+}
+
 void IndexBuffer::Create(std::vector<uint16_t> indexes) {
 	count = indexes.size();
 	if (!buffer) {
@@ -45,7 +50,7 @@ void IndexBuffer::Create(std::vector<uint16_t> indexes) {
 void IndexBuffer::Bind() {
 	Renderer* renderer = Renderer::GetInstance();
 	const UINT offset = 0u;
-	renderer->GetContext()->IASetIndexBuffer(buffer.Get(), DXGI_FORMAT_R16_UINT, offset);
+	renderer->GetContext()->IASetIndexBuffer(buffer, DXGI_FORMAT_R16_UINT, offset);
 }
 
 uint16_t IndexBuffer::GetCount() {
