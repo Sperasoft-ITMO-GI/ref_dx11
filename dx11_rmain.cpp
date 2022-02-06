@@ -1,7 +1,5 @@
 // dx11r_main.c
 
-#define _XM_NO_INTRINSICS_
-
 #include <dx11_local.h>
 
 void R_Clear(void);
@@ -698,9 +696,14 @@ void R_SetupDX(void)
 	// Записываем моделвью матрицу в ворлд матрицу
 	// Может быть нужно траспанировать
 
-	for (int i = 0; i < 16; ++i) {
-		r_world_matrix[i] = model_view.m[i / 4][i % 4];
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			r_world_matrix[(i * 4) + j] = model_view.r[i].m128_f32[j];
+		}
 	}
+
 	//qglGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
 
 	////
