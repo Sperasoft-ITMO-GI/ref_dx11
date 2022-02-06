@@ -589,8 +589,8 @@ void R_DrawSkyBox(void)
 		vect.push_back(MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i));
 		vect.push_back(MakeSkyVec(skymaxs[0][i], skymins[1][i], i));
 		VertexBuffer vb(vect);
-		Quad sky_quad(cb, vb, ib, DEFAULT, sky_images[skytexorder[i]]->texnum);
-		sky_renderer->AddElement(sky_quad);
+		//Quad sky_quad(cb, vb, ib, DEFAULT, sky_images[skytexorder[i]]->texnum);
+		//sky_renderer->AddElement(sky_quad);
 		//qglEnd();
 	}
 	//qglPopMatrix();

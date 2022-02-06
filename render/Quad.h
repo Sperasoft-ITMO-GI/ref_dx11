@@ -13,14 +13,10 @@ class Quad : public Primitive {
 public:
 
 	Quad(ConstantBufferQuad& cbq);
-	Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer& ib,
-		 int flags, int tex_index = -1, int lm_index = -1);	
-	Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb,
-		 int flags, int tex_index = -1, int lm_index = -1);
+	Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer& ib);	
+	Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb);
 
 	~Quad();
-
-	int GetFlags();
 
 	void Draw();
 

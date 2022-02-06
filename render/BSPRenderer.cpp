@@ -15,16 +15,16 @@ void  BSPRenderer::Init() {
 }
 
 void BSPRenderer::Render() {
-	for (auto& polygon : polygons) {
+	//for (auto& polygon : polygons) {
 
-		if (polygon.GetFlags() & BSP_SOLID) {
-			SetPipelineState(factory->GetState(BSP_SOLID));
-		}
+	//	if (polygon.GetFlags() & BSP_SOLID) {
+	//		SetPipelineState(factory->GetState(BSP_SOLID));
+	//	}
 
-		Draw(polygon);
-	}
+	//	Draw(polygon);
+	//}
 
-	polygons.clear();
+	//polygons.clear();
 }
 
 void BSPRenderer::AddElement(const BSPPoly& polygon) {

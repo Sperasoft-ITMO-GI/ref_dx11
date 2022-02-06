@@ -11,13 +11,9 @@
 
 class BSPPoly : public Primitive {
 public:
-	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, int flags, int tex_index = -1, int lm_index = -1);
-	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, IndexBuffer& ib,
-		int flags, int tex_index = -1, int lm_index = -1);
-	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb,
-		int flags, int tex_index = -1, int lm_index = -1);
-
-	int GetFlags();
+	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb);
+	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, IndexBuffer& ib);
+	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb);
 
 	void Draw();
 

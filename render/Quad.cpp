@@ -7,28 +7,20 @@ Quad::Quad(ConstantBufferQuad& cbq)
 	: Primitive(true), cb(cbq) {
 }
 
-Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer& ib, 
-	       int flags, int tex_index, int lm_index)
-	: Primitive(vb, ib, flags, tex_index, lm_index, true), cb(cb) {
+Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, IndexBuffer& ib)
+	: Primitive(vb, ib, true), cb(cb) {
 }
 
-Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb, 
-	       int flags, int tex_index, int lm_index) 
-	: Primitive(vb, ib, flags, tex_index, lm_index, false), cb(cb) {
+Quad::Quad(ConstantBuffer<ConstantBufferQuad>& cb, VertexBuffer& vb) 
+	: Primitive(vb, ib, false), cb(cb) {
 }
 
 Quad::~Quad() {
 	//cb.~ConstantBuffer();
 }
 
-int Quad::GetFlags() {
-	return flags;
-}
-
 void Quad::Draw() {
 	Renderer* renderer = Renderer::GetInstance();
-
-	renderer->Bind(texture_index);
 
 	dynamic_vb.Bind();
 	cb.Bind<ConstantBufferQuad>();
@@ -38,8 +30,6 @@ void Quad::Draw() {
 
 void Quad::DrawIndexed() {
 	Renderer* renderer = Renderer::GetInstance();
-
-	renderer->Bind(texture_index);
 
 	dynamic_vb.Bind();
 	dynamic_ib.Bind();

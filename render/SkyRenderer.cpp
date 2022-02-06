@@ -13,7 +13,7 @@ void SkyRenderer::Init() {
 }
 
 void SkyRenderer::Render() {
-	for (auto& quad : quads) {
+	/*for (auto& quad : quads) {
 		if (quad.GetFlags() & DEFAULT) {
 			SetPipelineState(factory->GetState(DEFAULT));
 		}
@@ -21,7 +21,7 @@ void SkyRenderer::Render() {
 		Draw(quad);
 	}
 
-	quads.clear();
+	quads.clear();*/
 }
 
 void SkyRenderer::AddElement(const Quad& quad) {

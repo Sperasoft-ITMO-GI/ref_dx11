@@ -608,8 +608,8 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 
 	ConstantBuffer<ConstantBufferPolygon> CB(cbp);
 
-	BSPPoly bspP(CB, vbp, ib, BSP_SOLID, texNum);
-	bsp_renderer->AddElement(bspP);
+	//BSPPoly bspP(CB, vbp, ib, BSP_SOLID, texNum);
+	//bsp_renderer->AddElement(bspP);
 }
 
 //============
