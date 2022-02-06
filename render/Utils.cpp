@@ -12,7 +12,7 @@ wstring ToWide(const string& narrow) {
 	return wide;
 };
 
-ComPtr<ID3DBlob> CompileShader(
+ID3DBlob* CompileShader(
 	const wchar_t* filename,
 	const D3D_SHADER_MACRO* defines,
 	const char* entrypoint,
@@ -26,10 +26,10 @@ ComPtr<ID3DBlob> CompileShader(
 	compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #endif
 
-	ComPtr<ID3DBlob> byteCode;
-	ComPtr<ID3DBlob> errors;
+	ID3DBlob* byteCode;
+	ID3DBlob* errors;
 
-	printf("%s", defines[1].Name);
+	printf("%s\n", defines[0].Name);
 
 	D3DCompileFromFile(filename, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		entrypoint, target, compileFlags, 0, &byteCode, &errors);

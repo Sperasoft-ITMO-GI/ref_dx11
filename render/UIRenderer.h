@@ -30,6 +30,14 @@ public:
 
 	void Add(const QuadDefinitions& qd);
 
+	void InitNewFactory(const wchar_t* path);
+
+	void CompileWithDefines(int defines);
+
+	void BindNewFactory();
+
+	void ClearTempFactory();
+
 private:
 	class UIPSProvider : public IStateProvider {
 	public:
@@ -38,6 +46,7 @@ private:
 
 private:
 	PipelineFactory* factory;
+	PipelineFactory* factory_temp;
 	Quad* quad;
 	std::vector<QuadDefinitions> qds;
 };

@@ -4,16 +4,21 @@ PipelineFactory::PipelineFactory(const std::wstring& path, IStateProvider* prov,
 	: shader_path(path), provider(prov), def_to_sm(defs) {
 }
 
-PipelineState* PipelineFactory::GetState(int defs) {
+PipelineState* PipelineFactory::GetState(int defs) 
+{
 	PipelineState* ps;
-	if (def_to_ps.count(defs)) {
+	if (def_to_ps.count(defs)) 
+	{
 		return def_to_ps.at(defs);
 	}
-	else {
+	else 
+	{
 		ps = new PipelineState();
+		ps->vs = new VertexShader();
+		ps->ps = new PixelShader();
 
-		ps->vs->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "VSMain", "vs_5_0").Get());
-		ps->ps->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "PSMain", "ps_5_0").Get());
+		ps->vs->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "VSMain", "vs_5_0"));
+		ps->ps->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "PSMain", "ps_5_0"));
 		
 		provider->PatchPipelineState(ps, defs);
 

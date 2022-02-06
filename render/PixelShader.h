@@ -16,7 +16,7 @@ public:
 
 	virtual void Bind() override;
 
-	virtual void Create(Microsoft::WRL::ComPtr<ID3DBlob> blob) override;
+	virtual void Create(ID3DBlob* blob) override;
 
 private:
 	ID3D11PixelShader* shader;

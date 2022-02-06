@@ -12,6 +12,7 @@ public:
 	PipelineFactory(const std::wstring& path, IStateProvider* prov, std::unordered_map<int, D3D_SHADER_MACRO*> defs);
 
 	PipelineState* GetState(int defs);
+
 private:
 	std::wstring shader_path;
 	IStateProvider* provider;

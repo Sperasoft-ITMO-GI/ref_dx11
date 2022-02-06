@@ -10,8 +10,8 @@ VertexShader::~VertexShader() {
 	blob->Release();
 }
 
-void VertexShader::Create(Microsoft::WRL::ComPtr<ID3DBlob> b) {
-	b.CopyTo(&blob);
+void VertexShader::Create(ID3DBlob* b) {
+	blob = b;
 	Renderer* renderer = Renderer::GetInstance();
 	renderer->GetDevice()->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader);
 }
@@ -21,6 +21,6 @@ void VertexShader::Bind() {
 	renderer->GetContext()->VSSetShader(shader, nullptr, 0u);
 }
 
-Microsoft::WRL::ComPtr<ID3DBlob> VertexShader::GetBlob() {
+ID3DBlob* VertexShader::GetBlob() {
 	return blob;
 }

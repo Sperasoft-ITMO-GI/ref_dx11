@@ -59,3 +59,23 @@ void UIRenderer::UIPSProvider::PatchPipelineState(PipelineState* state, int defi
 	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 }
 
+void UIRenderer::InitNewFactory(const wchar_t* path)
+{
+	factory_temp = new PipelineFactory(path, new UIPSProvider(), macro);
+}
+
+void UIRenderer::CompileWithDefines(int defines)
+{
+	factory_temp->GetState(defines);
+}
+
+void UIRenderer::ClearTempFactory()
+{
+	delete factory_temp;
+}
+
+void UIRenderer::BindNewFactory()
+{
+	delete factory;
+	factory = factory_temp;
+}

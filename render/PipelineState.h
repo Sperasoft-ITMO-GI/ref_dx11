@@ -10,8 +10,8 @@
 #include <States.h>
 
 struct PipelineState {
-	VertexShader* vs = new VertexShader();
-	PixelShader* ps = new PixelShader();
+	VertexShader* vs = nullptr;
+	PixelShader* ps = nullptr;
 	ID3D11BlendState* bs = nullptr;
 	ID3D11RasterizerState* rs = nullptr;
 	ID3D11InputLayout* layout = nullptr;

@@ -31,7 +31,7 @@
 
 std::wstring ToWide(const std::string& narrow);
 
-Microsoft::WRL::ComPtr<ID3DBlob> CompileShader(const wchar_t* filename, const D3D_SHADER_MACRO* defines,
+ID3DBlob* CompileShader(const wchar_t* filename, const D3D_SHADER_MACRO* defines,
                                                const char* entrypoint, const char* target);
 
 DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync);

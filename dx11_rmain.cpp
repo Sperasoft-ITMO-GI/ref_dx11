@@ -82,11 +82,27 @@ States* States::states = nullptr;
 cvar_t* gl_round_down;
 
 
-void RecompileShaders()
+void CompileShaders()
 {
-	// TODO: added function to recompile shaders
-	//if(dx11App.CompileAllShaders())
-		//printf("RECOMPILE SUCCESS\n");
+	// to recompile just input "cl" in colsole
+	
+	// UI_Renderer
+	ui_renderer->InitNewFactory(L"ref_dx11\\shaders\\UITexture.hlsl");
+	ui_renderer->CompileWithDefines(UI_COLORED);
+	ui_renderer->CompileWithDefines(UI_TEXTURED);
+	ui_renderer->BindNewFactory();
+
+	// Если ошибка, то нужно вызывать эту функцию ниже
+	// Но как обрабатывать ошибки эти, я не знаю
+	//ui_renderer->ClearTempFactory();
+
+
+	// BSP_Renderer
+
+
+	// SKY_Renderer
+
+	printf("RECOMPILE SUCCESS\n");
 }
 
 
@@ -963,7 +979,7 @@ void R_Register(void)
 	vid_gamma = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
 	vid_ref = ri.Cvar_Get("vid_ref", "gl", CVAR_ARCHIVE);
 
-	ri.Cmd_AddCommand("compile_shaders", RecompileShaders);
+	ri.Cmd_AddCommand("cl", CompileShaders);
 	ri.Cmd_AddCommand("imagelist", GL_ImageList_f);
 	ri.Cmd_AddCommand("screenshot", GL_ScreenShot_f);
 	ri.Cmd_AddCommand("modellist", Mod_Modellist_f);

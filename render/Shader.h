@@ -4,5 +4,5 @@
 
 class Shader {
 public:
-	virtual void Create(Microsoft::WRL::ComPtr<ID3DBlob> blob) = 0;
+	virtual void Create(ID3DBlob* blob) = 0;
 };

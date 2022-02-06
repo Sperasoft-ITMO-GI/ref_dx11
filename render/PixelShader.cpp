@@ -12,7 +12,7 @@ void PixelShader::Bind() {
 	renderer->GetContext()->PSSetShader(shader, nullptr, 0u);
 }
 
-void PixelShader::Create(Microsoft::WRL::ComPtr<ID3DBlob> blob) {
+void PixelShader::Create(ID3DBlob* blob) {
 	Renderer* renderer = Renderer::GetInstance();
 	renderer->GetDevice()->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader);
 }

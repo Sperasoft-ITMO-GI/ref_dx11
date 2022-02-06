@@ -14,13 +14,13 @@ public:
 
 	~VertexShader();
 
-	virtual void Create(Microsoft::WRL::ComPtr<ID3DBlob> blob) override;
+	virtual void Create(ID3DBlob* blob) override;
 
 	virtual void Bind() override;
 
-	Microsoft::WRL::ComPtr<ID3DBlob> GetBlob();
+	ID3DBlob* GetBlob();
 
 private:
 	ID3D11VertexShader* shader;
-	Microsoft::WRL::ComPtr<ID3DBlob> blob;
+	ID3DBlob* blob;
 };
