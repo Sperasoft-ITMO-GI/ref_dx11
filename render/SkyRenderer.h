@@ -10,7 +10,7 @@
 #include <Quad.h>
 #include <Utils.hpp>
 
-#define DEFAULT  0x001
+#define SKY_DEFAULT  0x001
 
 struct SkyDefinitions {
 	std::vector<SkyVertex> vert;
@@ -35,6 +35,14 @@ public:
 
 	void Add(const SkyDefinitions& quad);
 
+	void InitNewFactory(const wchar_t* path);
+
+	void CompileWithDefines(int defines);
+
+	void BindNewFactory();
+
+	void ClearTempFactory();
+
 private:
 	class SkyPSProvider : public IStateProvider {
 	public:
@@ -43,6 +51,7 @@ private:
 
 private:
 	PipelineFactory* factory;
+	PipelineFactory* factory_temp;
 	std::vector<Quad> quads;
 	Quad* q;
 	std::vector<SkyDefinitions> sky_defs;

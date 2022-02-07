@@ -98,9 +98,14 @@ void CompileShaders()
 
 
 	// BSP_Renderer
-
+	bsp_renderer->InitNewFactory(L"ref_dx11\\shaders\\BSP.hlsl");
+	bsp_renderer->CompileWithDefines(BSP_SOLID);
+	bsp_renderer->BindNewFactory();
 
 	// SKY_Renderer
+	sky_renderer->InitNewFactory(L"ref_dx11\\shaders\\Sky.hlsl");
+	sky_renderer->CompileWithDefines(SKY_DEFAULT);
+	sky_renderer->BindNewFactory();
 
 	printf("RECOMPILE SUCCESS\n");
 }

@@ -824,13 +824,6 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 	if (gl_round_down->value && scaled_height > height && mipmap)
 		scaled_height >>= 1;
 
-	// let people sample down the world textures for speed
-	if (mipmap)
-	{
-		//scaled_width >>= (int)gl_picmip->value;
-		//scaled_height >>= (int)gl_picmip->value;
-	}
-
 	// don't ever bother with >256 textures
 	if (scaled_width > 256)
 		scaled_width = 256;
@@ -881,37 +874,7 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 	renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
 	renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, mipmap);
 
-	if (mipmap)
-	{
-		int		miplevel;
-
-		miplevel = 0;
-		while (scaled_width > 1 || scaled_height > 1)
-		{
-			GL_MipMap((byte*)scaled, scaled_width, scaled_height);
-			scaled_width >>= 1;
-			scaled_height >>= 1;
-			if (scaled_width < 1)
-				scaled_width = 1;
-			if (scaled_height < 1)
-				scaled_height = 1;
-			miplevel++;
-			//qglTexImage2D(GL_TEXTURE_2D, miplevel, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
-		}
-	}
 done:;
-
-
-	if (mipmap)
-	{
-		//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-		//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
-	}
-	else
-	{
-		//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
-		//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
-	}
 
 	return (samples == gl_alpha_format) ? True : False;
 }

@@ -590,13 +590,13 @@ void R_DrawSkyBox(void)
 		vect.push_back(MakeSkyVec(skymaxs[0][i], skymins[1][i], i));
 
 		SkyDefinitions sd{
-			vect, { 2, 1, 0, 0, 3, 2 }, cbq, DEFAULT, sky_images[skytexorder[i]]->texnum
+			vect, { 2, 1, 0, 0, 3, 2 }, cbq, SKY_DEFAULT, sky_images[skytexorder[i]]->texnum
 		};
 		sky_renderer->Add(sd);
 
 
 		//VertexBuffer vb(vect);
-		//Quad sky_quad(cb, vb, ib, DEFAULT, sky_images[skytexorder[i]]->texnum);
+		//Quad sky_quad(cb, vb, ib, SKY_DEFAULT, sky_images[skytexorder[i]]->texnum);
 		//sky_renderer->AddElement(sky_quad);
 		//qglEnd();
 	}

@@ -37,6 +37,14 @@ public:
 
 	void Add(const BSPDefinitions& polygon);
 
+	void InitNewFactory(const wchar_t* path);
+
+	void CompileWithDefines(int defines);
+
+	void BindNewFactory();
+
+	void ClearTempFactory();
+
 private:
 	class ModelPSProvider : public IStateProvider {
 	public:
@@ -45,6 +53,7 @@ private:
 
 private:
 	PipelineFactory* factory;
+	PipelineFactory* factory_temp;
 	std::vector<BSPPoly> polygons;
 	BSPPoly* p;
 	std::vector<BSPDefinitions> bsp_defs;

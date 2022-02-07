@@ -5,7 +5,7 @@ static D3D_SHADER_MACRO defMac[] = {
 };
 
 static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
-	{DEFAULT, defMac},
+	{SKY_DEFAULT, defMac},
 };
 
 SkyRenderer::~SkyRenderer() {
@@ -22,8 +22,8 @@ void SkyRenderer::Init() {
 
 void SkyRenderer::Render() {
 	/*for (auto& quad : quads) {
-		if (quad.GetFlags() & DEFAULT) {
-			SetPipelineState(factory->GetState(DEFAULT));
+		if (quad.GetFlags() & SKY_DEFAULT) {
+			SetPipelineState(factory->GetState(SKY_DEFAULT));
 		}
 
 		Draw(quad);
@@ -32,8 +32,8 @@ void SkyRenderer::Render() {
 	quads.clear();*/
 	Renderer* renderer = Renderer::GetInstance();
 	for (auto& poly : sky_defs) {
-		if (poly.flags & DEFAULT) {
-			SetPipelineState(factory->GetState(DEFAULT));
+		if (poly.flags & SKY_DEFAULT) {
+			SetPipelineState(factory->GetState(SKY_DEFAULT));
 		}
 
 		renderer->Bind(poly.texture_index);
@@ -69,3 +69,24 @@ void SkyRenderer::SkyPSProvider::PatchPipelineState(PipelineState* state, int de
 	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 }
 
+
+void SkyRenderer::InitNewFactory(const wchar_t* path)
+{
+	factory_temp = new PipelineFactory(path, new SkyPSProvider(), macro);
+}
+
+void SkyRenderer::CompileWithDefines(int defines)
+{
+	factory_temp->GetState(defines);
+}
+
+void SkyRenderer::ClearTempFactory()
+{
+	delete factory_temp;
+}
+
+void SkyRenderer::BindNewFactory()
+{
+	delete factory;
+	factory = factory_temp;
+}

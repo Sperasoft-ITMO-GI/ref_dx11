@@ -76,3 +76,25 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 	}
 	
 }
+
+
+void BSPRenderer::InitNewFactory(const wchar_t* path)
+{
+	factory_temp = new PipelineFactory(path, new ModelPSProvider(), macro);
+}
+
+void BSPRenderer::CompileWithDefines(int defines)
+{
+	factory_temp->GetState(defines);
+}
+
+void BSPRenderer::ClearTempFactory()
+{
+	delete factory_temp;
+}
+
+void BSPRenderer::BindNewFactory()
+{
+	delete factory;
+	factory = factory_temp;
+}
