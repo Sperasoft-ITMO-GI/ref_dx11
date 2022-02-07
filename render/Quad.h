@@ -24,7 +24,13 @@ public:
 
 	void DrawStatic();
 
+	
+	void CreateCB(const ConstantBufferQuad& cbq);
+	void CreateDynamicVB(UINT size);
+	void CreateDynamicIB(UINT size);
 	void UpdateCB(ConstantBufferQuad& cbq);
+	void UpdateDynamicVB(std::vector<SkyVertex> vertexes);
+	void UpdateDynamicIB(std::vector<uint16_t> indexes);
 
 public:
 	static VertexBuffer vb;

@@ -48,6 +48,31 @@ void Quad::DrawStatic() {
 	renderer->GetContext()->DrawIndexed(ib.GetCount(), 0u, 0u);
 }
 
+void Quad::CreateCB(const ConstantBufferQuad& cbq)
+{
+	cb.Create(cbq);
+}
+
+void Quad::CreateDynamicVB(UINT size)
+{
+	dynamic_vb.CreateDynamic<SkyVertex>(size);
+}
+
+void Quad::CreateDynamicIB(UINT size)
+{
+	dynamic_ib.CreateDynamic(size);
+}
+
 void Quad::UpdateCB(ConstantBufferQuad& cbq) {
 	cb.Update(cbq);
+}
+
+void Quad::UpdateDynamicVB(std::vector<SkyVertex> vertexes)
+{
+	dynamic_vb.Update(vertexes);
+}
+
+void Quad::UpdateDynamicIB(std::vector<uint16_t> indexes)
+{
+	dynamic_ib.Update(indexes);
 }
