@@ -10,8 +10,24 @@ static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
 	{BSP_SOLID, solMac}
 };
 
-void  BSPRenderer::Init() {
+BSPRenderer::~BSPRenderer()
+{
+	delete factory;
+	p->~BSPPoly();
+}
+
+void BSPRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\BSP.hlsl", new ModelPSProvider, macro);
+	p = new BSPPoly();
+	p->CreateDynamicVB(32);
+	p->CreateDynamicIB(64);
+}
+
+void BSPRenderer::InitCB() {
+	Renderer* renderer = Renderer::GetInstance();
+	ConstantBufferPolygon cbp;
+	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	p->CreateCB(cbp);
 }
 
 void BSPRenderer::Render() {
@@ -25,10 +41,27 @@ void BSPRenderer::Render() {
 	//}
 
 	//polygons.clear();
+	Renderer* renderer = Renderer::GetInstance();
+	for (auto& poly : bsp_defs) {
+		if (poly.flags & BSP_SOLID) {
+			SetPipelineState(factory->GetState(BSP_SOLID));
+		}
+		
+		renderer->Bind(poly.texture_index);
+		p->UpdateDynamicVB(poly.vert);
+		p->UpdateDynamicIB(poly.ind);
+		p->DrawIndexed();
+	}
+
+	bsp_defs.clear();
 }
 
 void BSPRenderer::AddElement(const BSPPoly& polygon) {
 	polygons.push_back(polygon);
+}
+
+void BSPRenderer::Add(const BSPDefinitions& polygon) {
+	bsp_defs.push_back(polygon);
 }
 
 void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int defines) {

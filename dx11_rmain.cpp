@@ -701,6 +701,7 @@ void R_SetupDX(void)
 	//model_view = XMMatrixTranspose(model_view);
 
 	renderer->SetModelViewMatrix(model_view);
+	bsp_renderer->InitCB();
 
 	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
 	//qglRotatef(90, 0, 0, 1);	    // put Z going up

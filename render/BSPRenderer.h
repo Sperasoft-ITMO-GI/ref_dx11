@@ -13,14 +13,28 @@
 // There should be defines
 #define BSP_SOLID  0x001
 
+struct BSPDefinitions {
+	std::vector<BSPVertex> vert;
+	std::vector<uint16_t> ind;
+	int flags;
+	int texture_index;
+	int lightmap_index;
+};
+
 class BSPRenderer {
 public:
 
+	~BSPRenderer();
+
 	void Init();
+
+	void InitCB();
 
 	void Render();
 
 	void AddElement(const BSPPoly& polygon);
+
+	void Add(const BSPDefinitions& polygon);
 
 private:
 	class ModelPSProvider : public IStateProvider {
@@ -31,4 +45,6 @@ private:
 private:
 	PipelineFactory* factory;
 	std::vector<BSPPoly> polygons;
+	BSPPoly* p;
+	std::vector<BSPDefinitions> bsp_defs;
 };

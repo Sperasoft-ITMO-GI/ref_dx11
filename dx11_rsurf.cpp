@@ -599,14 +599,20 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 	// Временно, пока не придумаем чего-нибудь получше
 	DummyTriangulation(&indexes, p->numverts);
 
-	VertexBuffer vbp(vect);
-	IndexBuffer ib(indexes);
+	BSPDefinitions bspd{
+		vect, indexes, BSP_SOLID, texNum, -1
+	};
 
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	bsp_renderer->Add(bspd);
+
+	//VertexBuffer vbp(vect);
+	//IndexBuffer ib(indexes);
+
+	//ConstantBufferPolygon cbp;
+	//cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
 	//cbp.position_transform = renderer->GetPerspective() * renderer->GetModelView();
 
-	ConstantBuffer<ConstantBufferPolygon> CB(cbp);
+	//ConstantBuffer<ConstantBufferPolygon> CB(cbp);
 
 	//BSPPoly bspP(CB, vbp, ib, BSP_SOLID, texNum);
 	//bsp_renderer->AddElement(bspP);

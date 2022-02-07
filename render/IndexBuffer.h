@@ -17,6 +17,10 @@ public:
 
 	void Create(std::vector<uint16_t> indexes);
 
+	void CreateDynamic(const UINT size);
+
+	void Update(std::vector<uint16_t> indexes);
+
 	virtual void Bind() override;
 	
 	uint16_t GetCount();

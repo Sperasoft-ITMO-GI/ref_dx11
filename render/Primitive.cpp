@@ -13,3 +13,5 @@ Primitive::~Primitive() {
 	dynamic_vb.~VertexBuffer();
 	dynamic_ib.~IndexBuffer();
 }
+
+

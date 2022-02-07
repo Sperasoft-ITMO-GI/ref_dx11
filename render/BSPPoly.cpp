@@ -3,12 +3,20 @@
 VertexBuffer BSPPoly::vb;
 IndexBuffer  BSPPoly::ib;
 
+BSPPoly::BSPPoly() : Primitive(true), cb()
+{
+}
+
 BSPPoly::BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb)
 	: Primitive(true), cb(cb) {
 }
 
 BSPPoly::BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, IndexBuffer& ib)
 	: Primitive(vb, ib, true), cb(cb) {
+}
+
+BSPPoly::~BSPPoly() {
+
 }
 
 void BSPPoly::Draw() {
@@ -38,4 +46,28 @@ void BSPPoly::DrawStatic() {
 	cb.Bind<ConstantBufferQuad>();
 
 	renderer->GetContext()->DrawIndexed(ib.GetCount(), 0u, 0u);
+}
+
+void BSPPoly::CreateCB(const ConstantBufferPolygon& cbp) {
+	cb.Create(cbp);
+}
+
+void BSPPoly::CreateDynamicVB(UINT size)
+{
+	dynamic_vb.CreateDynamic<BSPVertex>(size);
+}
+
+void BSPPoly::CreateDynamicIB(UINT size)
+{
+	dynamic_ib.CreateDynamic(size);
+}
+
+void BSPPoly::UpdateDynamicVB(std::vector<BSPVertex> vertexes)
+{
+	dynamic_vb.Update(vertexes);
+}
+
+void BSPPoly::UpdateDynamicIB(std::vector<uint16_t> indexes)
+{
+	dynamic_ib.Update(indexes);
 }

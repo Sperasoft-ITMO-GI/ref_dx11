@@ -34,7 +34,26 @@ public:
 			constant_buffer_desc.ByteWidth = sizeof(T);
 
 			D3D11_SUBRESOURCE_DATA constant_subresource_data{};
-			constant_subresource_data.pSysMem = &trans;
+			constant_subresource_data.pSysMem = &transforms;
+
+			renderer->GetDevice()->CreateBuffer(&constant_buffer_desc, &constant_subresource_data, &buffer);
+		}
+	}	
+	
+	template<typename T>
+	void Create(const T& trans) {
+		if (!buffer) {
+			transforms = trans;
+			Renderer* renderer = Renderer::GetInstance();
+
+			D3D11_BUFFER_DESC constant_buffer_desc{ 0 };
+			constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+			//constant_buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			constant_buffer_desc.ByteWidth = sizeof(T);
+
+			D3D11_SUBRESOURCE_DATA constant_subresource_data{};
+			constant_subresource_data.pSysMem = &transforms;
 
 			renderer->GetDevice()->CreateBuffer(&constant_buffer_desc, &constant_subresource_data, &buffer);
 		}
@@ -46,16 +65,16 @@ public:
 	}
 
 	template<typename T>
-	void Update(const T& transforms) {
+	void Update(const T& trans) {
 		Renderer* renderer = Renderer::GetInstance();
 		
 		ID3D11DeviceContext* context = renderer->GetContext();
 
-		T data = transforms;
+		transforms = trans;
 		D3D11_MAPPED_SUBRESOURCE mapped_subresource;
 		ZeroMemory(&mapped_subresource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 		DXCHECK(context->Map(buffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapped_subresource));
-		CopyMemory(mapped_subresource.pData, &data, sizeof(T));
+		CopyMemory(mapped_subresource.pData, &transforms, sizeof(T));
 		context->Unmap(buffer, 0u);
 	}
 
