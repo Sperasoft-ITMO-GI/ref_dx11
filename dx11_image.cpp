@@ -865,7 +865,7 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 	{
 		if (!mipmap)
 		{
-			renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum, false);
+			renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)data, img->texnum, mipmap);
 			renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)data, img->type);
 
 			goto done;
@@ -879,7 +879,7 @@ qboolean GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, ima
 	GL_LightScaleTexture(scaled, scaled_width, scaled_height, (!mipmap) ? True : False);
 
 	renderer->Test(name, scaled_width, scaled_height, 32, (unsigned char*)scaled, img->type);
-	renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, false);
+	renderer->AddTexturetoSRV(scaled_width, scaled_height, 32, (unsigned char*)scaled, img->texnum, mipmap);
 
 	if (mipmap)
 	{
@@ -961,7 +961,7 @@ qboolean GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean
 	else
 	{
 		Renderer* renderer = Renderer::GetInstance();
-		renderer->AddTexturetoSRV(img->width, img->height, 32, (unsigned char*)trans, img->texnum, false);
+		renderer->AddTexturetoSRV(img->width, img->height, 32, (unsigned char*)trans, img->texnum, mipmap);
 		renderer->Test(name, img->width, img->height, 32, (unsigned char*)trans, img->type);
 		return True;
 	}

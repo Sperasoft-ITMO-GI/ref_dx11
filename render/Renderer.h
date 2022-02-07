@@ -26,7 +26,7 @@ public:
 	void SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far);
 	void SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx);
 
-	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool dynamic);
+	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool mipmap);
 	void UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum);
 
 	void DeleteTextureFromSRV(int texNum);

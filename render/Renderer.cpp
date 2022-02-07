@@ -166,17 +166,17 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		D3D11_SAMPLER_DESC sampler_desc;
 		ZeroMemory(&sampler_desc, sizeof(D3D11_SAMPLER_DESC));
 
-		sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
 		sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		sampler_desc.MipLODBias = 0.0f;
-		sampler_desc.MaxAnisotropy = 1;
+		sampler_desc.MaxAnisotropy = 16;
 		sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 		sampler_desc.BorderColor[0] = 1.0f;
 		sampler_desc.BorderColor[1] = 1.0f;
 		sampler_desc.BorderColor[2] = 1.0f;
 		sampler_desc.BorderColor[3] = 1.0f;
+		sampler_desc.MipLODBias = 0.0f;
 		sampler_desc.MinLOD = -FLT_MAX;
 		sampler_desc.MaxLOD = FLT_MAX;
 
@@ -205,50 +205,69 @@ void Renderer::SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx) {
 	model_view = model_view_mx;
 }
 
-void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool dynamic) {
-	using DirectX::XMFLOAT2;
-	using DirectX::XMFLOAT3;
-	using DirectX::XMFLOAT4;
-	using Microsoft::WRL::ComPtr;
-
+void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool mipmap)
+{
 	D3D11_SUBRESOURCE_DATA initData;
 	initData.pSysMem = data;
 	initData.SysMemPitch = width * (bits / 8);
 	initData.SysMemSlicePitch = 0;
 
-	DXGI_FORMAT format;
+	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	if (bits == 8)
 		format = DXGI_FORMAT_R8_UNORM;
 	else if (bits == 32)
 		format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-	D3D11_USAGE usage;
-	if (dynamic)
-		usage = D3D11_USAGE_DEFAULT;
-	else
-		usage = D3D11_USAGE_IMMUTABLE;
+	D3D11_USAGE usage = D3D11_USAGE_DEFAULT;
+
+	UINT bindFlags = D3D11_BIND_SHADER_RESOURCE;
+	UINT miscFlags = 0;
+	UINT mipLevelsTexture = 1;
+	UINT mipLevelsSRV = 1;
+	if (mipmap)
+	{
+		bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+		miscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+		mipLevelsTexture = 0;
+		mipLevelsSRV = -1;
+	}
 
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = width;
 	desc.Height = height;
-	desc.MipLevels = 1;
+	desc.MipLevels = mipLevelsTexture;
 	desc.ArraySize = 1;
 	desc.Format = format;
 	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
 	desc.Usage = usage;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
+	desc.BindFlags = bindFlags;
+	desc.MiscFlags = miscFlags;
 
-	ComPtr<ID3D11Texture2D> tex;
-	DXCHECK(device->CreateTexture2D(&desc, &initData, tex.GetAddressOf()));
+	ID3D11Texture2D* tex = nullptr;
+
+	if (mipmap)
+	{
+		DXCHECK(device->CreateTexture2D(&desc, nullptr, &tex));
+		context->UpdateSubresource(tex, 0u, NULL, initData.pSysMem, initData.SysMemPitch, 0u);
+	}
+	else
+	{
+		DXCHECK(device->CreateTexture2D(&desc, &initData, &tex));
+	}
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
 	SRVDesc.Format = format;
 	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	SRVDesc.Texture2D.MipLevels = 1;
+	SRVDesc.Texture2D.MipLevels = mipLevelsSRV;
 
-	DXCHECK(device->CreateShaderResourceView(tex.Get(), &SRVDesc, &texture_array_srv[texNum]));
+	DXCHECK(device->CreateShaderResourceView(tex, &SRVDesc, &texture_array_srv[texNum]));
+
+	if (mipmap)
+	{
+		context->GenerateMips(texture_array_srv[texNum]);
+	}
 }
 
 void Renderer::UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum) {
