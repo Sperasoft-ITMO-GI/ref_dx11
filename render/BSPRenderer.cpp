@@ -50,6 +50,7 @@ void BSPRenderer::Render() {
 		renderer->Bind(poly.texture_index);
 		p->UpdateDynamicVB(poly.vert);
 		p->UpdateDynamicIB(poly.ind);
+		p->UpdateCB(poly.cbp);
 		p->DrawIndexed();
 	}
 

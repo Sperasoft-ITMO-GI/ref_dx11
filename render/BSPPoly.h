@@ -27,6 +27,7 @@ public:
 	void CreateCB(const ConstantBufferPolygon& cbp);
 	void CreateDynamicVB(UINT size);
 	void CreateDynamicIB(UINT size);
+	void UpdateCB(const ConstantBufferPolygon& cbp);
 	void UpdateDynamicVB(std::vector<BSPVertex> vertexes);
 	void UpdateDynamicIB(std::vector<uint16_t> indexes);
 

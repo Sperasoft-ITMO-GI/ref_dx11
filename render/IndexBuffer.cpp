@@ -54,7 +54,7 @@ void IndexBuffer::CreateDynamic(const UINT size) {
 		D3D11_BUFFER_DESC buffer_desc{};
 		ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
 
-		buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
 		buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		buffer_desc.ByteWidth = sizeof(count) * count;

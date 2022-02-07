@@ -62,6 +62,11 @@ void BSPPoly::CreateDynamicIB(UINT size)
 	dynamic_ib.CreateDynamic(size);
 }
 
+void BSPPoly::UpdateCB(const ConstantBufferPolygon& cbp)
+{
+	cb.Update(cbp);
+}
+
 void BSPPoly::UpdateDynamicVB(std::vector<BSPVertex> vertexes)
 {
 	dynamic_vb.Update(vertexes);

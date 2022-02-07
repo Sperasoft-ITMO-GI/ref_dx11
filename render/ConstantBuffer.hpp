@@ -48,8 +48,8 @@ public:
 
 			D3D11_BUFFER_DESC constant_buffer_desc{ 0 };
 			constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-			//constant_buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			constant_buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
+			constant_buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			constant_buffer_desc.ByteWidth = sizeof(T);
 
 			D3D11_SUBRESOURCE_DATA constant_subresource_data{};
