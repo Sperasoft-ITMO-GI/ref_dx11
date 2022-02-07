@@ -13,7 +13,7 @@ static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
 BSPRenderer::~BSPRenderer()
 {
 	delete factory;
-	p->~BSPPoly();
+	delete p;
 }
 
 void BSPRenderer::Init() {
