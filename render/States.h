@@ -22,7 +22,8 @@ public:
 	}
 
 	const std::unordered_map<BlendState, ID3D11BlendState*> blend_states{
-		{ALPHA,   MakeAlphaBS()},
+		{SIMPLEALPHA,   MakeSimpleAlphaBS()},
+		{ALPHA, MakeAlphaBS()},
 		{NOBS, MakeNoBS()}
 	};
 	const std::unordered_map<RasterizationState, ID3D11RasterizerState*> rasterization_states{

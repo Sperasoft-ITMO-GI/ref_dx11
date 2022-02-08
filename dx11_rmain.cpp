@@ -100,14 +100,13 @@ void CompileShaders()
 	// BSP_Renderer
 	bsp_renderer->InitNewFactory(L"ref_dx11\\shaders\\BSP.hlsl");
 	bsp_renderer->CompileWithDefines(BSP_SOLID);
+	bsp_renderer->CompileWithDefines(BSP_ALPHA);
 	bsp_renderer->BindNewFactory();
 
 	// SKY_Renderer
 	sky_renderer->InitNewFactory(L"ref_dx11\\shaders\\Sky.hlsl");
 	sky_renderer->CompileWithDefines(SKY_DEFAULT);
 	sky_renderer->BindNewFactory();
-
-	printf("RECOMPILE SUCCESS\n");
 }
 
 
@@ -1103,7 +1102,7 @@ R_Shutdown
 */
 void R_Shutdown(void)
 {
-	ri.Cmd_RemoveCommand("compile_shaders");
+	ri.Cmd_RemoveCommand("cl");
 	ri.Cmd_RemoveCommand("imagelist");
 	ri.Cmd_RemoveCommand("screenshot");
 	ri.Cmd_RemoveCommand("modellist");

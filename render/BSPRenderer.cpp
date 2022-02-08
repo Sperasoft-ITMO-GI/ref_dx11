@@ -6,8 +6,13 @@ static D3D_SHADER_MACRO solMac[] = {
 	"SOLID", "1", NULL, NULL
 };
 
+static D3D_SHADER_MACRO alpMac[] = {
+	"ALPHA", "1", NULL, NULL
+};
+
 static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
-	{BSP_SOLID, solMac}
+	{BSP_SOLID, solMac},
+	{BSP_ALPHA, alpMac}
 };
 
 BSPRenderer::~BSPRenderer()
@@ -31,20 +36,15 @@ void BSPRenderer::InitCB() {
 }
 
 void BSPRenderer::Render() {
-	//for (auto& polygon : polygons) {
 
-	//	if (polygon.GetFlags() & BSP_SOLID) {
-	//		SetPipelineState(factory->GetState(BSP_SOLID));
-	//	}
-
-	//	Draw(polygon);
-	//}
-
-	//polygons.clear();
 	Renderer* renderer = Renderer::GetInstance();
 	for (auto& poly : bsp_defs) {
 		if (poly.flags & BSP_SOLID) {
 			SetPipelineState(factory->GetState(BSP_SOLID));
+		}
+
+		if (poly.flags & BSP_ALPHA) {
+			SetPipelineState(factory->GetState(BSP_ALPHA));
 		}
 		
 		renderer->Bind(poly.texture_index);
@@ -67,9 +67,18 @@ void BSPRenderer::Add(const BSPDefinitions& polygon) {
 
 void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int defines) {
 	States* states = States::GetInstance();
+
 	if (defines & BSP_SOLID)
 	{
-		state->bs = states->blend_states.at(BlendState::NOBS);
+		state->bs = states->blend_states.at(BlendState::SIMPLEALPHA);
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
+		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::POLYGON));
+		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
+	}
+
+	if (defines & BSP_ALPHA)
+	{
+		state->bs = states->blend_states.at(BlendState::SIMPLEALPHA);
 		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::POLYGON));
 		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);

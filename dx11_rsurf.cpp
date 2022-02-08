@@ -49,6 +49,8 @@ static qboolean	LM_AllocBlock(int w, int h, int* x, int* y);
 extern void R_SetCacheState(msurface_t* surf);
 extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 
+float colorBuf[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+
 
 // Это ужасный костыль, его необходимо будет удалить
 void DummyTriangulation(std::vector<uint16_t>* ind, int num)
@@ -569,7 +571,7 @@ DrawGLPoly
 ================
 */
 // Дописал передачу номера текстуры в функцию, возможно в будущем удалим
-void DrawGLPoly(glpoly_t* p, int texNum)
+void DrawGLPoly(glpoly_t* p, int texNum, int defines)
 {
 	int		i;
 	float* v;
@@ -589,7 +591,7 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 		vert.texture_coord.x = v[3];
 		vert.texture_coord.y = v[4];
 		vert.lightmap_texture_coord.x = v[5];
-		vert.lightmap_texture_coord.x = v[6];
+		vert.lightmap_texture_coord.y = v[6];
 
 		vect.push_back(vert);
 	}
@@ -601,24 +603,16 @@ void DrawGLPoly(glpoly_t* p, int texNum)
 
 	ConstantBufferPolygon cbp;
 	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	cbp.color[0] = colorBuf[0];
+	cbp.color[1] = colorBuf[1];
+	cbp.color[2] = colorBuf[2];
+	cbp.color[3] = colorBuf[3];
 
 	BSPDefinitions bspd{
-		vect, indexes, cbp, BSP_SOLID, texNum, -1
+		vect, indexes, cbp, defines, texNum, -1
 	};
 
 	bsp_renderer->Add(bspd);
-
-	//VertexBuffer vbp(vect);
-	//IndexBuffer ib(indexes);
-
-	//ConstantBufferPolygon cbp;
-	//cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	//cbp.position_transform = renderer->GetPerspective() * renderer->GetModelView();
-
-	//ConstantBuffer<ConstantBufferPolygon> CB(cbp);
-
-	//BSPPoly bspP(CB, vbp, ib, BSP_SOLID, texNum);
-	//bsp_renderer->AddElement(bspP);
 }
 
 //============
@@ -642,12 +636,17 @@ void DrawGLFlowingPoly(msurface_t* fa)
 		scroll = -64.0;
 
 	//qglBegin(GL_POLYGON);
+
+
 	v = p->verts[0];
 	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
 	{
 		//qglTexCoord2f((v[3] + scroll), v[4]);
 		//qglVertex3fv(v);
 	}
+
+
+
 	//qglEnd();
 }
 //PGM
@@ -667,6 +666,11 @@ void R_DrawTriangleOutlines(void)
 	//qglDisable(GL_TEXTURE_2D);
 	//qglDisable(GL_DEPTH_TEST);
 	//qglColor4f(1, 1, 1, 1);
+
+	colorBuf[0] = 1.0f;
+	colorBuf[1] = 1.0f;
+	colorBuf[2] = 1.0f;
+	colorBuf[3] = 1.0f;
 
 	for (i = 0; i < MAX_LIGHTMAPS; i++)
 	{
@@ -918,10 +922,12 @@ void R_RenderBrushPoly(msurface_t* fa)
 		//GL_Bind(image->texnum);
 
 		// warp texture, no lightmaps
-		//GL_TexEnv(GL_MODULATE);
 		//qglColor4f(dx11_state.inverse_intensity, dx11_state.inverse_intensity, dx11_state.inverse_intensity, 1.0F);
+		colorBuf[0] = dx11_state.inverse_intensity;
+		colorBuf[1] = dx11_state.inverse_intensity;
+		colorBuf[2] = dx11_state.inverse_intensity;
+		colorBuf[3] = 1.0f;
 		EmitWaterPolys(fa);
-		//GL_TexEnv(GL_REPLACE);
 
 		return;
 	}
@@ -937,7 +943,7 @@ void R_RenderBrushPoly(msurface_t* fa)
 	if (fa->texinfo->flags & SURF_FLOWING)
 		DrawGLFlowingPoly(fa);
 	else
-		DrawGLPoly(fa->polys, image->texnum);
+		DrawGLPoly(fa->polys, image->texnum, BSP_SOLID);
 	//PGM
 	//======
 
@@ -1031,21 +1037,41 @@ void R_DrawAlphaSurfaces(void)
 	{
 		//GL_Bind(s->texinfo->image->texnum);
 		c_brush_polys++;
-		/*if (s->texinfo->flags & SURF_TRANS33)
-			qglColor4f(intens, intens, intens, 0.33);
+		if (s->texinfo->flags & SURF_TRANS33)
+		{
+			//qglColor4f(intens, intens, intens, 0.33);
+			colorBuf[0] = intens;
+			colorBuf[1] = intens;
+			colorBuf[2] = intens;
+			colorBuf[3] = 0.33;
+		}
 		else if (s->texinfo->flags & SURF_TRANS66)
-			qglColor4f(intens, intens, intens, 0.66);
+		{
+			//qglColor4f(intens, intens, intens, 0.66);
+			colorBuf[0] = intens;
+			colorBuf[1] = intens;
+			colorBuf[2] = intens;
+			colorBuf[3] = 0.66f;
+		}
 		else
-			qglColor4f(intens, intens, intens, 1);*/
+		{
+			//qglColor4f(intens, intens, intens, 1);
+			colorBuf[0] = intens;
+			colorBuf[1] = intens;
+			colorBuf[2] = intens;
+			colorBuf[3] = 1.0f;
+		}
 		if (s->flags & SURF_DRAWTURB)
 			EmitWaterPolys(s);
 		else
-			DrawGLPoly(s->polys, s->texinfo->image->texnum);
+			DrawGLPoly(s->polys, s->texinfo->image->texnum, BSP_ALPHA);
 	}
 
-	//GL_TexEnv(GL_REPLACE);
 	//qglColor4f(1, 1, 1, 1);
-	//qglDisable(GL_BLEND);
+	colorBuf[0] = 1.0f;
+	colorBuf[1] = 1.0f;
+	colorBuf[2] = 1.0f;
+	colorBuf[3] = 1.0f;
 
 	r_alpha_surfaces = NULL;
 }
@@ -1280,9 +1306,11 @@ void R_DrawInlineBModel(void)
 	// if translucent
 	if (currententity->flags & RF_TRANSLUCENT)
 	{
-		//qglEnable(GL_BLEND);
 		//qglColor4f(1, 1, 1, 0.25);
-		//GL_TexEnv(GL_MODULATE);
+		colorBuf[0] = 1.0f;
+		colorBuf[1] = 1.0f;
+		colorBuf[2] = 1.0f;
+		colorBuf[3] = 0.25f;
 	}
 
 	//
@@ -1315,14 +1343,15 @@ void R_DrawInlineBModel(void)
 
 	if (!(currententity->flags & RF_TRANSLUCENT))
 	{
-		//if (!qglMTexCoord2fSGIS)
-		//	R_BlendLightmaps();
+		R_BlendLightmaps();
 	}
 	else
 	{
-		//qglDisable(GL_BLEND);
 		//qglColor4f(1, 1, 1, 1);
-		//GL_TexEnv(GL_REPLACE);
+		colorBuf[0] = 1.0f;
+		colorBuf[1] = 1.0f;
+		colorBuf[2] = 1.0f;
+		colorBuf[3] = 1.0f;
 	}
 }
 
@@ -1363,6 +1392,10 @@ void R_DrawBrushModel(entity_t* e)
 		return;
 
 	//qglColor3f(1, 1, 1);
+	colorBuf[0] = 1.0f;
+	colorBuf[1] = 1.0f;
+	colorBuf[2] = 1.0f;
+	colorBuf[3] = 1.0f;
 	memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 
 	VectorSubtract(r_newrefdef.vieworg, e->origin, modelorg);
@@ -1550,6 +1583,10 @@ void R_DrawWorld(void)
 	dx11_state.currenttextures[0] = dx11_state.currenttextures[1] = -1;
 
 	//qglColor3f(1, 1, 1);
+	colorBuf[0] = 1.0f;
+	colorBuf[1] = 1.0f;
+	colorBuf[2] = 1.0f;
+	colorBuf[3] = 1.0f;
 	memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 	R_ClearSkyBox();
 
