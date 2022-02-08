@@ -636,7 +636,7 @@ void DrawGLFlowingPoly(msurface_t* fa)
 		scroll = -64.0;
 
 	//qglBegin(GL_POLYGON);
-
+	printf("DrawGLFlowingPoly found!!!\n");
 
 	v = p->verts[0];
 	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
@@ -660,8 +660,8 @@ void R_DrawTriangleOutlines(void)
 	int			i, j;
 	glpoly_t* p;
 
-	//if (!gl_showtris->value)
-	//	return;
+	if (true/*!gl_showtris->value*/)
+		return;
 
 	//qglDisable(GL_TEXTURE_2D);
 	//qglDisable(GL_DEPTH_TEST);
@@ -821,78 +821,78 @@ void R_BlendLightmaps(void)
 	/*
 	** render dynamic lightmaps
 	*/
-	//if (gl_dynamic->value)
-	//{
-	//	LM_InitBlock();
+	if (true/*gl_dynamic->value*/)
+	{
+		LM_InitBlock();
 
-	//	GL_Bind(dx11_state.lightmap_textures + 0);
+		//GL_Bind(dx11_state.lightmap_textures + 0);
 
-	//	if (currentmodel == r_worldmodel)
-	//		c_visible_lightmaps++;
+		if (currentmodel == r_worldmodel)
+			c_visible_lightmaps++;
 
-	//	newdrawsurf = gl_lms.lightmap_surfaces[0];
+		newdrawsurf = gl_lms.lightmap_surfaces[0];
 
-	//	for (surf = gl_lms.lightmap_surfaces[0]; surf != 0; surf = surf->lightmapchain)
-	//	{
-	//		int		smax, tmax;
-	//		byte* base;
+		for (surf = gl_lms.lightmap_surfaces[0]; surf != 0; surf = surf->lightmapchain)
+		{
+			int		smax, tmax;
+			byte* base;
 
-	//		smax = (surf->extents[0] >> 4) + 1;
-	//		tmax = (surf->extents[1] >> 4) + 1;
+			smax = (surf->extents[0] >> 4) + 1;
+			tmax = (surf->extents[1] >> 4) + 1;
 
-	//		if (LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
-	//		{
-	//			base = gl_lms.lightmap_buffer;
-	//			base += (surf->dlight_t * BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
+			if (LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
+			{
+				base = gl_lms.lightmap_buffer;
+				base += (surf->dlight_t * BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
 
-	//			R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
-	//		}
-	//		else
-	//		{
-	//			msurface_t* drawsurf;
+				R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
+			}
+			else
+			{
+				msurface_t* drawsurf;
 
-	//			// upload what we have so far
-	//			LM_UploadBlock(True);
+				// upload what we have so far
+				LM_UploadBlock(True);
 
-	//			// draw all surfaces that use this lightmap
-	//			for (drawsurf = newdrawsurf; drawsurf != surf; drawsurf = drawsurf->lightmapchain)
-	//			{
-	//				if (drawsurf->polys)
-	//					DrawGLPolyChain(drawsurf->polys,
-	//						(drawsurf->light_s - drawsurf->dlight_s) * (1.0 / 128.0),
-	//						(drawsurf->light_t - drawsurf->dlight_t) * (1.0 / 128.0));
-	//			}
+				// draw all surfaces that use this lightmap
+				for (drawsurf = newdrawsurf; drawsurf != surf; drawsurf = drawsurf->lightmapchain)
+				{
+					if (drawsurf->polys)
+						DrawGLPolyChain(drawsurf->polys,
+							(drawsurf->light_s - drawsurf->dlight_s) * (1.0 / 128.0),
+							(drawsurf->light_t - drawsurf->dlight_t) * (1.0 / 128.0));
+				}
 
-	//			newdrawsurf = drawsurf;
+				newdrawsurf = drawsurf;
 
-	//			// clear the block
-	//			LM_InitBlock();
+				// clear the block
+				LM_InitBlock();
 
-	//			// try uploading the block now
-	//			if (!LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
-	//			{
-	//				ri.Sys_Error(ERR_FATAL, "Consecutive calls to LM_AllocBlock(%d,%d) failed (dynamic)\n", smax, tmax);
-	//			}
+				// try uploading the block now
+				if (!LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
+				{
+					ri.Sys_Error(ERR_FATAL, "Consecutive calls to LM_AllocBlock(%d,%d) failed (dynamic)\n", smax, tmax);
+				}
 
-	//			base = gl_lms.lightmap_buffer;
-	//			base += (surf->dlight_t * BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
+				base = gl_lms.lightmap_buffer;
+				base += (surf->dlight_t * BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
 
-	//			R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
-	//		}
-	//	}
+				R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
+			}
+		}
 
-	//	/*
-	//	** draw remainder of dynamic lightmaps that haven't been uploaded yet
-	//	*/
-	//	if (newdrawsurf)
-	//		LM_UploadBlock(True);
+		/*
+		** draw remainder of dynamic lightmaps that haven't been uploaded yet
+		*/
+		if (newdrawsurf)
+			LM_UploadBlock(True);
 
-	//	for (surf = newdrawsurf; surf != 0; surf = surf->lightmapchain)
-	//	{
-	//		if (surf->polys)
-	//			DrawGLPolyChain(surf->polys, (surf->light_s - surf->dlight_s) * (1.0 / 128.0), (surf->light_t - surf->dlight_t) * (1.0 / 128.0));
-	//	}
-	//}
+		for (surf = newdrawsurf; surf != 0; surf = surf->lightmapchain)
+		{
+			if (surf->polys)
+				DrawGLPolyChain(surf->polys, (surf->light_s - surf->dlight_s) * (1.0 / 128.0), (surf->light_t - surf->dlight_t) * (1.0 / 128.0));
+		}
+	}
 
 	/*
 	** restore state

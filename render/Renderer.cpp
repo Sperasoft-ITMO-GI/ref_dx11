@@ -283,7 +283,10 @@ void Renderer::UpdateTextureInSRV(int width, int height, int bits, unsigned char
 
 void Renderer::DeleteTextureFromSRV(int texNum)
 {
-	texture_array_srv[texNum]->Release();
+	if (texture_array_srv[texNum])
+	{
+		texture_array_srv[texNum]->Release();
+	}
 }
 
 void Renderer::Test(char* name, int width, int height, int bits, unsigned char* data, int type) 
@@ -376,10 +379,9 @@ Renderer::~Renderer()
 	// release SRV's
 	for (int i = 0; i < 1600; ++i) 
 	{
-		if (texture_array_srv[i])
-		{
-			texture_array_srv[i]->Release();
-		}
+		// Возможно это и не нужно, так как мы всё равно убиваем контекст
+		// И к тому же где-то ранее мы уже очищаем, поэтому вылетает иногда тут
+		//DeleteTextureFromSRV(i);
 	}
 	sampler->Release();
 	render_target_view->Release();

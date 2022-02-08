@@ -207,6 +207,10 @@ void EmitWaterPolys(msurface_t* fa)
 		p = bp;
 
 		//qglBegin(GL_TRIANGLE_FAN);
+
+		BSPVertex vert = {};
+		std::vector<BSPVertex> vect;
+
 		for (i = 0, v = p->verts[0]; i < p->numverts; i++, v += VERTEXSIZE)
 		{
 			os = v[3];
@@ -221,7 +225,34 @@ void EmitWaterPolys(msurface_t* fa)
 
 			//qglTexCoord2f(s, t);
 			//qglVertex3fv(v);
+
+			vert.position.x = v[0];
+			vert.position.y = v[1];
+			vert.position.z = v[2];
+			vert.texture_coord.x = s;
+			vert.texture_coord.y = t;
+
+			vect.push_back(vert);
 		}
+
+		std::vector<uint16_t> indexes;
+
+		// Временно, пока не придумаем чего-нибудь получше
+		DummyTriangulation(&indexes, p->numverts);
+
+		ConstantBufferPolygon cbp;
+		cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+		cbp.color[0] = colorBuf[0];
+		cbp.color[1] = colorBuf[1];
+		cbp.color[2] = colorBuf[2];
+		cbp.color[3] = colorBuf[3];
+
+		BSPDefinitions bspd{
+			vect, indexes, cbp, BSP_ALPHA, fa->texinfo->image->texnum, -1
+		};
+
+		bsp_renderer->Add(bspd);
+
 		//qglEnd();
 	}
 }

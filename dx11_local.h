@@ -220,6 +220,8 @@ void GL_Bind(int texnum);
 //void GL_EnableMultitexture(qboolean enable);
 //void GL_SelectTexture(GLenum);
 
+void DummyTriangulation(std::vector<uint16_t>* ind, int num);
+
 void R_LightPoint(vec3_t p, vec3_t color);
 void R_PushDlights(void);
 
@@ -228,6 +230,8 @@ extern	model_t* r_worldmodel;
 extern	unsigned	d_8to24table[256];
 
 extern	int		registration_sequence;
+
+extern float colorBuf[4];
 
 
 void V_AddBlend(float r, float g, float b, float a, float* v_blend);
