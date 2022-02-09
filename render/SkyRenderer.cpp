@@ -63,7 +63,7 @@ void SkyRenderer::SkyPSProvider::PatchPipelineState(PipelineState* state, int de
 
 	States* states = States::GetInstance();
 
-	state->bs = states->blend_states.at(BlendState::SIMPLEALPHA);
+	state->bs = states->blend_states.at(BlendState::UIALPHABS);
 	state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
 	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::SKY_QUAD));
 	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);

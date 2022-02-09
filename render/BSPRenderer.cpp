@@ -1,7 +1,5 @@
 #include <BSPRenderer.h>
 
-// Тут нужно заменить дефайны на необходимые (это копипаста UIRenderer)
-
 static D3D_SHADER_MACRO solMac[] = {
 	"SOLID", "1", NULL, NULL
 };
@@ -10,9 +8,14 @@ static D3D_SHADER_MACRO alpMac[] = {
 	"ALPHA", "1", NULL, NULL
 };
 
+static D3D_SHADER_MACRO watMac[] = {
+	"WATER", "1", NULL, NULL
+};
+
 static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
 	{BSP_SOLID, solMac},
-	{BSP_ALPHA, alpMac}
+	{BSP_ALPHA, alpMac},
+	{BSP_WATER, watMac}
 };
 
 BSPRenderer::~BSPRenderer()
@@ -46,6 +49,10 @@ void BSPRenderer::Render() {
 		if (poly.flags & BSP_ALPHA) {
 			SetPipelineState(factory->GetState(BSP_ALPHA));
 		}
+
+		if (poly.flags & BSP_WATER) {
+			SetPipelineState(factory->GetState(BSP_WATER));
+		}
 		
 		renderer->Bind(poly.texture_index);
 		p->UpdateDynamicVB(poly.vert);
@@ -70,7 +77,7 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 
 	if (defines & BSP_SOLID)
 	{
-		state->bs = states->blend_states.at(BlendState::SIMPLEALPHA);
+		state->bs = states->blend_states.at(BlendState::NOBS);
 		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::POLYGON));
 		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
@@ -78,10 +85,18 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 
 	if (defines & BSP_ALPHA)
 	{
-		state->bs = states->blend_states.at(BlendState::SIMPLEALPHA);
+		state->bs = states->blend_states.at(BlendState::ALPHABS);
 		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::POLYGON));
 		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
+	}
+
+	if (defines & BSP_WATER)
+	{
+		state->bs = states->blend_states.at(BlendState::WATERBS);
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
+		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::POLYGON));
+		state->topology = states->topology.at(Topology::TRIANGLE_STRIP);
 	}
 	
 }

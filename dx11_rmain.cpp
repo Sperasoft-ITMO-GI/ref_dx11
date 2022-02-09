@@ -101,6 +101,7 @@ void CompileShaders()
 	bsp_renderer->InitNewFactory(L"ref_dx11\\shaders\\BSP.hlsl");
 	bsp_renderer->CompileWithDefines(BSP_SOLID);
 	bsp_renderer->CompileWithDefines(BSP_ALPHA);
+	bsp_renderer->CompileWithDefines(BSP_WATER);
 	bsp_renderer->BindNewFactory();
 
 	// SKY_Renderer

@@ -237,8 +237,13 @@ void EmitWaterPolys(msurface_t* fa)
 
 		std::vector<uint16_t> indexes;
 
-		// Временно, пока не придумаем чего-нибудь получше
-		DummyTriangulation(&indexes, p->numverts);
+		for (i = 0; i < p->numverts; i++)
+		{
+			if (i % 2 == 0)
+				indexes.push_back(i / 2);
+			else
+				indexes.push_back(p->numverts - 1 - i / 2);
+		}
 
 		ConstantBufferPolygon cbp;
 		cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
@@ -248,7 +253,7 @@ void EmitWaterPolys(msurface_t* fa)
 		cbp.color[3] = colorBuf[3];
 
 		BSPDefinitions bspd{
-			vect, indexes, cbp, BSP_ALPHA, fa->texinfo->image->texnum, -1
+			vect, indexes, cbp, BSP_WATER, fa->texinfo->image->texnum, -1
 		};
 
 		bsp_renderer->Add(bspd);

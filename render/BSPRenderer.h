@@ -13,6 +13,7 @@
 // There should be defines
 #define BSP_SOLID  0x001
 #define BSP_ALPHA  0x002
+#define BSP_WATER  0x004
 
 struct BSPDefinitions {
 	std::vector<BSPVertex> vert;

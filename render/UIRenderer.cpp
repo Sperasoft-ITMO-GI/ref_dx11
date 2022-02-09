@@ -53,7 +53,7 @@ void UIRenderer::UIPSProvider::PatchPipelineState(PipelineState* state, int defi
 	*/
 	States* states = States::GetInstance();
 
-	state->bs = states->blend_states.at(BlendState::SIMPLEALPHA);
+	state->bs = states->blend_states.at(BlendState::UIALPHABS);
 	state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
 	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::UI_QUAD));
 	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);

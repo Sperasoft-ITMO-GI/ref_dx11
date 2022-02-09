@@ -45,5 +45,9 @@ float4 PSMain(VSOut IN) : SV_Target
 	result = diffuseText.Sample(Sampler, IN.texCoord) * IN.col;
 #endif
 
+#ifdef WATER
+	result = diffuseText.Sample(Sampler, IN.texCoord) * IN.col;
+#endif
+
     return result;
 }
