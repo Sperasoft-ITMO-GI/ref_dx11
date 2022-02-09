@@ -25,6 +25,7 @@ public:
 		{UIALPHABS,   MakeUIAlphaBS()},
 		{ALPHABS, MakeAlphaBS()},
 		{WATERBS, MakeWaterBS()},
+		{SURFLIGHTMAPBS, MakeSurfLightMapBS()},
 		{NOBS, MakeNoBS()}
 	};
 	const std::unordered_map<RasterizationState, ID3D11RasterizerState*> rasterization_states{

@@ -12,10 +12,15 @@ static D3D_SHADER_MACRO watMac[] = {
 	"WATER", "1", NULL, NULL
 };
 
+static D3D_SHADER_MACRO lightMac[] = {
+	"LIGHTMAP", "1", NULL, NULL
+};
+
 static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
 	{BSP_SOLID, solMac},
 	{BSP_ALPHA, alpMac},
-	{BSP_WATER, watMac}
+	{BSP_WATER, watMac},
+	{BSP_LIGHTMAP, lightMac}
 };
 
 BSPRenderer::~BSPRenderer()
@@ -52,6 +57,10 @@ void BSPRenderer::Render() {
 
 		if (poly.flags & BSP_WATER) {
 			SetPipelineState(factory->GetState(BSP_WATER));
+		}
+
+		if (poly.flags & BSP_LIGHTMAP) {
+			SetPipelineState(factory->GetState(BSP_LIGHTMAP));
 		}
 		
 		renderer->Bind(poly.texture_index);
@@ -97,6 +106,14 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::POLYGON));
 		state->topology = states->topology.at(Topology::TRIANGLE_STRIP);
+	}
+
+	if (defines & BSP_LIGHTMAP)
+	{
+		state->bs = states->blend_states.at(BlendState::SURFLIGHTMAPBS);
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
+		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::POLYGON));
+		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 	}
 	
 }

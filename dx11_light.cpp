@@ -25,21 +25,33 @@ void R_RenderDlight(dlight_t* light)
 
 	VectorSubtract(light->origin, r_origin, v);
 
-	/*qglBegin(GL_TRIANGLE_FAN);
-	qglColor3f(light->color[0] * 0.2, light->color[1] * 0.2, light->color[2] * 0.2);
+	//qglBegin(GL_TRIANGLE_FAN);
+	//qglColor3f(light->color[0] * 0.2, light->color[1] * 0.2, light->color[2] * 0.2);
+	colorBuf[0] = light->color[0] * 0.2;
+	colorBuf[1] = light->color[1] * 0.2;
+	colorBuf[2] = light->color[2] * 0.2;
+	colorBuf[3] = 1.0f; // check for this
+
 	for (i = 0; i < 3; i++)
 		v[i] = light->origin[i] - vpn[i] * rad;
-	qglVertex3fv(v);
-	qglColor3f(0, 0, 0);
+
+	//qglVertex3fv(v);
+	//qglColor3f(0, 0, 0);
+	colorBuf[0] = 0.0f;
+	colorBuf[1] = 0.0f;
+	colorBuf[2] = 0.0f;
+	colorBuf[3] = 1.0f; // check for this
+
+
 	for (i = 16; i >= 0; i--)
 	{
 		a = i / 16.0 * M_PI * 2;
 		for (j = 0; j < 3; j++)
 			v[j] = light->origin[j] + vright[j] * cos(a) * rad
 			+ vup[j] * sin(a) * rad;
-		qglVertex3fv(v);
+		//qglVertex3fv(v);
 	}
-	qglEnd();*/
+	//qglEnd();
 }
 
 /*
@@ -52,8 +64,9 @@ void R_RenderDlights(void)
 	int		i;
 	dlight_t* l;
 
-	//if (!gl_flashblend->value)
-	//	return;
+	// Никогда не вызывается
+	if (true/*!gl_flashblend->value*/)
+		return;
 
 	//r_dlightframecount = r_framecount + 1;	// because the count hasn't
 	//										//  advanced yet for this frame
@@ -139,8 +152,8 @@ void R_PushDlights(void)
 	int		i;
 	dlight_t* l;
 
-	/*if (gl_flashblend->value)
-		return;*/
+	if (false/*gl_flashblend->value*/)
+		return;
 
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't
 											//  advanced yet for this frame
@@ -245,14 +258,14 @@ int RecursiveLightPoint(mnode_t* node, vec3_t start, vec3_t end)
 			for (maps = 0; maps < MAXLIGHTMAPS && surf->styles[maps] != 255;
 				maps++)
 			{
-				/*for (i = 0; i < 3; i++)
-					scale[i] = gl_modulate->value * r_newrefdef.lightstyles[surf->styles[maps]].rgb[i];
+				for (i = 0; i < 3; i++)
+					scale[i] = 1.0f * r_newrefdef.lightstyles[surf->styles[maps]].rgb[i];
 
 				pointcolor[0] += lightmap[0] * scale[0] * (1.0 / 255);
 				pointcolor[1] += lightmap[1] * scale[1] * (1.0 / 255);
 				pointcolor[2] += lightmap[2] * scale[2] * (1.0 / 255);
 				lightmap += 3 * ((surf->extents[0] >> 4) + 1) *
-					((surf->extents[1] >> 4) + 1);*/
+					((surf->extents[1] >> 4) + 1);
 			}
 		}
 
@@ -317,7 +330,7 @@ void R_LightPoint(vec3_t p, vec3_t color)
 		}
 	}
 
-	//VectorScale(color, gl_modulate->value, color);
+	VectorScale(color, 1.0f, color);
 }
 
 
@@ -478,8 +491,8 @@ void R_BuildLightMap(msurface_t* surf, byte* dest, int stride)
 		{
 			bl = s_blocklights;
 
-			/*for (i = 0; i < 3; i++)
-				scale[i] = gl_modulate->value * r_newrefdef.lightstyles[surf->styles[maps]].rgb[i];*/
+			for (i = 0; i < 3; i++)
+				scale[i] = 1.0f * r_newrefdef.lightstyles[surf->styles[maps]].rgb[i];
 
 			if (scale[0] == 1.0F &&
 				scale[1] == 1.0F &&
@@ -515,8 +528,8 @@ void R_BuildLightMap(msurface_t* surf, byte* dest, int stride)
 		{
 			bl = s_blocklights;
 
-			/*for (i = 0; i < 3; i++)
-				scale[i] = gl_modulate->value * r_newrefdef.lightstyles[surf->styles[maps]].rgb[i];*/
+			for (i = 0; i < 3; i++)
+				scale[i] = 1.0f * r_newrefdef.lightstyles[surf->styles[maps]].rgb[i];
 
 			if (scale[0] == 1.0F &&
 				scale[1] == 1.0F &&
@@ -551,151 +564,61 @@ store:
 	stride -= (smax << 2);
 	bl = s_blocklights;
 
-	//monolightmap = gl_monolightmap->string[0];
-
-	if (monolightmap == '0')
+	for (i = 0; i < tmax; i++, dest += stride)
 	{
-		for (i = 0; i < tmax; i++, dest += stride)
+		for (j = 0; j < smax; j++)
 		{
-			for (j = 0; j < smax; j++)
+
+			r = Q_ftol(bl[0]);
+			g = Q_ftol(bl[1]);
+			b = Q_ftol(bl[2]);
+
+			// catch negative lights
+			if (r < 0)
+				r = 0;
+			if (g < 0)
+				g = 0;
+			if (b < 0)
+				b = 0;
+
+			/*
+			** determine the brightest of the three color components
+			*/
+			if (r > g)
+				max = r;
+			else
+				max = g;
+			if (b > max)
+				max = b;
+
+			/*
+			** alpha is ONLY used for the mono lightmap case.  For this reason
+			** we set it to the brightest of the color components so that
+			** things don't get too dim.
+			*/
+			a = max;
+
+			/*
+			** rescale all the color components if the intensity of the greatest
+			** channel exceeds 1.0
+			*/
+			if (max > 255)
 			{
+				float t = 255.0F / max;
 
-				r = Q_ftol(bl[0]);
-				g = Q_ftol(bl[1]);
-				b = Q_ftol(bl[2]);
-
-				// catch negative lights
-				if (r < 0)
-					r = 0;
-				if (g < 0)
-					g = 0;
-				if (b < 0)
-					b = 0;
-
-				/*
-				** determine the brightest of the three color components
-				*/
-				if (r > g)
-					max = r;
-				else
-					max = g;
-				if (b > max)
-					max = b;
-
-				/*
-				** alpha is ONLY used for the mono lightmap case.  For this reason
-				** we set it to the brightest of the color components so that
-				** things don't get too dim.
-				*/
-				a = max;
-
-				/*
-				** rescale all the color components if the intensity of the greatest
-				** channel exceeds 1.0
-				*/
-				if (max > 255)
-				{
-					float t = 255.0F / max;
-
-					r = r * t;
-					g = g * t;
-					b = b * t;
-					a = a * t;
-				}
-
-				dest[0] = r;
-				dest[1] = g;
-				dest[2] = b;
-				dest[3] = a;
-
-				bl += 3;
-				dest += 4;
+				r = r * t;
+				g = g * t;
+				b = b * t;
+				a = a * t;
 			}
-		}
-	}
-	else
-	{
-		for (i = 0; i < tmax; i++, dest += stride)
-		{
-			for (j = 0; j < smax; j++)
-			{
 
-				r = Q_ftol(bl[0]);
-				g = Q_ftol(bl[1]);
-				b = Q_ftol(bl[2]);
+			dest[0] = r;
+			dest[1] = g;
+			dest[2] = b;
+			dest[3] = a;
 
-				// catch negative lights
-				if (r < 0)
-					r = 0;
-				if (g < 0)
-					g = 0;
-				if (b < 0)
-					b = 0;
-
-				/*
-				** determine the brightest of the three color components
-				*/
-				if (r > g)
-					max = r;
-				else
-					max = g;
-				if (b > max)
-					max = b;
-
-				/*
-				** alpha is ONLY used for the mono lightmap case.  For this reason
-				** we set it to the brightest of the color components so that
-				** things don't get too dim.
-				*/
-				a = max;
-
-				/*
-				** rescale all the color components if the intensity of the greatest
-				** channel exceeds 1.0
-				*/
-				if (max > 255)
-				{
-					float t = 255.0F / max;
-
-					r = r * t;
-					g = g * t;
-					b = b * t;
-					a = a * t;
-				}
-
-				/*
-				** So if we are doing alpha lightmaps we need to set the R, G, and B
-				** components to 0 and we need to set alpha to 1-alpha.
-				*/
-				switch (monolightmap)
-				{
-				case 'L':
-				case 'I':
-					r = a;
-					g = b = 0;
-					break;
-				case 'C':
-					// try faking colored lighting
-					a = 255 - ((r + g + b) / 3);
-					r *= a / 255.0;
-					g *= a / 255.0;
-					b *= a / 255.0;
-					break;
-				case 'A':
-				default:
-					r = g = b = 0;
-					a = 255 - a;
-					break;
-				}
-
-				dest[0] = r;
-				dest[1] = g;
-				dest[2] = b;
-				dest[3] = a;
-
-				bl += 3;
-				dest += 4;
-			}
+			bl += 3;
+			dest += 4;
 		}
 	}
 }

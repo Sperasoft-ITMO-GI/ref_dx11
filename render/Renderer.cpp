@@ -271,7 +271,6 @@ void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* d
 }
 
 void Renderer::UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum) {
-	using Microsoft::WRL::ComPtr;
 
 	ID3D11Resource* res = nullptr;
 	texture_array_srv[texNum]->GetResource(&res);

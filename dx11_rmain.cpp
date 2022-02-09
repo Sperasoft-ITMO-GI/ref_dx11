@@ -102,6 +102,7 @@ void CompileShaders()
 	bsp_renderer->CompileWithDefines(BSP_SOLID);
 	bsp_renderer->CompileWithDefines(BSP_ALPHA);
 	bsp_renderer->CompileWithDefines(BSP_WATER);
+	bsp_renderer->CompileWithDefines(BSP_LIGHTMAP);
 	bsp_renderer->BindNewFactory();
 
 	// SKY_Renderer
@@ -1185,6 +1186,7 @@ void R_BeginFrame(float camera_separation)
 	sky_renderer->Render();
 
 	renderer->UnSetDepthBuffer();
+	//bsp_renderer->Render();
 	ui_renderer->Render();
 	renderer->SetDepthBuffer();
 }
