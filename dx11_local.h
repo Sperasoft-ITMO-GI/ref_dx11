@@ -44,6 +44,7 @@ extern Renderer*    renderer;
 extern UIRenderer*  ui_renderer;
 extern BSPRenderer* bsp_renderer;
 extern SkyRenderer* sky_renderer;
+extern BeamRenderer* beam_renderer;
 
 /*
 

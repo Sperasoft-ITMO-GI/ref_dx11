@@ -73,9 +73,10 @@ dx11config_t dx11_config;
 dx11state_t  dx11_state;
 
 Renderer* renderer = Renderer::GetInstance();
-UIRenderer* ui_renderer =   new UIRenderer(); // Зачем указатель? Ответа на этот вопрос у меня нет...
-BSPRenderer* bsp_renderer = new BSPRenderer();
-SkyRenderer* sky_renderer = new SkyRenderer();
+UIRenderer* ui_renderer =     new UIRenderer(); // Зачем указатель? Ответа на этот вопрос у меня нет...
+BSPRenderer* bsp_renderer =   new BSPRenderer();
+SkyRenderer* sky_renderer =   new SkyRenderer();
+BeamRenderer* beam_renderer = new BeamRenderer();
 
 States* States::states = nullptr;
 
@@ -109,6 +110,11 @@ void CompileShaders()
 	sky_renderer->InitNewFactory(L"ref_dx11\\shaders\\Sky.hlsl");
 	sky_renderer->CompileWithDefines(SKY_DEFAULT);
 	sky_renderer->BindNewFactory();
+
+	// Beam_Renderer
+	beam_renderer->InitNewFactory(L"ref_dx11\\shaders\\Beam.hlsl");
+	beam_renderer->CompileWithDefines(BEAM_DEFAULT);
+	beam_renderer->BindNewFactory();
 }
 
 
@@ -708,6 +714,7 @@ void R_SetupDX(void)
 
 	renderer->SetModelViewMatrix(model_view);
 	bsp_renderer->InitCB();
+	beam_renderer->InitCB();
 
 	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
 	//qglRotatef(90, 0, 0, 1);	    // put Z going up
@@ -1070,6 +1077,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	ui_renderer->Init();
 	bsp_renderer->Init();
 	sky_renderer->Init();
+	beam_renderer->Init();
 
 	Quad::vb.Create(
 		std::vector<UIVertex>{
@@ -1184,6 +1192,7 @@ void R_BeginFrame(float camera_separation)
 	renderer->Clear();
 	bsp_renderer->Render();
 	sky_renderer->Render();
+	beam_renderer->Render();
 
 	renderer->UnSetDepthBuffer();
 	//bsp_renderer->Render();
@@ -1250,6 +1259,42 @@ void R_DrawBeam(entity_t* e)
 		VectorAdd(start_points[i], origin, start_points[i]);
 		VectorAdd(start_points[i], direction, end_points[i]);
 	}
+
+	using namespace DirectX;
+	std::vector<uint16_t> indexes;
+	std::vector<BeamVertex> verts;
+	BeamVertex vert;
+	for (int i = 0; i < NUM_BEAM_SEGS; ++i) {
+		vert.position = XMFLOAT3(start_points[i]);
+		verts.push_back(vert);
+		vert.position = XMFLOAT3(end_points[i]);
+		verts.push_back(vert);
+		vert.position = XMFLOAT3(start_points[(i + 1) % NUM_BEAM_SEGS]);
+		verts.push_back(vert);
+		vert.position = XMFLOAT3(end_points[(i + 1) % NUM_BEAM_SEGS]);
+		verts.push_back(vert);
+	}
+
+	r = (d_8to24table[e->skinnum & 0xFF]) & 0xFF;
+	g = (d_8to24table[e->skinnum & 0xFF] >> 8) & 0xFF;
+	b = (d_8to24table[e->skinnum & 0xFF] >> 16) & 0xFF;
+
+	r *= 1 / 255.0F;
+	g *= 1 / 255.0F;
+	b *= 1 / 255.0F;
+
+	ConstantBufferPolygon cbp;
+	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	cbp.color[0] = r;
+	cbp.color[1] = g;
+	cbp.color[2] = b;
+	cbp.color[3] = e->alpha;
+
+	BeamDefinitions beam_defs{
+		verts, indexes, cbp, BEAM_DEFAULT
+	};
+
+	beam_renderer->Add(beam_defs);
 
 	/*qglDisable(GL_TEXTURE_2D);
 	qglEnable(GL_BLEND);

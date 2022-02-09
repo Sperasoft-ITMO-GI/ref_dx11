@@ -10,6 +10,7 @@
 #include <UIVertex.h>
 #include <BSPVertex.h>
 #include <SkyVertex.h>
+#include <BeamVertex.h>
 
 class VertexBuffer : public Bindable {
 public:

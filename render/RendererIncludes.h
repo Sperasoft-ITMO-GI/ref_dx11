@@ -6,5 +6,4 @@
 #include <UIRenderer.h>
 #include <BSPRenderer.h>
 #include <SkyRenderer.h>
-#include <Quad.h>
-#include <BSPPoly.h>
+#include <BeamRenderer.h>

@@ -173,6 +173,8 @@
     <ClInclude Include="dx11_local.h" />
     <ClInclude Include="dx11_model.h" />
     <ClInclude Include="dxerr.h" />
+    <ClInclude Include="render\BeamRenderer.h" />
+    <ClInclude Include="render\BeamVertex.h" />
     <ClInclude Include="render\Bindable.h" />
     <ClInclude Include="render\BlendState.h" />
     <ClInclude Include="render\BSPVertex.h" />
@@ -185,6 +187,7 @@
     <ClInclude Include="render\PipelineState.h" />
     <ClInclude Include="render\PixelShader.h" />
     <ClInclude Include="render\BSPPoly.h" />
+    <ClInclude Include="render\BeamPoly.h" />
     <ClInclude Include="render\Primitive.h" />
     <ClInclude Include="render\Quad.h" />
     <ClInclude Include="render\RasterizationState.h" />
@@ -217,6 +220,7 @@
     <ClCompile Include="dx11_rsurf.cpp" />
     <ClCompile Include="dx11_warp.cpp" />
     <ClCompile Include="dxerr.cpp" />
+    <ClCompile Include="render\BeamRenderer.cpp" />
     <ClCompile Include="render\BlendState.cpp" />
     <ClCompile Include="render\IndexBuffer.cpp" />
     <ClCompile Include="render\InputLayout.cpp" />
@@ -225,6 +229,7 @@
     <ClCompile Include="render\PipelineState.cpp" />
     <ClCompile Include="render\PixelShader.cpp" />
     <ClCompile Include="render\BSPPoly.cpp" />
+    <ClCompile Include="render\BeamPoly.cpp" />
     <ClCompile Include="render\Primitive.cpp" />
     <ClCompile Include="render\Quad.cpp" />
     <ClCompile Include="render\RasterizationState.cpp" />
@@ -237,6 +242,12 @@
     <ClCompile Include="render\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="shaders\Beam.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="shaders\BSP.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

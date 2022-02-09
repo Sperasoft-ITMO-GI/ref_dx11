@@ -8,14 +8,14 @@
 #include <ConstantBuffer.hpp>
 #include <Primitive.h>
 
-class BSPPoly : public Primitive {
+class BeamPoly : public Primitive {
 public:
-	BSPPoly();
-	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb);
-	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, IndexBuffer& ib);
-	BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb);
+	BeamPoly();
+	BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cb);
+	BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, IndexBuffer& ib);
+	BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb);
 
-	~BSPPoly();
+	~BeamPoly();
 
 	void Draw();
 
@@ -27,7 +27,7 @@ public:
 	void CreateDynamicVB(UINT size);
 	void CreateDynamicIB(UINT size);
 	void UpdateCB(const ConstantBufferPolygon& cbp);
-	void UpdateDynamicVB(std::vector<BSPVertex> vertexes);
+	void UpdateDynamicVB(std::vector<BeamVertex> vertexes);
 	void UpdateDynamicIB(std::vector<uint16_t> indexes);
 
 private:
