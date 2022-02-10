@@ -51,7 +51,7 @@ void BeamRenderer::BeamPSProvider::PatchPipelineState(PipelineState* state, int 
 
 	if (defines & BEAM_DEFAULT)
 	{
-		state->bs = states->blend_states.at(BlendState::NOBS);
+		state->bs = states->blend_states.at(BlendState::ALPHABS);
 		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BEAM_POLYGON));
 		state->topology = states->topology.at(Topology::TRIANGLE_STRIP);
