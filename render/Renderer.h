@@ -27,7 +27,7 @@ public:
 	void SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx);
 
 	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool mipmap);
-	void UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum);
+	void UpdateTextureInSRV(int width, int height, int xOffset, int yOffset, int bits, unsigned char* data, int texNum);
 
 	void DeleteTextureFromSRV(int texNum);
 

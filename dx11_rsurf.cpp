@@ -581,6 +581,9 @@ void R_RenderBrushPoly(msurface_t* fa)
 				GL_LIGHTMAP_FORMAT,
 				GL_UNSIGNED_BYTE, temp);*/
 
+			renderer->UpdateTextureInSRV(smax, tmax, fa->light_s, fa->light_t, 32,
+				(unsigned char*)temp, dx11_state.lightmap_textures + fa->lightmaptexturenum);
+
 			fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
 			gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
 		}
@@ -1136,6 +1139,8 @@ static void LM_UploadBlock(qboolean dynamic)
 				height = gl_lms.allocated[i];
 		}
 
+		renderer->UpdateTextureInSRV(BLOCK_WIDTH, height, 0, 0, 32,
+			gl_lms.lightmap_buffer, dx11_state.lightmap_textures + texture);
 		/*qglTexSubImage2D(GL_TEXTURE_2D,
 			0,
 			0, 0,

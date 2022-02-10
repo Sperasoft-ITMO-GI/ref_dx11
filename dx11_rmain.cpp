@@ -1188,14 +1188,16 @@ void R_BeginFrame(float camera_separation)
 	// 
 	// GLimp_BeginFrame( camera_separation );
 
+	// Чтобы увидеть лайтмапы, нужно рендерить BSP с отключённым буфером глубины
+
 	// clear
 	renderer->Clear();
-	bsp_renderer->Render();
+	//bsp_renderer->Render();
 	sky_renderer->Render();
 	beam_renderer->Render();
 
 	renderer->UnSetDepthBuffer();
-	//bsp_renderer->Render();
+	bsp_renderer->Render();
 	ui_renderer->Render();
 	renderer->SetDepthBuffer();
 }

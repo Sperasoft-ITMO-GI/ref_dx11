@@ -270,12 +270,14 @@ void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* d
 	}
 }
 
-void Renderer::UpdateTextureInSRV(int width, int height, int bits, unsigned char* data, int texNum) {
+void Renderer::UpdateTextureInSRV(int width, int height, int xOffset, int yOffset, int bits, unsigned char* data, int texNum) {
 
 	ID3D11Resource* res = nullptr;
 	texture_array_srv[texNum]->GetResource(&res);
 
-	context->UpdateSubresource(res, NULL, NULL, data, width * (bits / 8), 0);
+	D3D11_BOX box { xOffset, yOffset, 0, xOffset + width, yOffset + height, 1 };
+
+	context->UpdateSubresource(res, NULL, &box, data, width * (bits / 8), 0);
 
 	ReleaseCOM(res);
 }

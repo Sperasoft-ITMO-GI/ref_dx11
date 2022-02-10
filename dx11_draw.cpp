@@ -290,7 +290,7 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 	}
 	else
 	{
-		renderer->UpdateTextureInSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE);
+		renderer->UpdateTextureInSRV(256, 256, 0, 0, 32, (unsigned char*)image32, CINEMATIC_PICTURE);
 	}
 
 	using namespace DirectX;
