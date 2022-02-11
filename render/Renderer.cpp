@@ -208,75 +208,66 @@ void Renderer::SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx) {
 
 void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool mipmap)
 {
-	if (texNum == 262 || texNum == 263 || texNum == 264 || texNum == 265 || texNum == 266 || texNum == 267) {
-		//unsigned char* sky_data = nullptr;
-		//std::swap(sky_data, data);
-		//sky_box_data[texNum - 262].pSysMem = sky_data;
-		//sky_box_data[texNum - 262].SysMemPitch = width * (bits / 8);
-		//sky_box_data[texNum - 262].SysMemSlicePitch = 0;
+	D3D11_SUBRESOURCE_DATA initData;
+	initData.pSysMem = data;
+	initData.SysMemPitch = width * (bits / 8);
+	initData.SysMemSlicePitch = 0;
+
+	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	if (bits == 8)
+		format = DXGI_FORMAT_R8_UNORM;
+	else if (bits == 32)
+		format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	D3D11_USAGE usage = D3D11_USAGE_DEFAULT;
+
+	UINT bindFlags = D3D11_BIND_SHADER_RESOURCE;
+	UINT miscFlags = 0;
+	UINT mipLevelsTexture = 1;
+	UINT mipLevelsSRV = 1;
+	if (mipmap)
+	{
+		bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+		miscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+		mipLevelsTexture = 0;
+		mipLevelsSRV = -1;
 	}
-	else {
-		D3D11_SUBRESOURCE_DATA initData;
-		initData.pSysMem = data;
-		initData.SysMemPitch = width * (bits / 8);
-		initData.SysMemSlicePitch = 0;
 
-		DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		if (bits == 8)
-			format = DXGI_FORMAT_R8_UNORM;
-		else if (bits == 32)
-			format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	D3D11_TEXTURE2D_DESC desc = {};
+	desc.Width = width;
+	desc.Height = height;
+	desc.MipLevels = mipLevelsTexture;
+	desc.ArraySize = 1;
+	desc.Format = format;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = usage;
+	desc.CPUAccessFlags = 0;
+	desc.BindFlags = bindFlags;
+	desc.MiscFlags = miscFlags;
 
-		D3D11_USAGE usage = D3D11_USAGE_DEFAULT;
+	ID3D11Texture2D* tex = nullptr;
 
-		UINT bindFlags = D3D11_BIND_SHADER_RESOURCE;
-		UINT miscFlags = 0;
-		UINT mipLevelsTexture = 1;
-		UINT mipLevelsSRV = 1;
-		if (mipmap)
-		{
-			bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-			miscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
-			mipLevelsTexture = 0;
-			mipLevelsSRV = -1;
-		}
+	if (mipmap)
+	{
+		DXCHECK(device->CreateTexture2D(&desc, nullptr, &tex));
+		context->UpdateSubresource(tex, 0u, NULL, initData.pSysMem, initData.SysMemPitch, 0u);
+	}
+	else
+	{
+		DXCHECK(device->CreateTexture2D(&desc, &initData, &tex));
+	}
 
-		D3D11_TEXTURE2D_DESC desc = {};
-		desc.Width = width;
-		desc.Height = height;
-		desc.MipLevels = mipLevelsTexture;
-		desc.ArraySize = 1;
-		desc.Format = format;
-		desc.SampleDesc.Count = 1;
-		desc.SampleDesc.Quality = 0;
-		desc.Usage = usage;
-		desc.CPUAccessFlags = 0;
-		desc.BindFlags = bindFlags;
-		desc.MiscFlags = miscFlags;
+	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+	SRVDesc.Format = format;
+	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	SRVDesc.Texture2D.MipLevels = mipLevelsSRV;
 
-		ID3D11Texture2D* tex = nullptr;
+	DXCHECK(device->CreateShaderResourceView(tex, &SRVDesc, &texture_array_srv[texNum]));
 
-		if (mipmap)
-		{
-			DXCHECK(device->CreateTexture2D(&desc, nullptr, &tex));
-			context->UpdateSubresource(tex, 0u, NULL, initData.pSysMem, initData.SysMemPitch, 0u);
-		}
-		else
-		{
-			DXCHECK(device->CreateTexture2D(&desc, &initData, &tex));
-		}
-
-		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
-		SRVDesc.Format = format;
-		SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		SRVDesc.Texture2D.MipLevels = mipLevelsSRV;
-
-		DXCHECK(device->CreateShaderResourceView(tex, &SRVDesc, &texture_array_srv[texNum]));
-
-		if (mipmap)
-		{
-			context->GenerateMips(texture_array_srv[texNum]);
-		}
+	if (mipmap)
+	{
+		context->GenerateMips(texture_array_srv[texNum]);
 	}
 }
 
@@ -343,41 +334,41 @@ void Renderer::DeleteTextureFromSRV(int texNum)
 
 void Renderer::Test(char* name, int width, int height, int bits, unsigned char* data, int type) 
 {
-	//char* newName = (char*)malloc(256);
-	//memset(newName, 0, 256);
-	//strcpy(newName, "pics/");
+	/*char* newName = (char*)malloc(256);
+	memset(newName, 0, 256);
+	strcpy(newName, "pics/");
 
-	//char* nameAfterSlash = strrchr(name, '/') + 1;
+	char* nameAfterSlash = strrchr(name, '/') + 1;
 
-	//if ((nameAfterSlash == NULL) || (name[0] == '*'))
-	//{
-	//	nameAfterSlash = name;
-	//}
+	if ((nameAfterSlash == NULL) || (name[0] == '*'))
+	{
+		nameAfterSlash = name;
+	}
 
-	//switch (type)
-	//{
-	//	case 0:
-	//		strcat(newName, "skin/");
-	//		break;
-	//	case 1:
-	//		strcat(newName, "sprite/");
-	//		break;
-	//	case 2:
-	//		strcat(newName, "wall/");
-	//		break;
-	//	case 3:
-	//		strcat(newName, "pic/");
-	//		break;
-	//	case 4:
-	//		strcat(newName, "sky/");
-	//		break;
-	//}
+	switch (type)
+	{
+		case 0:
+			strcat(newName, "skin/");
+			break;
+		case 1:
+			strcat(newName, "sprite/");
+			break;
+		case 2:
+			strcat(newName, "wall/");
+			break;
+		case 3:
+			strcat(newName, "pic/");
+			break;
+		case 4:
+			strcat(newName, "sky/");
+			break;
+	}
 
-	//strcat(newName, nameAfterSlash);
-	//strcat(newName, ".png\0");
+	strcat(newName, nameAfterSlash);
+	strcat(newName, ".png\0");
 
-	//stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
-	//free(newName);
+	stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
+	free(newName);*/
 }
 
 void Renderer::Bind(int texture_index) {

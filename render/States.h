@@ -24,7 +24,6 @@ public:
 	const std::unordered_map<BlendState, ID3D11BlendState*> blend_states{
 		{UIALPHABS,   MakeUIAlphaBS()},
 		{ALPHABS, MakeAlphaBS()},
-		{WATERBS, MakeWaterBS()},
 		{SURFLIGHTMAPBS, MakeSurfLightMapBS()},
 		{NOBS, MakeNoBS()}
 	};

@@ -102,7 +102,7 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 
 	if (defines & BSP_WATER)
 	{
-		state->bs = states->blend_states.at(BlendState::WATERBS);
+		state->bs = states->blend_states.at(BlendState::ALPHABS);
 		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BSP_POLYGON));
 		state->topology = states->topology.at(Topology::TRIANGLE_STRIP);

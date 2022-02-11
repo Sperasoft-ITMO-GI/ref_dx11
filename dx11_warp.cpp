@@ -12,7 +12,6 @@ image_t* sky_images[6];
 msurface_t* warpface;
 
 #define	SUBDIVIDE_SIZE	64
-//#define	SUBDIVIDE_SIZE	1024
 
 void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
 {
@@ -206,8 +205,6 @@ void EmitWaterPolys(msurface_t* fa)
 	{
 		p = bp;
 
-		//qglBegin(GL_TRIANGLE_FAN);
-
 		BSPVertex vert = {};
 		std::vector<BSPVertex> vect;
 
@@ -222,9 +219,6 @@ void EmitWaterPolys(msurface_t* fa)
 
 			t = ot + r_turbsin[Q_ftol(((os * 0.125 + rdt) * TURBSCALE)) & 255];
 			t *= (1.0 / 64);
-
-			//qglTexCoord2f(s, t);
-			//qglVertex3fv(v);
 
 			vert.position.x = v[0];
 			vert.position.y = v[1];
@@ -257,8 +251,6 @@ void EmitWaterPolys(msurface_t* fa)
 		};
 
 		bsp_renderer->Add(bspd);
-
-		//qglEnd();
 	}
 }
 
@@ -287,9 +279,6 @@ int	st_to_vec[6][3] =
 
 	{-2,-1,3},		// 0 degrees yaw, look straight up
 	{2,-1,-3}		// look straight down
-
-//	{-1,2,3},
-//	{1,2,-3}
 };
 
 // s = [0]/[2], t = [1]/[2]
@@ -303,9 +292,6 @@ int	vec_to_st[6][3] =
 
 	{-2,-1,3},
 	{-2,1,-3}
-
-	//	{-1,2,3},
-	//	{1,2,-3}
 };
 
 float	skymins[2][6], skymaxs[2][6];
@@ -320,16 +306,7 @@ void DrawSkyPolygon(int nump, vec3_t vecs)
 	float* vp;
 
 	c_sky++;
-#if 0
-	glBegin(GL_POLYGON);
-	for (i = 0; i < nump; i++, vecs += 3)
-	{
-		VectorAdd(vecs, r_origin, v);
-		qglVertex3fv(v);
-	}
-	glEnd();
-	return;
-#endif
+
 	// decide which face it maps to
 	VectorCopy(vec3_origin, v);
 	for (i = 0, vp = vecs; i < nump; i++, vp += 3)
@@ -526,7 +503,7 @@ void R_ClearSkyBox(void)
 }
 
 
-SkyVertex MakeSkyVec(float s, float t, int axis)
+void MakeSkyVec(float s, float t, int axis, std::vector<BSPVertex>* vect)
 {
 	vec3_t		v, b;
 	int			j, k;
@@ -534,6 +511,15 @@ SkyVertex MakeSkyVec(float s, float t, int axis)
 	b[0] = s * 2300;
 	b[1] = t * 2300;
 	b[2] = 2300;
+
+	for (j = 0; j < 3; j++)
+	{
+		k = st_to_vec[axis][j];
+		if (k < 0)
+			v[j] = -b[-k - 1];
+		else
+			v[j] = b[k - 1];
+	}
 
 	// avoid bilerp seam
 	s = (s + 1) * 0.5;
@@ -549,24 +535,17 @@ SkyVertex MakeSkyVec(float s, float t, int axis)
 		t = sky_max;
 
 	t = 1.0 - t;
-
-	using namespace DirectX;
-	SkyVertex vert;
-
-	for (j = 0; j < 3; j++)
-	{
-		k = st_to_vec[axis][j];
-		if (k < 0)
-			v[j] = -b[-k - 1];
-		else
-			v[j] = b[k - 1];
-	}
-	vert.position = XMFLOAT3(v);
-	//vert.texture_coord = XMFLOAT2(s, t);
-
-	return vert;
 	//qglTexCoord2f(s, t);
 	//qglVertex3fv(v);
+
+	BSPVertex vert = {};
+	vert.position.x = v[0];
+	vert.position.y = v[1];
+	vert.position.z = v[2];
+	vert.texture_coord.x = s;
+	vert.texture_coord.y = t;
+
+	vect->push_back(vert);
 }
 
 /*
@@ -589,9 +568,22 @@ void R_DrawSkyBox(void)
 			return;		// nothing visible
 	}
 
-	//qglPushMatrix();
-	//qglTranslatef(r_origin[0], r_origin[1], r_origin[2]);
-	//qglRotatef(r_newrefdef.time * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
+	ConstantBufferPolygon cbp;
+	if ((skyaxis[0] == 0) && (skyaxis[0] == 0) && (skyaxis[0] == 0))
+	{
+		cbp.position_transform = DirectX::XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2]) * renderer->GetModelView() * renderer->GetPerspective();
+	}
+	else
+	{
+		printf("POWERNULOS NEBO!!!!\n");
+		cbp.position_transform = DirectX::XMMatrixRotationAxis({ skyaxis[0], skyaxis[1], skyaxis[2] }, r_newrefdef.time * skyrotate);
+		cbp.position_transform *= DirectX::XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2]) * renderer->GetModelView() * renderer->GetPerspective();
+	}	
+
+	cbp.color[0] = 1.0f;
+	cbp.color[1] = 1.0f;
+	cbp.color[2] = 1.0f;
+	cbp.color[3] = 1.0f;
 
 	for (i = 0; i < 6; i++)
 	{
@@ -607,36 +599,29 @@ void R_DrawSkyBox(void)
 			|| skymins[1][i] >= skymaxs[1][i])
 			continue;
 
-		//GL_Bind(sky_images[skytexorder[i]]->texnum);
+		std::vector<BSPVertex> vect;
 
-		//qglBegin(GL_QUADS);
-		using namespace DirectX;
-		sky_renderer->is_exist = true;
-		//IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
-		ConstantBufferQuad cbq;
-		XMVECTOR v_axis = { skyaxis[0], skyaxis[1], skyaxis[2] };
-		cbq.position_transform *= renderer->GetModelView()
-			//* XMMatrixRotationAxis(v_axis, XMConvertToRadians(r_newrefdef.time * skyrotate))
-						   * XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
-				           * renderer->GetPerspective();
-		//std::vector<SkyVertex> vect;
-		//vect.push_back(MakeSkyVec(skymins[0][i], skymins[1][i], i));
-		//vect.push_back(MakeSkyVec(skymins[0][i], skymaxs[1][i], i));
-		//vect.push_back(MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i));
-		//vect.push_back(MakeSkyVec(skymaxs[0][i], skymins[1][i], i));
+		MakeSkyVec(skymins[0][i], skymins[1][i], i, &vect);
+		MakeSkyVec(skymins[0][i], skymaxs[1][i], i, &vect);
+		MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i, &vect);
+		MakeSkyVec(skymaxs[0][i], skymins[1][i], i, &vect);
 
-		//SkyDefinitions sd{
-		//	vect, { 2, 1, 0, 0, 3, 2 }, cbq, SKY_DEFAULT, sky_images[skytexorder[i]]->texnum
-		//};
-		//sky_renderer->Add(sd);
+		std::vector<uint16_t> indexes;
 
+		indexes.push_back(0);
+		indexes.push_back(2);
+		indexes.push_back(1);
 
-		//VertexBuffer vb(vect);
-		//Quad sky_quad(cb, vb, ib, SKY_DEFAULT, sky_images[skytexorder[i]]->texnum);
-		//sky_renderer->AddElement(sky_quad);
-		//qglEnd();
+		indexes.push_back(0);
+		indexes.push_back(3);
+		indexes.push_back(2);
+
+		BSPDefinitions bspd{
+		vect, indexes, cbp, BSP_SOLID, sky_images[skytexorder[i]]->texnum, -1
+		};
+
+		bsp_renderer->Add(bspd);
 	}
-	//qglPopMatrix();
 }
 
 

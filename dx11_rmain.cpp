@@ -102,7 +102,6 @@ void CompileShaders()
 	bsp_renderer->InitNewFactory(L"ref_dx11\\shaders\\BSP.hlsl");
 	bsp_renderer->CompileWithDefines(BSP_SOLID);
 	bsp_renderer->CompileWithDefines(BSP_ALPHA);
-	bsp_renderer->CompileWithDefines(BSP_WATER);
 	bsp_renderer->CompileWithDefines(BSP_LIGHTMAP);
 	bsp_renderer->BindNewFactory();
 
@@ -1219,7 +1218,7 @@ void R_BeginFrame(float camera_separation)
 	renderer->Clear();
 	bsp_renderer->Render();
 	beam_renderer->Render();
-	sky_renderer->Render();
+	//sky_renderer->Render();
 	renderer->UnSetDepthBuffer();
 	//bsp_renderer->Render();
 	ui_renderer->Render();
