@@ -285,6 +285,7 @@ void Renderer::UpdateTextureInSRV(int width, int height, int xOffset, int yOffse
 
 void Renderer::CreateSkyBoxSRV()
 {
+	//int	skytexorder[6] = { 0,2,1,3,4,5 };
 	int w, h, n;
 	stbi_set_flip_vertically_on_load(true);
 	for (int i = 0; i < 6; ++i) {
@@ -298,8 +299,8 @@ void Renderer::CreateSkyBoxSRV()
 
 
 	D3D11_TEXTURE2D_DESC texture_desc = {};
-	texture_desc.Width = 256;
-	texture_desc.Height = 256;
+	texture_desc.Width = w;
+	texture_desc.Height = h;
 	texture_desc.MipLevels = 1;
 	texture_desc.ArraySize = 6;
 	texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

@@ -23,7 +23,7 @@ public:
 
 	void InitCB();
 
-	//void Add(const SkyDefinitions& quad);
+	void Add(ConstantBufferSkyBox& cbsb);
 
 	void InitNewFactory(const wchar_t* path);
 
