@@ -6,8 +6,6 @@
 
 static vec3_t	modelorg;		// relative to viewpoint
 
-// wwwww
-
 msurface_t* r_alpha_surfaces;
 
 #define DYNAMIC_LIGHT_WIDTH  128
@@ -833,6 +831,8 @@ void R_DrawBrushModel(entity_t* e)
 	}
 
 	//qglPushMatrix();
+	auto saveMatrix = renderer->GetModelView();
+
 	e->angles[0] = -e->angles[0];	// stupid quake bug
 	e->angles[2] = -e->angles[2];	// stupid quake bug
 	R_RotateForEntity(e);
@@ -849,6 +849,7 @@ void R_DrawBrushModel(entity_t* e)
 	//GL_EnableMultitexture(False);
 
 	//qglPopMatrix();
+	renderer->SetModelViewMatrix(saveMatrix);
 }
 
 /*

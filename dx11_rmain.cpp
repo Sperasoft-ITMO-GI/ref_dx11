@@ -147,6 +147,14 @@ void R_RotateForEntity(entity_t* e)
 	qglRotatef(e->angles[1], 0, 0, 1);
 	qglRotatef(-e->angles[0], 0, 1, 0);
 	qglRotatef(-e->angles[2], 1, 0, 0);*/
+
+	renderer->SetModelViewMatrix(
+		DirectX::XMMatrixRotationAxis({ 1, 0, 0 }, -e->angles[2]) *
+		DirectX::XMMatrixRotationAxis({ 0, 1, 0 }, -e->angles[0]) *
+		DirectX::XMMatrixRotationAxis({ 0, 0, 1 }, e->angles[1])  *
+		DirectX::XMMatrixTranslation(e->origin[0], e->origin[1], e->origin[2]) *
+		renderer->GetModelView()
+	);
 }
 
 /*
