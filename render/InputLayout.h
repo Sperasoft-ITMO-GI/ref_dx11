@@ -7,7 +7,7 @@
 
 enum Layout {
 	UI_QUAD,
-	SKY_QUAD,
+	SKY_POLYGON,
 	BSP_POLYGON,
 	BEAM_POLYGON
 };

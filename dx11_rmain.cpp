@@ -714,6 +714,7 @@ void R_SetupDX(void)
 
 	renderer->SetModelViewMatrix(model_view);
 	bsp_renderer->InitCB();
+	sky_renderer->InitCB();
 	beam_renderer->InitCB();
 
 	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
@@ -1090,6 +1091,30 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	
 	Quad::ib.Create({ 2, 1, 0, 0, 3, 2 });
 
+	SkyPoly::vb.Create(
+		std::vector<SkyVertex>{
+			{{-1, -1, -1}},
+			{{ 1, -1, -1}},
+			{{-1,  1, -1}},
+			{{ 1,  1, -1}},
+			{{-1, -1,  1}},
+			{{ 1, -1,  1}},
+			{{-1,  1,  1}},
+			{{ 1,  1,  1}}
+		}
+	);
+
+	SkyPoly::ib.Create(
+		{
+	     0, 2, 1, 2, 3, 1,
+		 1, 3, 5, 3, 7, 5,
+		 2, 6, 3, 3, 6, 7,
+		 4, 5, 7, 4, 7, 6,
+		 0, 4, 2, 2, 4, 6,
+		 0, 1, 4, 1, 5, 4
+		}
+	);
+
 	// let the sound and input subsystems know about the new window
 	// can be call after creating windows and its context
 	ri.Vid_NewWindow(width, height);
@@ -1192,14 +1217,14 @@ void R_BeginFrame(float camera_separation)
 
 	// clear
 	renderer->Clear();
-	//bsp_renderer->Render();
-	sky_renderer->Render();
-	beam_renderer->Render();
-
-	renderer->UnSetDepthBuffer();
 	bsp_renderer->Render();
+	beam_renderer->Render();
+	sky_renderer->Render();
+	renderer->UnSetDepthBuffer();
+	//bsp_renderer->Render();
 	ui_renderer->Render();
 	renderer->SetDepthBuffer();
+	
 }
 
 /*

@@ -194,6 +194,7 @@
     <ClInclude Include="render\Renderer.h" />
     <ClInclude Include="render\RendererIncludes.h" />
     <ClInclude Include="render\Shader.h" />
+    <ClInclude Include="render\SkyPoly.h" />
     <ClInclude Include="render\SkyRenderer.h" />
     <ClInclude Include="render\SkyVertex.h" />
     <ClInclude Include="render\States.h" />
@@ -234,6 +235,7 @@
     <ClCompile Include="render\Quad.cpp" />
     <ClCompile Include="render\RasterizationState.cpp" />
     <ClCompile Include="render\Renderer.cpp" />
+    <ClCompile Include="render\SkyPoly.cpp" />
     <ClCompile Include="render\SkyRenderer.cpp" />
     <ClCompile Include="render\UIRenderer.cpp" />
     <ClCompile Include="render\Utils.cpp" />

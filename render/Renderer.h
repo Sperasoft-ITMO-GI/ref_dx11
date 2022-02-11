@@ -28,6 +28,7 @@ public:
 
 	void AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool mipmap);
 	void UpdateTextureInSRV(int width, int height, int xOffset, int yOffset, int bits, unsigned char* data, int texNum);
+	void CreateSkyBoxSRV();
 
 	void DeleteTextureFromSRV(int texNum);
 
@@ -57,6 +58,7 @@ public:
 	}
 
 	void Bind(int texture_index);
+	void BindSkyBox();
 
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetContext();
@@ -68,6 +70,9 @@ public:
 	}
 	bool IsMsaaEnable() {
 		return is_4xmsaa_enable;
+	}
+	ID3D11ShaderResourceView* GetSkyBoxSRV() {
+		return sky_box_view;
 	}
 
 private:
@@ -92,6 +97,9 @@ private:
 	
 	ID3D11SamplerState* sampler;
 	ID3D11ShaderResourceView* texture_array_srv[1600];
+
+	D3D11_SUBRESOURCE_DATA sky_box_data[6];
+	ID3D11ShaderResourceView* sky_box_view;
 
 	DirectX::XMMATRIX orthogonal;
 	DirectX::XMMATRIX perspective;

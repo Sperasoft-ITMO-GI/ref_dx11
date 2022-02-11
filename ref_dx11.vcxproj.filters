@@ -168,6 +168,9 @@
     <ClInclude Include="render\BeamPoly.h">
       <Filter>Render\BeamRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="render\SkyPoly.h">
+      <Filter>Render\SkyRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">
@@ -265,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="render\BeamPoly.cpp">
       <Filter>Render\BeamRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\SkyPoly.cpp">
+      <Filter>Render\SkyRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

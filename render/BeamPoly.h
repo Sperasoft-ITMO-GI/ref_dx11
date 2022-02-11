@@ -30,7 +30,7 @@ public:
 	void UpdateDynamicVB(std::vector<BeamVertex> vertexes);
 	void UpdateDynamicIB(std::vector<uint16_t> indexes);
 
-private:
+public:
 	static VertexBuffer vb;
 	static IndexBuffer ib;
 

@@ -22,6 +22,7 @@ Renderer::Renderer()
 	  is_4xmsaa_enable(false),
       is_initialized(false),
       sampler(nullptr), 
+	  sky_box_view(nullptr),
 	  model_view(DirectX::XMMatrixIdentity()),
       orthogonal(DirectX::XMMatrixIdentity()), 
       perspective(DirectX::XMMatrixIdentity()){
@@ -120,7 +121,7 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		// Set up the description of the stencil state.
 		depth_stencil_desc.DepthEnable = true;
 		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS;
+		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL; // только для неба такой
 		DXCHECK(device->CreateDepthStencilState(&depth_stencil_desc, &depth_stencil_state));
 
 		D3D11_TEXTURE2D_DESC depth_stencil_tex;
@@ -207,66 +208,75 @@ void Renderer::SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx) {
 
 void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool mipmap)
 {
-	D3D11_SUBRESOURCE_DATA initData;
-	initData.pSysMem = data;
-	initData.SysMemPitch = width * (bits / 8);
-	initData.SysMemSlicePitch = 0;
-
-	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	if (bits == 8)
-		format = DXGI_FORMAT_R8_UNORM;
-	else if (bits == 32)
-		format = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-	D3D11_USAGE usage = D3D11_USAGE_DEFAULT;
-
-	UINT bindFlags = D3D11_BIND_SHADER_RESOURCE;
-	UINT miscFlags = 0;
-	UINT mipLevelsTexture = 1;
-	UINT mipLevelsSRV = 1;
-	if (mipmap)
-	{
-		bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-		miscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
-		mipLevelsTexture = 0;
-		mipLevelsSRV = -1;
+	if (texNum == 262 || texNum == 263 || texNum == 264 || texNum == 265 || texNum == 266 || texNum == 267) {
+		//unsigned char* sky_data = nullptr;
+		//std::swap(sky_data, data);
+		//sky_box_data[texNum - 262].pSysMem = sky_data;
+		//sky_box_data[texNum - 262].SysMemPitch = width * (bits / 8);
+		//sky_box_data[texNum - 262].SysMemSlicePitch = 0;
 	}
+	else {
+		D3D11_SUBRESOURCE_DATA initData;
+		initData.pSysMem = data;
+		initData.SysMemPitch = width * (bits / 8);
+		initData.SysMemSlicePitch = 0;
 
-	D3D11_TEXTURE2D_DESC desc = {};
-	desc.Width = width;
-	desc.Height = height;
-	desc.MipLevels = mipLevelsTexture;
-	desc.ArraySize = 1;
-	desc.Format = format;
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
-	desc.Usage = usage;
-	desc.CPUAccessFlags = 0;
-	desc.BindFlags = bindFlags;
-	desc.MiscFlags = miscFlags;
+		DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		if (bits == 8)
+			format = DXGI_FORMAT_R8_UNORM;
+		else if (bits == 32)
+			format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-	ID3D11Texture2D* tex = nullptr;
+		D3D11_USAGE usage = D3D11_USAGE_DEFAULT;
 
-	if (mipmap)
-	{
-		DXCHECK(device->CreateTexture2D(&desc, nullptr, &tex));
-		context->UpdateSubresource(tex, 0u, NULL, initData.pSysMem, initData.SysMemPitch, 0u);
-	}
-	else
-	{
-		DXCHECK(device->CreateTexture2D(&desc, &initData, &tex));
-	}
+		UINT bindFlags = D3D11_BIND_SHADER_RESOURCE;
+		UINT miscFlags = 0;
+		UINT mipLevelsTexture = 1;
+		UINT mipLevelsSRV = 1;
+		if (mipmap)
+		{
+			bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+			miscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+			mipLevelsTexture = 0;
+			mipLevelsSRV = -1;
+		}
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
-	SRVDesc.Format = format;
-	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	SRVDesc.Texture2D.MipLevels = mipLevelsSRV;
+		D3D11_TEXTURE2D_DESC desc = {};
+		desc.Width = width;
+		desc.Height = height;
+		desc.MipLevels = mipLevelsTexture;
+		desc.ArraySize = 1;
+		desc.Format = format;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = usage;
+		desc.CPUAccessFlags = 0;
+		desc.BindFlags = bindFlags;
+		desc.MiscFlags = miscFlags;
 
-	DXCHECK(device->CreateShaderResourceView(tex, &SRVDesc, &texture_array_srv[texNum]));
+		ID3D11Texture2D* tex = nullptr;
 
-	if (mipmap)
-	{
-		context->GenerateMips(texture_array_srv[texNum]);
+		if (mipmap)
+		{
+			DXCHECK(device->CreateTexture2D(&desc, nullptr, &tex));
+			context->UpdateSubresource(tex, 0u, NULL, initData.pSysMem, initData.SysMemPitch, 0u);
+		}
+		else
+		{
+			DXCHECK(device->CreateTexture2D(&desc, &initData, &tex));
+		}
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+		SRVDesc.Format = format;
+		SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		SRVDesc.Texture2D.MipLevels = mipLevelsSRV;
+
+		DXCHECK(device->CreateShaderResourceView(tex, &SRVDesc, &texture_array_srv[texNum]));
+
+		if (mipmap)
+		{
+			context->GenerateMips(texture_array_srv[texNum]);
+		}
 	}
 }
 
@@ -282,6 +292,47 @@ void Renderer::UpdateTextureInSRV(int width, int height, int xOffset, int yOffse
 	ReleaseCOM(res);
 }
 
+void Renderer::CreateSkyBoxSRV()
+{
+	int w, h, n;
+	stbi_set_flip_vertically_on_load(true);
+	for (int i = 0; i < 6; ++i) {
+		std::string path("pics/sky/unit");
+		path += std::to_string(i) + ".png";
+		unsigned char* data = stbi_load(path.data(), &w, &h, &n, 0);
+		sky_box_data[i].pSysMem = data;
+		sky_box_data[i].SysMemPitch = w * n;
+		sky_box_data[i].SysMemSlicePitch = 0;
+	}
+
+
+	D3D11_TEXTURE2D_DESC texture_desc = {};
+	texture_desc.Width = 256;
+	texture_desc.Height = 256;
+	texture_desc.MipLevels = 1;
+	texture_desc.ArraySize = 6;
+	texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texture_desc.SampleDesc.Count = 1;
+	texture_desc.SampleDesc.Quality = 0;
+	texture_desc.Usage = D3D11_USAGE_DEFAULT;
+	texture_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	texture_desc.CPUAccessFlags = 0;
+	texture_desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+	// create the texture resource
+	ID3D11Texture2D* texture;
+	DXCHECK(device->CreateTexture2D(&texture_desc, sky_box_data, &texture));
+
+	// create the resource view on the texture
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = texture_desc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+	srvDesc.TextureCube.MostDetailedMip = 0;
+	srvDesc.TextureCube.MipLevels = 1;
+
+	DXCHECK(device->CreateShaderResourceView(texture, &srvDesc, &sky_box_view));
+}
+
 void Renderer::DeleteTextureFromSRV(int texNum)
 {
 	if (texture_array_srv[texNum])
@@ -292,46 +343,51 @@ void Renderer::DeleteTextureFromSRV(int texNum)
 
 void Renderer::Test(char* name, int width, int height, int bits, unsigned char* data, int type) 
 {
-	/*char* newName = (char*)malloc(256);
-	memset(newName, 0, 256);
-	strcpy(newName, "pics/");
+	//char* newName = (char*)malloc(256);
+	//memset(newName, 0, 256);
+	//strcpy(newName, "pics/");
 
-	char* nameAfterSlash = strrchr(name, '/') + 1;
+	//char* nameAfterSlash = strrchr(name, '/') + 1;
 
-	if ((nameAfterSlash == NULL) || (name[0] == '*'))
-	{
-		nameAfterSlash = name;
-	}
+	//if ((nameAfterSlash == NULL) || (name[0] == '*'))
+	//{
+	//	nameAfterSlash = name;
+	//}
 
-	switch (type)
-	{
-		case 0:
-			strcat(newName, "skin/");
-			break;
-		case 1:
-			strcat(newName, "sprite/");
-			break;
-		case 2:
-			strcat(newName, "wall/");
-			break;
-		case 3:
-			strcat(newName, "pic/");
-			break;
-		case 4:
-			strcat(newName, "sky/");
-			break;
-	}
+	//switch (type)
+	//{
+	//	case 0:
+	//		strcat(newName, "skin/");
+	//		break;
+	//	case 1:
+	//		strcat(newName, "sprite/");
+	//		break;
+	//	case 2:
+	//		strcat(newName, "wall/");
+	//		break;
+	//	case 3:
+	//		strcat(newName, "pic/");
+	//		break;
+	//	case 4:
+	//		strcat(newName, "sky/");
+	//		break;
+	//}
 
-	strcat(newName, nameAfterSlash);
-	strcat(newName, ".png\0");
+	//strcat(newName, nameAfterSlash);
+	//strcat(newName, ".png\0");
 
-	stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
-	free(newName);*/
+	//stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
+	//free(newName);
 }
 
 void Renderer::Bind(int texture_index) {
 	if(texture_index != -1)
 		context->PSSetShaderResources(0, 1, &texture_array_srv[texture_index]);
+}
+
+void Renderer::BindSkyBox()
+{
+	context->PSSetShaderResources(0, 1, &sky_box_view);
 }
 
 ID3D11Device* Renderer::GetDevice() {

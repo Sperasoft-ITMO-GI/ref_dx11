@@ -15,6 +15,10 @@ struct ConstantBufferPolygon {
 	float color[4];
 };
 
+struct ConstantBufferSkyBox {
+	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
+};
+
 template<typename T>
 class ConstantBuffer {
 public:

@@ -562,7 +562,7 @@ SkyVertex MakeSkyVec(float s, float t, int axis)
 			v[j] = b[k - 1];
 	}
 	vert.position = XMFLOAT3(v);
-	vert.texture_coord = XMFLOAT2(s, t);
+	//vert.texture_coord = XMFLOAT2(s, t);
 
 	return vert;
 	//qglTexCoord2f(s, t);
@@ -611,6 +611,7 @@ void R_DrawSkyBox(void)
 
 		//qglBegin(GL_QUADS);
 		using namespace DirectX;
+		sky_renderer->is_exist = true;
 		//IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
 		ConstantBufferQuad cbq;
 		XMVECTOR v_axis = { skyaxis[0], skyaxis[1], skyaxis[2] };
@@ -618,17 +619,16 @@ void R_DrawSkyBox(void)
 			//* XMMatrixRotationAxis(v_axis, XMConvertToRadians(r_newrefdef.time * skyrotate))
 						   * XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
 				           * renderer->GetPerspective();
-		//ConstantBuffer<ConstantBufferQuad> cb(cbq);
-		std::vector<SkyVertex> vect;
-		vect.push_back(MakeSkyVec(skymins[0][i], skymins[1][i], i));
-		vect.push_back(MakeSkyVec(skymins[0][i], skymaxs[1][i], i));
-		vect.push_back(MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i));
-		vect.push_back(MakeSkyVec(skymaxs[0][i], skymins[1][i], i));
+		//std::vector<SkyVertex> vect;
+		//vect.push_back(MakeSkyVec(skymins[0][i], skymins[1][i], i));
+		//vect.push_back(MakeSkyVec(skymins[0][i], skymaxs[1][i], i));
+		//vect.push_back(MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i));
+		//vect.push_back(MakeSkyVec(skymaxs[0][i], skymins[1][i], i));
 
-		SkyDefinitions sd{
-			vect, { 2, 1, 0, 0, 3, 2 }, cbq, SKY_DEFAULT, sky_images[skytexorder[i]]->texnum
-		};
-		sky_renderer->Add(sd);
+		//SkyDefinitions sd{
+		//	vect, { 2, 1, 0, 0, 3, 2 }, cbq, SKY_DEFAULT, sky_images[skytexorder[i]]->texnum
+		//};
+		//sky_renderer->Add(sd);
 
 
 		//VertexBuffer vb(vect);

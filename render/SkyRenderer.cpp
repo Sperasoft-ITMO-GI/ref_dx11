@@ -10,49 +10,51 @@ static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
 
 SkyRenderer::~SkyRenderer() {
 	delete factory;
-	delete q;
+	delete sp;
 }
 
 void SkyRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\Sky.hlsl", new SkyPSProvider(), macro);
-	q = new Quad(ConstantBufferQuad{});
-	q->CreateDynamicVB(4);
-	q->CreateDynamicIB(6);
+	sp = new SkyPoly();
 }
 
 void SkyRenderer::Render() {
-	/*for (auto& quad : quads) {
-		if (quad.GetFlags() & SKY_DEFAULT) {
-			SetPipelineState(factory->GetState(SKY_DEFAULT));
-		}
+	if (is_exist) {
+		SetPipelineState(factory->GetState(SKY_DEFAULT));
 
-		Draw(quad);
+		Renderer* renderer = Renderer::GetInstance();
+		if (!renderer->GetSkyBoxSRV())
+			renderer->CreateSkyBoxSRV();
+		renderer->BindSkyBox();
+
+		sp->DrawStatic();
 	}
+	//for (auto& poly : sky_defs) {
+	//	if (poly.flags & SKY_DEFAULT) {
+	//		SetPipelineState(factory->GetState(SKY_DEFAULT));
+	//	}
 
-	quads.clear();*/
+	//	renderer->Bind(poly.texture_index);
+	//	sp->UpdateDynamicVB(poly.vert);
+	//	sp->UpdateDynamicIB(poly.ind);
+	//	sp->UpdateCB(poly.cbsb);
+	//	sp->DrawIndexed();
+	//}
+
+	//sky_defs.clear();
+}
+
+void SkyRenderer::InitCB()
+{
 	Renderer* renderer = Renderer::GetInstance();
-	for (auto& poly : sky_defs) {
-		if (poly.flags & SKY_DEFAULT) {
-			SetPipelineState(factory->GetState(SKY_DEFAULT));
-		}
-
-		renderer->Bind(poly.texture_index);
-		q->UpdateDynamicVB(poly.vert);
-		q->UpdateDynamicIB(poly.ind);
-		q->UpdateCB(poly.cbq);
-		q->DrawIndexed();
-	}
-
-	sky_defs.clear();
+	ConstantBufferSkyBox cbsb;
+	cbsb.position_transform = renderer->GetPerspective();//* renderer->GetModelView() ;
+	sp->CreateCB(cbsb);
 }
 
-void SkyRenderer::AddElement(const Quad& quad) {
-	quads.push_back(quad);
-}
-
-void SkyRenderer::Add(const SkyDefinitions& quad) {
-	sky_defs.push_back(quad);
-}
+//void SkyRenderer::Add(const SkyDefinitions& quad) {
+//	sky_defs.push_back(quad);
+//}
 
 void SkyRenderer::SkyPSProvider::PatchPipelineState(PipelineState* state, int defines) {
 	/*
@@ -63,9 +65,9 @@ void SkyRenderer::SkyPSProvider::PatchPipelineState(PipelineState* state, int de
 
 	States* states = States::GetInstance();
 
-	state->bs = states->blend_states.at(BlendState::UIALPHABS);
-	state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
-	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::SKY_QUAD));
+	state->bs = states->blend_states.at(BlendState::NOBS);
+	state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
+	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::SKY_POLYGON));
 	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 }
 
