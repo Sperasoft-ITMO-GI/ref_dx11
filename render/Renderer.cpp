@@ -285,22 +285,19 @@ void Renderer::UpdateTextureInSRV(int width, int height, int xOffset, int yOffse
 
 void Renderer::CreateSkyBoxSRV()
 {
-	//int	skytexorder[6] = { 0,2,1,3,4,5 };
-	int w, h, n;
-	stbi_set_flip_vertically_on_load(true);
-	for (int i = 0; i < 6; ++i) {
-		std::string path("pics/sky/unit");
-		path += std::to_string(i) + ".png";
-		unsigned char* data = stbi_load(path.data(), &w, &h, &n, 0);
-		sky_box_data[i].pSysMem = data;
-		sky_box_data[i].SysMemPitch = w * n;
-		sky_box_data[i].SysMemSlicePitch = 0;
+	if (skyBoxIterator > 0)
+	{
+		sky_box_view->Release();
+		skyBoxIterator = 0;
 	}
 
+	int	skytexorder[6] = { 0,2,1,3,4,5 };
+	int width = 256;
+	int height = 256;
 
 	D3D11_TEXTURE2D_DESC texture_desc = {};
-	texture_desc.Width = w;
-	texture_desc.Height = h;
+	texture_desc.Width = width;
+	texture_desc.Height = height;
 	texture_desc.MipLevels = 1;
 	texture_desc.ArraySize = 6;
 	texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -313,7 +310,7 @@ void Renderer::CreateSkyBoxSRV()
 
 	// create the texture resource
 	ID3D11Texture2D* texture;
-	DXCHECK(device->CreateTexture2D(&texture_desc, sky_box_data, &texture));
+	DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &texture));
 
 	// create the resource view on the texture
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -323,6 +320,17 @@ void Renderer::CreateSkyBoxSRV()
 	srvDesc.TextureCube.MipLevels = 1;
 
 	DXCHECK(device->CreateShaderResourceView(texture, &srvDesc, &sky_box_view));
+}
+
+void Renderer::IterativeUpdateSkyBoxSrv(int width, int height, int bits, unsigned char* data)
+{
+	ID3D11Resource* res = nullptr;
+	sky_box_view->GetResource(&res);
+
+	context->UpdateSubresource(res, skyBoxIterator, NULL, data, width * (bits / 8), 0);
+	skyBoxIterator++;
+
+	ReleaseCOM(res);
 }
 
 void Renderer::DeleteTextureFromSRV(int texNum)

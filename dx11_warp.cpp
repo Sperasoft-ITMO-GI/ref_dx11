@@ -648,6 +648,9 @@ void R_SetSky(char* name, float rotate, vec3_t axis)
 	skyrotate = rotate;
 	VectorCopy(axis, skyaxis);
 
+	renderer->CreateSkyBoxSRV();
+	sky_renderer->is_exist = true;
+
 	for (i = 0; i < 6; i++)
 	{
 		// chop down rotating skies for less memory

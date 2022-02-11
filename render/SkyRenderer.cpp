@@ -23,8 +23,8 @@ void SkyRenderer::Render() {
 		SetPipelineState(factory->GetState(SKY_DEFAULT));
 
 		Renderer* renderer = Renderer::GetInstance();
-		if (!renderer->GetSkyBoxSRV())
-			renderer->CreateSkyBoxSRV();
+		/*if (!renderer->GetSkyBoxSRV())
+			renderer->CreateSkyBoxSRV();*/
 		renderer->BindSkyBox();
 
 		sp->DrawStatic();

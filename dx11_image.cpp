@@ -1068,8 +1068,8 @@ image_t* DX11_FindImage(char* name, imagetype_t type)
 	if (!strcmp(name + len - 4, ".pcx"))
 	{
 		LoadPCX(name, &pic, &palette, &width, &height);
-		//if (!pic)
-		//	return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
+		if (!pic)
+			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
 		image = DX_LoadPic(name, pic, width, height, type, 8);
 	}
 	else if (!strcmp(name + len - 4, ".wal"))
@@ -1082,6 +1082,10 @@ image_t* DX11_FindImage(char* name, imagetype_t type)
 		if (!pic)
 			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
 		image = DX_LoadPic(name, pic, width, height, type, 32);
+		if (type == it_sky)
+		{
+			renderer->IterativeUpdateSkyBoxSrv(width, height, 32, pic);
+		}
 	}
 	else
 		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad extension on: %s", name);

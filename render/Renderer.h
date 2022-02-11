@@ -30,6 +30,8 @@ public:
 	void UpdateTextureInSRV(int width, int height, int xOffset, int yOffset, int bits, unsigned char* data, int texNum);
 	void CreateSkyBoxSRV();
 
+	void IterativeUpdateSkyBoxSrv(int width, int height, int bits, unsigned char* data);
+
 	void DeleteTextureFromSRV(int texNum);
 
 	void Test(char* name, int width, int height, int bits, unsigned char* data, int type);
@@ -94,11 +96,12 @@ private:
 	UINT msaa_quality;
 	bool is_4xmsaa_enable;
 	bool is_initialized;
+
+	int skyBoxIterator = 0;
 	
 	ID3D11SamplerState* sampler;
 	ID3D11ShaderResourceView* texture_array_srv[1600];
 
-	D3D11_SUBRESOURCE_DATA sky_box_data[6];
 	ID3D11ShaderResourceView* sky_box_view;
 
 	DirectX::XMMATRIX orthogonal;

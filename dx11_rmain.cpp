@@ -1226,7 +1226,7 @@ void R_BeginFrame(float camera_separation)
 	renderer->Clear();
 	bsp_renderer->Render();
 	beam_renderer->Render();
-	//sky_renderer->Render();
+	sky_renderer->Render();
 	renderer->UnSetDepthBuffer();
 	//bsp_renderer->Render();
 	ui_renderer->Render();
