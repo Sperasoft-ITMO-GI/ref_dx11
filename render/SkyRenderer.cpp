@@ -29,27 +29,19 @@ void SkyRenderer::Render() {
 
 		sp->DrawStatic();
 	}
-	//for (auto& poly : sky_defs) {
-	//	if (poly.flags & SKY_DEFAULT) {
-	//		SetPipelineState(factory->GetState(SKY_DEFAULT));
-	//	}
-
-	//	renderer->Bind(poly.texture_index);
-	//	sp->UpdateDynamicVB(poly.vert);
-	//	sp->UpdateDynamicIB(poly.ind);
-	//	sp->UpdateCB(poly.cbsb);
-	//	sp->DrawIndexed();
-	//}
-
-	//sky_defs.clear();
 }
 
 void SkyRenderer::InitCB()
 {
 	Renderer* renderer = Renderer::GetInstance();
 	ConstantBufferSkyBox cbsb;
-	cbsb.position_transform = renderer->GetPerspective();//* renderer->GetModelView() ;
+	cbsb.position_transform = /*renderer->GetModelView() **/ renderer->GetPerspective();
 	sp->CreateCB(cbsb);
+}
+
+void SkyRenderer::Add(ConstantBufferSkyBox& cbsb)
+{
+	sp->UpdateCB(cbsb);
 }
 
 //void SkyRenderer::Add(const SkyDefinitions& quad) {

@@ -294,6 +294,7 @@ void Renderer::UpdateTextureInSRV(int width, int height, int xOffset, int yOffse
 
 void Renderer::CreateSkyBoxSRV()
 {
+	//int	skytexorder[6] = { 0,2,1,3,4,5 };
 	int w, h, n;
 	stbi_set_flip_vertically_on_load(true);
 	for (int i = 0; i < 6; ++i) {
@@ -307,8 +308,8 @@ void Renderer::CreateSkyBoxSRV()
 
 
 	D3D11_TEXTURE2D_DESC texture_desc = {};
-	texture_desc.Width = 256;
-	texture_desc.Height = 256;
+	texture_desc.Width = w;
+	texture_desc.Height = h;
 	texture_desc.MipLevels = 1;
 	texture_desc.ArraySize = 6;
 	texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -343,41 +344,41 @@ void Renderer::DeleteTextureFromSRV(int texNum)
 
 void Renderer::Test(char* name, int width, int height, int bits, unsigned char* data, int type) 
 {
-	//char* newName = (char*)malloc(256);
-	//memset(newName, 0, 256);
-	//strcpy(newName, "pics/");
+	/*char* newName = (char*)malloc(256);
+	memset(newName, 0, 256);
+	strcpy(newName, "pics/");
 
-	//char* nameAfterSlash = strrchr(name, '/') + 1;
+	char* nameAfterSlash = strrchr(name, '/') + 1;
 
-	//if ((nameAfterSlash == NULL) || (name[0] == '*'))
-	//{
-	//	nameAfterSlash = name;
-	//}
+	if ((nameAfterSlash == NULL) || (name[0] == '*'))
+	{
+		nameAfterSlash = name;
+	}
 
-	//switch (type)
-	//{
-	//	case 0:
-	//		strcat(newName, "skin/");
-	//		break;
-	//	case 1:
-	//		strcat(newName, "sprite/");
-	//		break;
-	//	case 2:
-	//		strcat(newName, "wall/");
-	//		break;
-	//	case 3:
-	//		strcat(newName, "pic/");
-	//		break;
-	//	case 4:
-	//		strcat(newName, "sky/");
-	//		break;
-	//}
+	switch (type)
+	{
+		case 0:
+			strcat(newName, "skin/");
+			break;
+		case 1:
+			strcat(newName, "sprite/");
+			break;
+		case 2:
+			strcat(newName, "wall/");
+			break;
+		case 3:
+			strcat(newName, "pic/");
+			break;
+		case 4:
+			strcat(newName, "sky/");
+			break;
+	}
 
-	//strcat(newName, nameAfterSlash);
-	//strcat(newName, ".png\0");
+	strcat(newName, nameAfterSlash);
+	strcat(newName, ".png\0");
 
-	//stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
-	//free(newName);
+	stbi_write_png(newName, width, height, bits / 8, data, width * bits / 8);
+	free(newName);*/
 }
 
 void Renderer::Bind(int texture_index) {

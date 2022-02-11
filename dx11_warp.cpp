@@ -613,12 +613,13 @@ void R_DrawSkyBox(void)
 		using namespace DirectX;
 		sky_renderer->is_exist = true;
 		//IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
-		ConstantBufferQuad cbq;
+		ConstantBufferSkyBox cbsb;
 		XMVECTOR v_axis = { skyaxis[0], skyaxis[1], skyaxis[2] };
-		cbq.position_transform *= renderer->GetModelView()
+		cbsb.position_transform *= renderer->GetModelView() //* XMMatrixRotationX(XMConvertToRadians(90)) 
 			//* XMMatrixRotationAxis(v_axis, XMConvertToRadians(r_newrefdef.time * skyrotate))
 						   * XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
 				           * renderer->GetPerspective();
+		sky_renderer->Add(cbsb);
 		//std::vector<SkyVertex> vect;
 		//vect.push_back(MakeSkyVec(skymins[0][i], skymins[1][i], i));
 		//vect.push_back(MakeSkyVec(skymins[0][i], skymaxs[1][i], i));
