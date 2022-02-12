@@ -33,7 +33,7 @@ void UIRenderer::Render() {
 			SetPipelineState(factory->GetState(UI_TEXTURED));
 		}
 
-		renderer->Bind(qd.teture_index);
+		renderer->Bind(qd.teture_index, 0);
 		quad->UpdateCB(qd.cbq);
 		quad->DrawStatic();
 	}

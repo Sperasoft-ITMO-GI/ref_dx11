@@ -59,7 +59,7 @@ public:
 		context->OMSetRenderTargets(1, &render_target_view, nullptr);
 	}
 
-	void Bind(int texture_index);
+	void Bind(int texture_index, int textureSlot);
 	void BindSkyBox();
 
 	ID3D11Device* GetDevice();

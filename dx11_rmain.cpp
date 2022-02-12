@@ -103,6 +103,7 @@ void CompileShaders()
 	bsp_renderer->CompileWithDefines(BSP_SOLID);
 	bsp_renderer->CompileWithDefines(BSP_ALPHA);
 	bsp_renderer->CompileWithDefines(BSP_LIGHTMAP);
+	bsp_renderer->CompileWithDefines(BSP_LIGHTMAPPEDPOLY);
 	bsp_renderer->BindNewFactory();
 
 	// SKY_Renderer
@@ -1220,18 +1221,8 @@ void R_BeginFrame(float camera_separation)
 	// 
 	// GLimp_BeginFrame( camera_separation );
 
-	// Чтобы увидеть лайтмапы, нужно рендерить BSP с отключённым буфером глубины
-
 	// clear
-	renderer->Clear();
-	bsp_renderer->Render();
-	beam_renderer->Render();
-	sky_renderer->Render();
-	renderer->UnSetDepthBuffer();
-	//bsp_renderer->Render();
-	ui_renderer->Render();
-	renderer->SetDepthBuffer();
-	
+	renderer->Clear();	
 }
 
 /*
@@ -1243,6 +1234,15 @@ void R_BeginFrame(float camera_separation)
 */
 void DX11_EndFrame(void)
 {
+	// Чтобы увидеть лайтмапы, нужно рендерить BSP с отключённым буфером глубины
+
+	bsp_renderer->Render();
+	beam_renderer->Render();
+	sky_renderer->Render();
+	renderer->UnSetDepthBuffer();
+	ui_renderer->Render();
+	renderer->SetDepthBuffer();
+
 	renderer->Swap();
 }
 

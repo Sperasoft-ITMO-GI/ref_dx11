@@ -380,9 +380,11 @@ void Renderer::Test(char* name, int width, int height, int bits, unsigned char* 
 	free(newName);*/
 }
 
-void Renderer::Bind(int texture_index) {
-	if(texture_index != -1)
-		context->PSSetShaderResources(0, 1, &texture_array_srv[texture_index]);
+void Renderer::Bind(int texture_index, int textureSlot) {
+	if (texture_index != -1)
+	{
+		context->PSSetShaderResources(textureSlot, 1, &texture_array_srv[texture_index]);
+	}
 }
 
 void Renderer::BindSkyBox()

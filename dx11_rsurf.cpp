@@ -48,6 +48,7 @@ extern void R_SetCacheState(msurface_t* surf);
 extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 
 float colorBuf[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+bool multiTexture = true;
 
 void SmartTriangulation(std::vector<uint16_t>* ind, int num)
 {
@@ -96,7 +97,6 @@ image_t* R_TextureAnimation(mtexinfo_t* tex)
 DrawGLPoly
 ================
 */
-// Дописал передачу номера текстуры в функцию, возможно в будущем удалим
 void DrawGLPoly(glpoly_t* p, int texNum, int defines)
 {
 	int		i;
@@ -116,15 +116,12 @@ void DrawGLPoly(glpoly_t* p, int texNum, int defines)
 		vert.position.z = v[2];
 		vert.texture_coord.x = v[3];
 		vert.texture_coord.y = v[4];
-		vert.lightmap_texture_coord.x = v[5];
-		vert.lightmap_texture_coord.y = v[6];
 
 		vect.push_back(vert);
 	}
 
 	std::vector<uint16_t> indexes;
 
-	// Временно, пока не придумаем чего-нибудь получше
 	SmartTriangulation(&indexes, p->numverts);
 
 	ConstantBufferPolygon cbp;
@@ -148,7 +145,7 @@ void DrawGLPoly(glpoly_t* p, int texNum, int defines)
 DrawGLFlowingPoly -- version of DrawGLPoly that handles scrolling texture
 ================
 */
-void DrawGLFlowingPoly(msurface_t* fa)
+void DrawGLFlowingPoly(msurface_t* fa, int texNum, int defines)
 {
 	int		i;
 	float* v;
@@ -164,14 +161,40 @@ void DrawGLFlowingPoly(msurface_t* fa)
 	//qglBegin(GL_POLYGON);
 	printf("DrawGLFlowingPoly found!!!\n");
 
+	BSPVertex vert = {};
+	std::vector<BSPVertex> vect;
+
 	v = p->verts[0];
 	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
 	{
 		//qglTexCoord2f((v[3] + scroll), v[4]);
 		//qglVertex3fv(v);
+
+		vert.position.x = v[0];
+		vert.position.y = v[1];
+		vert.position.z = v[2];
+		vert.texture_coord.x = v[3] + scroll;
+		vert.texture_coord.y = v[4];
+
+		vect.push_back(vert);
 	}
 
+	std::vector<uint16_t> indexes;
 
+	SmartTriangulation(&indexes, p->numverts);
+
+	ConstantBufferPolygon cbp;
+	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	cbp.color[0] = colorBuf[0];
+	cbp.color[1] = colorBuf[1];
+	cbp.color[2] = colorBuf[2];
+	cbp.color[3] = colorBuf[3];
+
+	BSPDefinitions bspd{
+		vect, indexes, cbp, BSP_SOLID, texNum, -1
+	};
+
+	bsp_renderer->Add(bspd);
 
 	//qglEnd();
 }
@@ -265,7 +288,6 @@ void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset, int texNum)
 
 			std::vector<uint16_t> indexes;
 
-			// Временно, пока не придумаем чего-нибудь получше
 			SmartTriangulation(&indexes, p->numverts);
 
 			BSPDefinitions bspd{
@@ -530,7 +552,7 @@ void R_RenderBrushPoly(msurface_t* fa)
 	//======
 	//PGM
 	if (fa->texinfo->flags & SURF_FLOWING)
-		DrawGLFlowingPoly(fa);
+		DrawGLFlowingPoly(fa, image->texnum, BSP_SOLID);
 	else
 		DrawGLPoly(fa->polys, image->texnum, BSP_SOLID);
 	//PGM
@@ -681,19 +703,362 @@ void DrawTextureChains(void)
 
 	c_visible_textures = 0;
 
-	for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
+	if (!multiTexture)
 	{
-		if (!image->registration_sequence)
-			continue;
-		s = image->texturechain;
-		if (!s)
-			continue;
-		c_visible_textures++;
+		for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
+		{
+			if (!image->registration_sequence)
+				continue;
+			s = image->texturechain;
+			if (!s)
+				continue;
+			c_visible_textures++;
 
-		for (; s; s = s->texturechain)
-			R_RenderBrushPoly(s);
+			for (; s; s = s->texturechain)
+				R_RenderBrushPoly(s);
 
-		image->texturechain = NULL;
+			image->texturechain = NULL;
+		}
+	}
+	else
+	{
+		for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
+		{
+			if (!image->registration_sequence)
+				continue;
+			if (!image->texturechain)
+				continue;
+			c_visible_textures++;
+
+			for (s = image->texturechain; s; s = s->texturechain)
+			{
+				if (!(s->flags & SURF_DRAWTURB))
+					R_RenderBrushPoly(s);
+			}
+		}
+
+		for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
+		{
+			if (!image->registration_sequence)
+				continue;
+			s = image->texturechain;
+			if (!s)
+				continue;
+
+			for (; s; s = s->texturechain)
+			{
+				if (s->flags & SURF_DRAWTURB)
+					R_RenderBrushPoly(s);
+			}
+
+			image->texturechain = NULL;
+		}
+	}
+}
+
+static void GL_RenderLightmappedPoly(msurface_t* surf)
+{
+	int		i, nv = surf->polys->numverts;
+	int		map;
+	float* v;
+	image_t* image = R_TextureAnimation(surf->texinfo);
+	qboolean is_dynamic = False;
+	unsigned lmtex = surf->lightmaptexturenum;
+	glpoly_t* p;
+
+	for (map = 0; map < MAXLIGHTMAPS && surf->styles[map] != 255; map++)
+	{
+		if (r_newrefdef.lightstyles[surf->styles[map]].white != surf->cached_light[map])
+			goto dynamic;
+	}
+
+	// dynamic this frame or dynamic previously
+	if ((surf->dlightframe == r_framecount))
+	{
+	dynamic:
+		if (true/*gl_dynamic->value*/)
+		{
+			if (!(surf->texinfo->flags & (SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP)))
+			{
+				is_dynamic = True;
+			}
+		}
+	}
+
+	if (is_dynamic)
+	{
+		unsigned	temp[128 * 128];
+		int			smax, tmax;
+
+		if ((surf->styles[map] >= 32 || surf->styles[map] == 0) && (surf->dlightframe != r_framecount))
+		{
+			smax = (surf->extents[0] >> 4) + 1;
+			tmax = (surf->extents[1] >> 4) + 1;
+
+			R_BuildLightMap(surf, (byte*)(void*)temp, smax * 4);
+			R_SetCacheState(surf);
+
+			//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + surf->lightmaptexturenum);
+
+			lmtex = surf->lightmaptexturenum;
+
+			/*qglTexSubImage2D(GL_TEXTURE_2D, 0,
+				surf->light_s, surf->light_t,
+				smax, tmax,
+				GL_LIGHTMAP_FORMAT,
+				GL_UNSIGNED_BYTE, temp);*/
+
+			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
+				(unsigned char*)temp, dx11_state.lightmap_textures + surf->lightmaptexturenum);
+
+		}
+		else
+		{
+			// TODO: Here is a bug with dynamic lightmap update
+
+			smax = (surf->extents[0] >> 4) + 1;
+			tmax = (surf->extents[1] >> 4) + 1;
+
+			R_BuildLightMap(surf, (byte*)(void*)temp, smax * 4);
+
+			//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + 0);
+
+			lmtex = 0;
+
+			/*qglTexSubImage2D(GL_TEXTURE_2D, 0,
+				surf->light_s, surf->light_t,
+				smax, tmax,
+				GL_LIGHTMAP_FORMAT,
+				GL_UNSIGNED_BYTE, temp);*/
+
+			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
+				(unsigned char*)temp, dx11_state.lightmap_textures + 0);
+
+		}
+
+		c_brush_polys++;
+
+		//GL_MBind(GL_TEXTURE0_SGIS, image->texnum);
+		//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + lmtex);
+
+		//==========
+		//PGM
+		if (surf->texinfo->flags & SURF_FLOWING)
+		{
+			float scroll;
+
+			scroll = -64 * ((r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0));
+			if (scroll == 0.0)
+				scroll = -64.0;
+
+			for (p = surf->polys; p; p = p->chain)
+			{
+				BSPVertex vert = {};
+				std::vector<BSPVertex> vect;
+
+				v = p->verts[0];
+				//qglBegin(GL_POLYGON);
+				for (i = 0; i < nv; i++, v += VERTEXSIZE)
+				{
+					//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, (v[3] + scroll), v[4]);
+					//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
+					//qglVertex3fv(v);
+
+					vert.position.x = v[0];
+					vert.position.y = v[1];
+					vert.position.z = v[2];
+					vert.texture_coord.x = v[3] + scroll;
+					vert.texture_coord.y = v[4];
+					vert.lightmap_texture_coord.x = v[5];
+					vert.lightmap_texture_coord.y = v[6];
+
+					vect.push_back(vert);
+				}
+
+				std::vector<uint16_t> indexes;
+
+				SmartTriangulation(&indexes, p->numverts);
+
+				ConstantBufferPolygon cbp;
+				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+				cbp.color[0] = colorBuf[0];
+				cbp.color[1] = colorBuf[1];
+				cbp.color[2] = colorBuf[2];
+				cbp.color[3] = colorBuf[3];
+
+				// BSP_LIGHTMAPPEDPOLY
+
+				BSPDefinitions bspd{
+					vect, indexes, cbp, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add(bspd);
+
+				//qglEnd();
+			}
+		}
+		else
+		{
+			for (p = surf->polys; p; p = p->chain)
+			{
+				BSPVertex vert = {};
+				std::vector<BSPVertex> vect;
+
+				v = p->verts[0];
+				//qglBegin(GL_POLYGON);
+				for (i = 0; i < nv; i++, v += VERTEXSIZE)
+				{
+					//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, v[3], v[4]);
+					//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
+					//qglVertex3fv(v);
+
+					vert.position.x = v[0];
+					vert.position.y = v[1];
+					vert.position.z = v[2];
+					vert.texture_coord.x = v[3];
+					vert.texture_coord.y = v[4];
+					vert.lightmap_texture_coord.x = v[5];
+					vert.lightmap_texture_coord.y = v[6];
+
+					vect.push_back(vert);
+				}
+
+				std::vector<uint16_t> indexes;
+
+				SmartTriangulation(&indexes, p->numverts);
+
+				ConstantBufferPolygon cbp;
+				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+				cbp.color[0] = colorBuf[0];
+				cbp.color[1] = colorBuf[1];
+				cbp.color[2] = colorBuf[2];
+				cbp.color[3] = colorBuf[3];
+
+				BSPDefinitions bspd{
+					vect, indexes, cbp, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add(bspd);
+
+				//qglEnd();
+			}
+		}
+		//PGM
+		//==========
+	}
+	else
+	{
+		c_brush_polys++;
+
+		//GL_MBind(GL_TEXTURE0_SGIS, image->texnum);
+		//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + lmtex);
+
+		//==========
+		//PGM
+		if (surf->texinfo->flags & SURF_FLOWING)
+		{
+			float scroll;
+
+			scroll = -64 * ((r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0));
+			if (scroll == 0.0)
+				scroll = -64.0;
+
+			for (p = surf->polys; p; p = p->chain)
+			{
+				BSPVertex vert = {};
+				std::vector<BSPVertex> vect;
+
+				v = p->verts[0];
+				//qglBegin(GL_POLYGON);
+				for (i = 0; i < nv; i++, v += VERTEXSIZE)
+				{
+					//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, (v[3] + scroll), v[4]);
+					//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
+					//qglVertex3fv(v);
+
+					vert.position.x = v[0];
+					vert.position.y = v[1];
+					vert.position.z = v[2];
+					vert.texture_coord.x = v[3] + scroll;
+					vert.texture_coord.y = v[4];
+					vert.lightmap_texture_coord.x = v[5];
+					vert.lightmap_texture_coord.y = v[6];
+
+					vect.push_back(vert);
+				}
+
+				std::vector<uint16_t> indexes;
+
+				SmartTriangulation(&indexes, p->numverts);
+
+				ConstantBufferPolygon cbp;
+				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+				cbp.color[0] = colorBuf[0];
+				cbp.color[1] = colorBuf[1];
+				cbp.color[2] = colorBuf[2];
+				cbp.color[3] = colorBuf[3];
+
+				BSPDefinitions bspd{
+					vect, indexes, cbp, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add(bspd);
+
+				//qglEnd();
+			}
+		}
+		else
+		{
+			//PGM
+			//==========
+			for (p = surf->polys; p; p = p->chain)
+			{
+				BSPVertex vert = {};
+				std::vector<BSPVertex> vect;
+
+				v = p->verts[0];
+				//qglBegin(GL_POLYGON);
+				for (i = 0; i < nv; i++, v += VERTEXSIZE)
+				{
+					//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, v[3], v[4]);
+					//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
+					//qglVertex3fv(v);
+
+					vert.position.x = v[0];
+					vert.position.y = v[1];
+					vert.position.z = v[2];
+					vert.texture_coord.x = v[3];
+					vert.texture_coord.y = v[4];
+					vert.lightmap_texture_coord.x = v[5];
+					vert.lightmap_texture_coord.y = v[6];
+
+					vect.push_back(vert);
+				}
+
+				std::vector<uint16_t> indexes;
+
+				SmartTriangulation(&indexes, p->numverts);
+
+				ConstantBufferPolygon cbp;
+				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+				cbp.color[0] = colorBuf[0];
+				cbp.color[1] = colorBuf[1];
+				cbp.color[2] = colorBuf[2];
+				cbp.color[3] = colorBuf[3];
+
+				BSPDefinitions bspd{
+					vect, indexes, cbp, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add(bspd);
+
+				//qglEnd();
+			}
+			//==========
+			//PGM
+		}
+		//PGM
+		//==========
 	}
 }
 
@@ -751,6 +1116,10 @@ void R_DrawInlineBModel(void)
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
 			}
+			else if (multiTexture && !(psurf->flags & SURF_DRAWTURB))
+			{
+				GL_RenderLightmappedPoly(psurf);
+			}
 			else
 			{
 				//GL_EnableMultitexture(False);
@@ -762,7 +1131,8 @@ void R_DrawInlineBModel(void)
 
 	if (!(currententity->flags & RF_TRANSLUCENT))
 	{
-		R_BlendLightmaps();
+		if(!multiTexture)
+			R_BlendLightmaps();
 	}
 	else
 	{
@@ -964,12 +1334,19 @@ void R_RecursiveWorldNode(mnode_t* node)
 		}
 		else
 		{
-			// the polygon is visible, so add it to the texture
-			// sorted chain
-			// FIXME: this is a hack for animation
-			image = R_TextureAnimation(surf->texinfo);
-			surf->texturechain = image->texturechain;
-			image->texturechain = surf;
+			if (multiTexture && !(surf->flags & SURF_DRAWTURB))
+			{
+				GL_RenderLightmappedPoly(surf);
+			}
+			else
+			{
+				// the polygon is visible, so add it to the texture
+				// sorted chain
+				// FIXME: this is a hack for animation
+				image = R_TextureAnimation(surf->texinfo);
+				surf->texturechain = image->texturechain;
+				image->texturechain = surf;
+			}
 		}
 	}
 
@@ -1012,8 +1389,15 @@ void R_DrawWorld(void)
 	memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 	R_ClearSkyBox();
 
-	R_RecursiveWorldNode(r_worldmodel->nodes);
-
+	if (multiTexture)
+	{
+		R_RecursiveWorldNode(r_worldmodel->nodes);
+	}
+	else
+	{
+		R_RecursiveWorldNode(r_worldmodel->nodes);
+	}
+	
 	/*
 	** theoretically nothing should happen in the next two functions
 	** if multitexture is enabled
