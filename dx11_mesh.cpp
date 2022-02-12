@@ -38,7 +38,6 @@ float	r_avertexnormals[NUMVERTEXNORMALS][3] = {
 typedef float vec4_t[4];
 
 static	vec4_t	s_lerped[MAX_VERTS];
-//static	vec3_t	lerped[MAX_VERTS];
 
 vec3_t	shadevector;
 float	shadelight[3];
@@ -112,17 +111,16 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp)
 
 	order = (int*)((byte*)paliashdr + paliashdr->ofs_glcmds);
 
-	//	glTranslatef (frame->translate[0], frame->translate[1], frame->translate[2]);
-	//	glScalef (frame->scale[0], frame->scale[1], frame->scale[2]);
-
 	if (currententity->flags & RF_TRANSLUCENT)
 		alpha = currententity->alpha;
 	else
 		alpha = 1.0;
 
 	// PMM - added double shell
-	/*if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
-		qglDisable(GL_TEXTURE_2D);*/
+	if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
+	{
+		//qglDisable(GL_TEXTURE_2D);
+	}
 
 	frontlerp = 1.0 - backlerp;
 
@@ -151,147 +149,145 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp)
 
 	GL_LerpVerts(paliashdr->num_xyz, v, ov, verts, lerp, move, frontv, backv);
 
-//	if (gl_vertex_arrays->value)
-//	{
-//		float colorArray[MAX_VERTS * 4];
-//
-//		qglEnableClientState(GL_VERTEX_ARRAY);
-//		qglVertexPointer(3, GL_FLOAT, 16, s_lerped);	// padded for SIMD
-//
-////		if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE ) )
-//		// PMM - added double damage shell
-//		if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
-//		{
-//			qglColor4f(shadelight[0], shadelight[1], shadelight[2], alpha);
-//		}
-//		else
-//		{
-//			qglEnableClientState(GL_COLOR_ARRAY);
-//			qglColorPointer(3, GL_FLOAT, 0, colorArray);
-//
-//			//
-//			// pre light everything
-//			//
-//			for (i = 0; i < paliashdr->num_xyz; i++)
-//			{
-//				float l = shadedots[verts[i].lightnormalindex];
-//
-//				colorArray[i * 3 + 0] = l * shadelight[0];
-//				colorArray[i * 3 + 1] = l * shadelight[1];
-//				colorArray[i * 3 + 2] = l * shadelight[2];
-//			}
-//		}
-//
-//		if (qglLockArraysEXT != 0)
-//			qglLockArraysEXT(0, paliashdr->num_xyz);
-//
-//		while (1)
-//		{
-//			// get the vertex count and primitive type
-//			count = *order++;
-//			if (!count)
-//				break;		// done
-//			if (count < 0)
-//			{
-//				count = -count;
-//				qglBegin(GL_TRIANGLE_FAN);
-//			}
-//			else
-//			{
-//				qglBegin(GL_TRIANGLE_STRIP);
-//			}
-//
-//			// PMM - added double damage shell
-//			if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
-//			{
-//				do
-//				{
-//					index_xyz = order[2];
-//					order += 3;
-//
-//					qglVertex3fv(s_lerped[index_xyz]);
-//
-//				} while (--count);
-//			}
-//			else
-//			{
-//				do
-//				{
-//					// texture coordinates come from the draw list
-//					qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
-//					index_xyz = order[2];
-//
-//					order += 3;
-//
-//					// normals and vertexes come from the frame list
-////					l = shadedots[verts[index_xyz].lightnormalindex];
-//
-////					qglColor4f (l* shadelight[0], l*shadelight[1], l*shadelight[2], alpha);
-//					qglArrayElement(index_xyz);
-//
-//				} while (--count);
-//			}
-//			qglEnd();
-//		}
-//
-//		if (qglUnlockArraysEXT != 0)
-//			qglUnlockArraysEXT();
-//	}
-//	else
-//	{
-//		while (1)
-//		{
-//			// get the vertex count and primitive type
-//			count = *order++;
-//			if (!count)
-//				break;		// done
-//			if (count < 0)
-//			{
-//				count = -count;
-//				qglBegin(GL_TRIANGLE_FAN);
-//			}
-//			else
-//			{
-//				qglBegin(GL_TRIANGLE_STRIP);
-//			}
-//
-//			if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE))
-//			{
-//				do
-//				{
-//					index_xyz = order[2];
-//					order += 3;
-//
-//					qglColor4f(shadelight[0], shadelight[1], shadelight[2], alpha);
-//					qglVertex3fv(s_lerped[index_xyz]);
-//
-//				} while (--count);
-//			}
-//			else
-//			{
-//				do
-//				{
-//					// texture coordinates come from the draw list
-//					qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
-//					index_xyz = order[2];
-//					order += 3;
-//
-//					// normals and vertexes come from the frame list
-//					l = shadedots[verts[index_xyz].lightnormalindex];
-//
-//					qglColor4f(l * shadelight[0], l * shadelight[1], l * shadelight[2], alpha);
-//					qglVertex3fv(s_lerped[index_xyz]);
-//				} while (--count);
-//			}
-//
-//			qglEnd();
-//		}
-//	}
-//
-//	//	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE ) )
-//		// PMM - added double damage shell
-//	if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
-//		qglEnable(GL_TEXTURE_2D);
+	if (false/*gl_vertex_arrays->value*/)
+	{
+		float colorArray[MAX_VERTS * 4];
+
+		//qglEnableClientState(GL_VERTEX_ARRAY);
+		//qglVertexPointer(3, GL_FLOAT, 16, s_lerped);	// padded for SIMD
+
+		// PMM - added double damage shell
+		if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
+		{
+			//qglColor4f(shadelight[0], shadelight[1], shadelight[2], alpha);
+		}
+		else
+		{
+			//qglEnableClientState(GL_COLOR_ARRAY);
+			//qglColorPointer(3, GL_FLOAT, 0, colorArray);
+
+			//
+			// pre light everything
+			//
+			for (i = 0; i < paliashdr->num_xyz; i++)
+			{
+				float l = shadedots[verts[i].lightnormalindex];
+
+				colorArray[i * 3 + 0] = l * shadelight[0];
+				colorArray[i * 3 + 1] = l * shadelight[1];
+				colorArray[i * 3 + 2] = l * shadelight[2];
+			}
+		}
+
+		//if (qglLockArraysEXT != 0)
+		//	qglLockArraysEXT(0, paliashdr->num_xyz);
+
+		while (1)
+		{
+			// get the vertex count and primitive type
+			count = *order++;
+			if (!count)
+				break;		// done
+			if (count < 0)
+			{
+				count = -count;
+				//qglBegin(GL_TRIANGLE_FAN);
+			}
+			else
+			{
+				//qglBegin(GL_TRIANGLE_STRIP);
+			}
+
+			// PMM - added double damage shell
+			if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
+			{
+				do
+				{
+					index_xyz = order[2];
+					order += 3;
+
+					//qglVertex3fv(s_lerped[index_xyz]);
+
+				} while (--count);
+			}
+			else
+			{
+				do
+				{
+					// texture coordinates come from the draw list
+					//qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
+					index_xyz = order[2];
+
+					order += 3;
+
+					// normals and vertexes come from the frame list
+
+					//qglArrayElement(index_xyz);
+
+				} while (--count);
+			}
+			//qglEnd();
+		}
+
+		//if (qglUnlockArraysEXT != 0)
+		//	qglUnlockArraysEXT();
+	}
+	else
+	{
+		while (1)
+		{
+			// get the vertex count and primitive type
+			count = *order++;
+			if (!count)
+				break;		// done
+			if (count < 0)
+			{
+				count = -count;
+				//qglBegin(GL_TRIANGLE_FAN);
+			}
+			else
+			{
+				//qglBegin(GL_TRIANGLE_STRIP);
+			}
+
+			if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE))
+			{
+				do
+				{
+					index_xyz = order[2];
+					order += 3;
+
+					//qglColor4f(shadelight[0], shadelight[1], shadelight[2], alpha);
+					//qglVertex3fv(s_lerped[index_xyz]);
+
+				} while (--count);
+			}
+			else
+			{
+				do
+				{
+					// texture coordinates come from the draw list
+					//qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
+					index_xyz = order[2];
+					order += 3;
+
+					// normals and vertexes come from the frame list
+					l = shadedots[verts[index_xyz].lightnormalindex];
+
+					//qglColor4f(l * shadelight[0], l * shadelight[1], l * shadelight[2], alpha);
+					//qglVertex3fv(s_lerped[index_xyz]);
+				} while (--count);
+			}
+
+			//qglEnd();
+		}
+	}
+
+		// PMM - added double damage shell
+		if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
+		{
+			//qglEnable(GL_TEXTURE_2D);
+		}
 }
 
 
@@ -324,45 +320,47 @@ void GL_DrawAliasShadow(dmdl_t* paliashdr, int posenum)
 
 	height = -lheight + 1.0;
 
-//	while (1)
-//	{
-//		// get the vertex count and primitive type
-//		count = *order++;
-//		if (!count)
-//			break;		// done
-//		if (count < 0)
-//		{
-//			count = -count;
-//			qglBegin(GL_TRIANGLE_FAN);
-//		}
-//		else
-//			qglBegin(GL_TRIANGLE_STRIP);
-//
-//		do
-//		{
-//			// normals and vertexes come from the frame list
-///*
-//			point[0] = verts[order[2]].v[0] * frame->scale[0] + frame->translate[0];
-//			point[1] = verts[order[2]].v[1] * frame->scale[1] + frame->translate[1];
-//			point[2] = verts[order[2]].v[2] * frame->scale[2] + frame->translate[2];
-//*/
-//
-//			memcpy(point, s_lerped[order[2]], sizeof(point));
-//
-//			point[0] -= shadevector[0] * (point[2] + lheight);
-//			point[1] -= shadevector[1] * (point[2] + lheight);
-//			point[2] = height;
-//			//			height -= 0.001;
-//			qglVertex3fv(point);
-//
-//			order += 3;
-//
-//			//			verts++;
-//
-//		} while (--count);
-//
-//		qglEnd();
-//	}
+	while (1)
+	{
+		// get the vertex count and primitive type
+		count = *order++;
+		if (!count)
+			break;		// done
+		if (count < 0)
+		{
+			count = -count;
+			//qglBegin(GL_TRIANGLE_FAN);
+		}
+		else
+		{
+			//qglBegin(GL_TRIANGLE_STRIP);
+		}
+
+		do
+		{
+			// normals and vertexes come from the frame list
+			/*
+			point[0] = verts[order[2]].v[0] * frame->scale[0] + frame->translate[0];
+			point[1] = verts[order[2]].v[1] * frame->scale[1] + frame->translate[1];
+			point[2] = verts[order[2]].v[2] * frame->scale[2] + frame->translate[2];
+			*/
+
+			memcpy(point, s_lerped[order[2]], sizeof(point));
+
+			point[0] -= shadevector[0] * (point[2] + lheight);
+			point[1] -= shadevector[1] * (point[2] + lheight);
+			point[2] = height;
+			// height -= 0.001;
+			//qglVertex3fv(point);
+
+			order += 3;
+
+			//			verts++;
+
+		} while (--count);
+
+		//qglEnd();
+	}
 }
 
 #endif
@@ -597,16 +595,6 @@ void R_DrawAliasModel(entity_t* e)
 			}
 		}
 	}
-	//PMM - ok, now flatten these down to range from 0 to 1.0.
-//		max_shell_val = max(shadelight[0], max(shadelight[1], shadelight[2]));
-//		if (max_shell_val > 0)
-//		{
-//			for (i=0; i<3; i++)
-//			{
-//				shadelight[i] = shadelight[i] / max_shell_val;
-//			}
-//		}
-// pmm
 	else if (currententity->flags & RF_FULLBRIGHT)
 	{
 		for (i = 0; i < 3; i++)
@@ -639,7 +627,7 @@ void R_DrawAliasModel(entity_t* e)
 
 		}
 
-		/*if (gl_monolightmap->string[0] != '0')
+		if (false/*gl_monolightmap->string[0] != '0'*/)
 		{
 			float s = shadelight[0];
 
@@ -651,7 +639,7 @@ void R_DrawAliasModel(entity_t* e)
 			shadelight[0] = s;
 			shadelight[1] = s;
 			shadelight[2] = s;
-		}*/
+		}
 	}
 
 	if (currententity->flags & RF_MINLIGHT)
@@ -710,27 +698,29 @@ void R_DrawAliasModel(entity_t* e)
 	//
 	// draw all the triangles
 	//
-	//if (currententity->flags & RF_DEPTHHACK) // hack the depth range to prevent view model from poking into walls
-	//	qglDepthRange(gldepthmin, gldepthmin + 0.3 * (gldepthmax - gldepthmin));
+	if (currententity->flags & RF_DEPTHHACK) // hack the depth range to prevent view model from poking into walls
+	{
+		//qglDepthRange(gldepthmin, gldepthmin + 0.3 * (gldepthmax - gldepthmin));
+	}
 
-	//if ((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
-	//{
-	//	extern void MYgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
+	if ((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
+	{
+		//extern void MYgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
 
-	//	qglMatrixMode(GL_PROJECTION);
-	//	qglPushMatrix();
-	//	qglLoadIdentity();
-	//	qglScalef(-1, 1, 1);
-	//	MYgluPerspective(r_newrefdef.fov_y, (float)r_newrefdef.width / r_newrefdef.height, 4, 4096);
-	//	qglMatrixMode(GL_MODELVIEW);
+		//qglMatrixMode(GL_PROJECTION);
+		//qglPushMatrix();
+		//qglLoadIdentity();
+		//qglScalef(-1, 1, 1);
+		//MYgluPerspective(r_newrefdef.fov_y, (float)r_newrefdef.width / r_newrefdef.height, 4, 4096);
+		//qglMatrixMode(GL_MODELVIEW);
 
-	//	qglCullFace(GL_BACK);
-	//}
+		//qglCullFace(GL_BACK);
+	}
 
 	//qglPushMatrix();
-	//e->angles[PITCH] = -e->angles[PITCH];	// sigh.
-	//R_RotateForEntity(e);
-	//e->angles[PITCH] = -e->angles[PITCH];	// sigh.
+	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
+	R_RotateForEntity(e);
+	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
 
 	// select skin
 	if (currententity->skin)
@@ -750,15 +740,15 @@ void R_DrawAliasModel(entity_t* e)
 		skin = r_notexture;	// fallback...
 	//GL_Bind(skin->texnum);
 
-	//// draw it
+	// draw it
 
 	//qglShadeModel(GL_SMOOTH);
 
 	//GL_TexEnv(GL_MODULATE);
-	//if (currententity->flags & RF_TRANSLUCENT)
-	//{
-	//	qglEnable(GL_BLEND);
-	//}
+	if (currententity->flags & RF_TRANSLUCENT)
+	{
+		//qglEnable(GL_BLEND);
+	}
 
 
 	if ((currententity->frame >= paliashdr->num_frames)
@@ -783,57 +773,45 @@ void R_DrawAliasModel(entity_t* e)
 		currententity->backlerp = 0;
 	GL_DrawAliasFrameLerp(paliashdr, currententity->backlerp);
 
-	/*GL_TexEnv(GL_REPLACE);
-	qglShadeModel(GL_FLAT);
+	//GL_TexEnv(GL_REPLACE);
+	//qglShadeModel(GL_FLAT);
 
-	qglPopMatrix();*/
+	//qglPopMatrix();
 
-#if 0
-	qglDisable(GL_CULL_FACE);
-	qglPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	qglDisable(GL_TEXTURE_2D);
-	qglBegin(GL_TRIANGLE_STRIP);
-	for (i = 0; i < 8; i++)
+	if ((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
 	{
-		qglVertex3fv(bbox[i]);
-	}
-	qglEnd();
-	qglEnable(GL_TEXTURE_2D);
-	qglPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	qglEnable(GL_CULL_FACE);
-#endif
-
-	/*if ((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
-	{
-		qglMatrixMode(GL_PROJECTION);
-		qglPopMatrix();
-		qglMatrixMode(GL_MODELVIEW);
-		qglCullFace(GL_FRONT);
+		//qglMatrixMode(GL_PROJECTION);
+		//qglPopMatrix();
+		//qglMatrixMode(GL_MODELVIEW);
+		//qglCullFace(GL_FRONT);
 	}
 
 	if (currententity->flags & RF_TRANSLUCENT)
 	{
-		qglDisable(GL_BLEND);
+		//qglDisable(GL_BLEND);
 	}
 
 	if (currententity->flags & RF_DEPTHHACK)
-		qglDepthRange(gldepthmin, gldepthmax);
+	{
+		//qglDepthRange(gldepthmin, gldepthmax);
+	}
+		
 
 #if 1
-	if (gl_shadows->value && !(currententity->flags & (RF_TRANSLUCENT | RF_WEAPONMODEL)))
+	if (false/*gl_shadows->value*/ && !(currententity->flags & (RF_TRANSLUCENT | RF_WEAPONMODEL)))
 	{
-		qglPushMatrix();
-		R_RotateForEntity(e);
-		qglDisable(GL_TEXTURE_2D);
-		qglEnable(GL_BLEND);
-		qglColor4f(0, 0, 0, 0.5);
-		GL_DrawAliasShadow(paliashdr, currententity->frame);
-		qglEnable(GL_TEXTURE_2D);
-		qglDisable(GL_BLEND);
-		qglPopMatrix();
+		//qglPushMatrix();
+		//R_RotateForEntity(e);
+		//qglDisable(GL_TEXTURE_2D);
+		//qglEnable(GL_BLEND);
+		//qglColor4f(0, 0, 0, 0.5);
+		//GL_DrawAliasShadow(paliashdr, currententity->frame);
+		//qglEnable(GL_TEXTURE_2D);
+		//qglDisable(GL_BLEND);
+		//qglPopMatrix();
 	}
 #endif
-	qglColor4f(1, 1, 1, 1);*/
+	//qglColor4f(1, 1, 1, 1);
 }
 
 

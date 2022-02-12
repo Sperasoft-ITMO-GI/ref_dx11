@@ -198,61 +198,72 @@ void R_DrawSpriteModel(entity_t* e)
 	if (e->flags & RF_TRANSLUCENT)
 		alpha = e->alpha;
 
-	/*if (alpha != 1.0F)
-		qglEnable(GL_BLEND);
+	//qglColor4f(1, 1, 1, alpha);
+	colorBuf[0] = 1.0f;
+	colorBuf[1] = 1.0f;
+	colorBuf[2] = 1.0f;
+	colorBuf[3] = alpha;
 
-	qglColor4f(1, 1, 1, alpha);
+	//GL_Bind(currentmodel->skins[e->frame]->texnum);
 
-	GL_Bind(currentmodel->skins[e->frame]->texnum);
+	//qglBegin(GL_QUADS);
 
-	GL_TexEnv(GL_MODULATE);
+	ConstantBufferPolygon cbp;
+	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	cbp.color[0] = colorBuf[0];
+	cbp.color[1] = colorBuf[1];
+	cbp.color[2] = colorBuf[2];
+	cbp.color[3] = colorBuf[3];
 
-	if (alpha == 1.0)
-		qglEnable(GL_ALPHA_TEST);
-	else
-		qglDisable(GL_ALPHA_TEST);
+	std::vector<BSPVertex> vect;
 
-	qglBegin(GL_QUADS);
-
-	qglTexCoord2f(0, 1);
+	//qglTexCoord2f(0, 1);
 	VectorMA(e->origin, -frame->origin_y, up, point);
 	VectorMA(point, -frame->origin_x, right, point);
-	qglVertex3fv(point);
+	//qglVertex3fv(point);
+	vect.push_back({ {point[0], point[1], point[2]}, {0, 1}, {0, 0} });
 
-	qglTexCoord2f(0, 0);
+	//qglTexCoord2f(0, 0);
 	VectorMA(e->origin, frame->height - frame->origin_y, up, point);
 	VectorMA(point, -frame->origin_x, right, point);
-	qglVertex3fv(point);
+	//qglVertex3fv(point);
+	vect.push_back({ {point[0], point[1], point[2]}, {0, 0}, {0, 0} });
 
-	qglTexCoord2f(1, 0);
+	//qglTexCoord2f(1, 0);
 	VectorMA(e->origin, frame->height - frame->origin_y, up, point);
 	VectorMA(point, frame->width - frame->origin_x, right, point);
-	qglVertex3fv(point);
+	//qglVertex3fv(point);
+	vect.push_back({ {point[0], point[1], point[2]}, {1, 0}, {0, 0} });
 
-	qglTexCoord2f(1, 1);
+	//qglTexCoord2f(1, 1);
 	VectorMA(e->origin, -frame->origin_y, up, point);
 	VectorMA(point, frame->width - frame->origin_x, right, point);
-	qglVertex3fv(point);
+	//qglVertex3fv(point);
+	vect.push_back({ {point[0], point[1], point[2]}, {1, 1}, {0, 0} });
 
-	qglEnd();
+	std::vector<uint16_t> indexes;
 
-	qglDisable(GL_ALPHA_TEST);
-	GL_TexEnv(GL_REPLACE);
+	indexes.push_back(0);
+	indexes.push_back(2);
+	indexes.push_back(1);
 
-	if (alpha != 1.0F)
-		qglDisable(GL_BLEND);
+	indexes.push_back(0);
+	indexes.push_back(3);
+	indexes.push_back(2);
 
-	qglColor4f(1, 1, 1, 1);*/
-	VectorMA(e->origin, -frame->origin_y, up, point);
-	VectorMA(point, frame->width - frame->origin_x, right, point);
-	using namespace DirectX;
-	ConstantBufferQuad cbq;
-	//cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(8, 8, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
-	cbq.texture_transform *= XMMatrixTranslation(0, 1, 0);
+	BSPDefinitions bspd{
+		vect, indexes, cbp, BSP_ALPHA, currentmodel->skins[e->frame]->texnum, -1
+	};
 
-	ConstantBuffer<ConstantBufferQuad> cb(cbq);
-	//Quad textured_quad(cb, UI_TEXTURED, draw_chars->texnum);
-	//ui_renderer->AddElement(textured_quad);
+	bsp_renderer->Add(bspd);
+
+	//qglEnd();
+
+	//qglColor4f(1, 1, 1, 1);
+	colorBuf[0] = 1.0f;
+	colorBuf[1] = 1.0f;
+	colorBuf[2] = 1.0f;
+	colorBuf[3] = 1.0f;
 }
 
 //==================================================================================
@@ -496,10 +507,10 @@ R_PolyBlend
 */
 void R_PolyBlend(void)
 {
-	//if (!gl_polyblend->value)
-	//	return;
-	//if (!v_blend[3])
-	//	return;
+	if (true/*!gl_polyblend->value*/)
+		return;
+	if (!v_blend[3])
+		return;
 
 	//qglDisable(GL_ALPHA_TEST);
 	//qglEnable(GL_BLEND);
@@ -508,7 +519,7 @@ void R_PolyBlend(void)
 
 	//qglLoadIdentity();
 
-	//// FIXME: get rid of these
+	// FIXME: get rid of these
 	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
 	//qglRotatef(90, 0, 0, 1);	    // put Z going up
 

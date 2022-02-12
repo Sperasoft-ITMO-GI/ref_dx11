@@ -274,6 +274,8 @@ void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* d
 void Renderer::UpdateTextureInSRV(int width, int height, int xOffset, int yOffset, int bits, unsigned char* data, int texNum) {
 
 	ID3D11Resource* res = nullptr;
+	D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
+
 	texture_array_srv[texNum]->GetResource(&res);
 
 	D3D11_BOX box { xOffset, yOffset, 0, xOffset + width, yOffset + height, 1 };
