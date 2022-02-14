@@ -1211,7 +1211,7 @@ void R_DrawBrushModel(entity_t* e)
 
 	e->angles[0] = -e->angles[0];	// stupid quake bug
 	e->angles[2] = -e->angles[2];	// stupid quake bug
-	R_RotateForEntity(e);
+	renderer->SetModelViewMatrix(R_RotateForEntity(e) * renderer->GetModelView());
 	e->angles[0] = -e->angles[0];	// stupid quake bug
 	e->angles[2] = -e->angles[2];	// stupid quake bug
 

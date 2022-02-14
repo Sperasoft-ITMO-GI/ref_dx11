@@ -86,7 +86,7 @@ interpolates between two frames and origins
 FIXME: batch lerp all vertexes
 =============
 */
-void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp)
+void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp, int texNum, DirectX::XMMATRIX modView, DirectX::XMMATRIX proj)
 {
 	float 	l;
 	daliasframe_t* frame, * oldframe;
@@ -119,6 +119,7 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp)
 	// PMM - added double shell
 	if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
 	{
+		texNum = -1;
 		//qglDisable(GL_TEXTURE_2D);
 	}
 
@@ -236,19 +237,30 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp)
 	{
 		while (1)
 		{
+
 			// get the vertex count and primitive type
 			count = *order++;
 			if (!count)
 				break;		// done
+
+			bool triangleStrip = true;
+
 			if (count < 0)
 			{
 				count = -count;
+				triangleStrip = false;
 				//qglBegin(GL_TRIANGLE_FAN);
 			}
 			else
 			{
+				triangleStrip = true;
 				//qglBegin(GL_TRIANGLE_STRIP);
 			}
+
+			int numVerts = count;
+
+			ModVertex vert = {};
+			std::vector<ModVertex> vect;
 
 			if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE))
 			{
@@ -258,7 +270,17 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp)
 					order += 3;
 
 					//qglColor4f(shadelight[0], shadelight[1], shadelight[2], alpha);
+					vert.color.x = shadelight[0];
+					vert.color.y = shadelight[1];
+					vert.color.z = shadelight[2];
+					vert.color.w = alpha;
+
 					//qglVertex3fv(s_lerped[index_xyz]);
+					vert.position.x = s_lerped[index_xyz][0];
+					vert.position.y = s_lerped[index_xyz][1];
+					vert.position.z = s_lerped[index_xyz][2];
+
+					vect.push_back(vert);
 
 				} while (--count);
 			}
@@ -268,6 +290,9 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp)
 				{
 					// texture coordinates come from the draw list
 					//qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
+					vert.texture_coord.x = ((float*)order)[0];
+					vert.texture_coord.y = ((float*)order)[1];
+
 					index_xyz = order[2];
 					order += 3;
 
@@ -275,9 +300,56 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp)
 					l = shadedots[verts[index_xyz].lightnormalindex];
 
 					//qglColor4f(l * shadelight[0], l * shadelight[1], l * shadelight[2], alpha);
+					vert.color.x = shadelight[0];
+					vert.color.y = shadelight[1];
+					vert.color.z = shadelight[2];
+					vert.color.w = alpha;
+
 					//qglVertex3fv(s_lerped[index_xyz]);
+					vert.position.x = s_lerped[index_xyz][0];
+					vert.position.y = s_lerped[index_xyz][1];
+					vert.position.z = s_lerped[index_xyz][2];
+
+					vect.push_back(vert);
+
 				} while (--count);
 			}
+
+			std::vector<uint16_t> indexes;
+
+			if (triangleStrip)
+			{
+				for (i = 0; i < numVerts; i++)
+				{
+					indexes.push_back(i);
+				}
+			}
+			else
+			{
+				for (i = 0; i < numVerts; i++)
+				{
+					if (i % 2 == 0)
+						indexes.push_back(i / 2);
+					else
+						indexes.push_back(numVerts - 1 - i / 2);
+				}
+			}
+
+			SmartTriangulation(&indexes, numVerts);
+			
+
+			ConstantBufferPolygon cbp;
+			cbp.position_transform = modView * proj;
+			cbp.color[0] = colorBuf[0];
+			cbp.color[1] = colorBuf[1];
+			cbp.color[2] = colorBuf[2];
+			cbp.color[3] = colorBuf[3];
+
+			ModDefinitions bspd{
+				vect, indexes, cbp, MOD_ALPHA, texNum, -1
+			};
+
+			mod_renderer->Add(bspd);
 
 			//qglEnd();
 		}
@@ -703,10 +775,12 @@ void R_DrawAliasModel(entity_t* e)
 		//qglDepthRange(gldepthmin, gldepthmin + 0.3 * (gldepthmax - gldepthmin));
 	}
 
+	DirectX::XMMATRIX proj = renderer->GetPerspective();
+
 	if ((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
 	{
 		//extern void MYgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
-
+		
 		//qglMatrixMode(GL_PROJECTION);
 		//qglPushMatrix();
 		//qglLoadIdentity();
@@ -715,13 +789,15 @@ void R_DrawAliasModel(entity_t* e)
 		//qglMatrixMode(GL_MODELVIEW);
 
 		//qglCullFace(GL_BACK);
+
+		proj = DirectX::XMMatrixIdentity() * DirectX::XMMatrixScaling(-1.0f, 1.0f, 1.0f)
+			* DirectX::XMMatrixPerspectiveFovRH(DirectX::XMConvertToRadians(r_newrefdef.fov_y), (float)r_newrefdef.width / r_newrefdef.height, 4, 4096);
 	}
 
 	//qglPushMatrix();
-	auto saveMatrix = renderer->GetModelView();
 
 	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
-	R_RotateForEntity(e);
+	DirectX::XMMATRIX modView = R_RotateForEntity(e) * renderer->GetModelView();
 	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
 
 	// select skin
@@ -773,13 +849,13 @@ void R_DrawAliasModel(entity_t* e)
 
 	if (!r_lerpmodels->value)
 		currententity->backlerp = 0;
-	GL_DrawAliasFrameLerp(paliashdr, currententity->backlerp);
+
+	GL_DrawAliasFrameLerp(paliashdr, currententity->backlerp, skin->texnum, modView, proj);
 
 	//GL_TexEnv(GL_REPLACE);
 	//qglShadeModel(GL_FLAT);
 
 	//qglPopMatrix();
-	renderer->SetModelViewMatrix(saveMatrix);
 
 	if ((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
 	{
@@ -804,8 +880,7 @@ void R_DrawAliasModel(entity_t* e)
 	if (false/*gl_shadows->value*/ && !(currententity->flags & (RF_TRANSLUCENT | RF_WEAPONMODEL)))
 	{
 		//qglPushMatrix();
-		auto saveMatrix = renderer->GetModelView();
-		R_RotateForEntity(e);
+		//R_RotateForEntity(e);
 		//qglDisable(GL_TEXTURE_2D);
 		//qglEnable(GL_BLEND);
 		//qglColor4f(0, 0, 0, 0.5);
@@ -813,10 +888,13 @@ void R_DrawAliasModel(entity_t* e)
 		//qglEnable(GL_TEXTURE_2D);
 		//qglDisable(GL_BLEND);
 		//qglPopMatrix();
-		renderer->SetModelViewMatrix(saveMatrix);
 	}
 #endif
 	//qglColor4f(1, 1, 1, 1);
+	colorBuf[0] = 1.0f;
+	colorBuf[1] = 1.0f;
+	colorBuf[2] = 1.0f;
+	colorBuf[3] = 1.0f;
 }
 
 

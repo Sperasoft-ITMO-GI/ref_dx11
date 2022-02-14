@@ -9,6 +9,7 @@
 #include <Shader.h>
 #include <UIVertex.h>
 #include <BSPVertex.h>
+#include <ModVertex.h>
 #include <SkyVertex.h>
 #include <BeamVertex.h>
 

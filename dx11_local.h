@@ -44,6 +44,7 @@ extern UIRenderer*  ui_renderer;
 extern BSPRenderer* bsp_renderer;
 extern SkyRenderer* sky_renderer;
 extern BeamRenderer* beam_renderer;
+extern ModRenderer* mod_renderer;
 
 extern bool multiTexture;
 
@@ -252,7 +253,7 @@ void R_InitParticleTexture(void);
 void Draw_InitLocal(void);
 void GL_SubdivideSurface(msurface_t* fa);
 qboolean R_CullBox(vec3_t mins, vec3_t maxs);
-void R_RotateForEntity(entity_t* e);
+DirectX::XMMATRIX R_RotateForEntity(entity_t * e);
 void R_MarkLeaves(void);
 
 glpoly_t* WaterWarpPolyVerts(glpoly_t* p);

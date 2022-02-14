@@ -77,6 +77,7 @@ UIRenderer* ui_renderer =     new UIRenderer(); // Зачем указатель? Ответа на эт
 BSPRenderer* bsp_renderer =   new BSPRenderer();
 SkyRenderer* sky_renderer =   new SkyRenderer();
 BeamRenderer* beam_renderer = new BeamRenderer();
+ModRenderer* mod_renderer = new ModRenderer();
 
 States* States::states = nullptr;
 
@@ -115,6 +116,11 @@ void CompileShaders()
 	beam_renderer->InitNewFactory(L"ref_dx11\\shaders\\Beam.hlsl");
 	beam_renderer->CompileWithDefines(BEAM_DEFAULT);
 	beam_renderer->BindNewFactory();
+
+	// Mod_Renderer
+	mod_renderer->InitNewFactory(L"ref_dx11\\shaders\\Model.hlsl");
+	mod_renderer->CompileWithDefines(MOD_ALPHA);
+	mod_renderer->BindNewFactory();
 }
 
 
@@ -141,7 +147,7 @@ qboolean R_CullBox(vec3_t mins, vec3_t maxs)
 }
 
 
-void R_RotateForEntity(entity_t* e)
+DirectX::XMMATRIX R_RotateForEntity(entity_t* e)
 {
 	/*qglTranslatef(e->origin[0], e->origin[1], e->origin[2]);
 
@@ -149,13 +155,15 @@ void R_RotateForEntity(entity_t* e)
 	qglRotatef(-e->angles[0], 0, 1, 0);
 	qglRotatef(-e->angles[2], 1, 0, 0);*/
 
-	renderer->SetModelViewMatrix(
-		DirectX::XMMatrixRotationAxis({ 1, 0, 0 }, -e->angles[2]) *
-		DirectX::XMMatrixRotationAxis({ 0, 1, 0 }, -e->angles[0]) *
-		DirectX::XMMatrixRotationAxis({ 0, 0, 1 }, e->angles[1])  *
-		DirectX::XMMatrixTranslation(e->origin[0], e->origin[1], e->origin[2]) *
-		renderer->GetModelView()
-	);
+	using namespace DirectX;
+
+	XMMATRIX mat =
+		XMMatrixRotationAxis({ 1, 0, 0 }, XMConvertToRadians(-e->angles[2])) *
+		XMMatrixRotationAxis({ 0, 1, 0 }, XMConvertToRadians(-e->angles[0])) *
+		XMMatrixRotationAxis({ 0, 0, 1 }, XMConvertToRadians(e->angles[1])) *
+		XMMatrixTranslation(e->origin[0], e->origin[1], e->origin[2]);
+
+	return mat;
 }
 
 /*
@@ -735,6 +743,7 @@ void R_SetupDX(void)
 	bsp_renderer->InitCB();
 	sky_renderer->InitCB();
 	beam_renderer->InitCB();
+	mod_renderer->InitCB();
 
 	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
 	//qglRotatef(90, 0, 0, 1);	    // put Z going up
@@ -1098,6 +1107,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	bsp_renderer->Init();
 	sky_renderer->Init();
 	beam_renderer->Init();
+	mod_renderer->Init();
 
 	Quad::vb.Create(
 		std::vector<UIVertex>{
@@ -1251,6 +1261,7 @@ void DX11_EndFrame(void)
 	// Чтобы увидеть лайтмапы, нужно рендерить BSP с отключённым буфером глубины
 
 	bsp_renderer->Render();
+	mod_renderer->Render();
 	beam_renderer->Render();
 	sky_renderer->Render();
 	renderer->UnSetDepthBuffer();

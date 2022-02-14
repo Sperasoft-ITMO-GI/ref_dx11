@@ -173,6 +173,9 @@
     <ClInclude Include="dx11_local.h" />
     <ClInclude Include="dx11_model.h" />
     <ClInclude Include="dxerr.h" />
+    <ClInclude Include="ModRenderer.h" />
+    <ClInclude Include="ModVertex.h" />
+    <ClInclude Include="ModPoly.h" />
     <ClInclude Include="render\BeamRenderer.h" />
     <ClInclude Include="render\BeamVertex.h" />
     <ClInclude Include="render\Bindable.h" />
@@ -221,6 +224,8 @@
     <ClCompile Include="dx11_rsurf.cpp" />
     <ClCompile Include="dx11_warp.cpp" />
     <ClCompile Include="dxerr.cpp" />
+    <ClCompile Include="ModRenderer.cpp" />
+    <ClCompile Include="ModPoly.cpp" />
     <ClCompile Include="render\BeamRenderer.cpp" />
     <ClCompile Include="render\BlendState.cpp" />
     <ClCompile Include="render\IndexBuffer.cpp" />
@@ -255,6 +260,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="shaders\Model.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="shaders\Sky.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

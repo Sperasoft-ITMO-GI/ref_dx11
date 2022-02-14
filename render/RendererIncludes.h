@@ -7,3 +7,4 @@
 #include <BSPRenderer.h>
 #include <SkyRenderer.h>
 #include <BeamRenderer.h>
+#include <ModRenderer.h>

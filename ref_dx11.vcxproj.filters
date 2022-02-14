@@ -38,6 +38,9 @@
     <Filter Include="Render\BeamRenderer">
       <UniqueIdentifier>{6d6e70a2-ccfa-4154-ac2f-6ea33da17b8b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render\ModelRenderer">
+      <UniqueIdentifier>{9007ad48-f03c-4d10-b1e0-fe7cce6b87bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ref_dx11.def">
@@ -171,6 +174,15 @@
     <ClInclude Include="render\SkyPoly.h">
       <Filter>Render\SkyRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="ModRenderer.h">
+      <Filter>Render\ModelRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="ModVertex.h">
+      <Filter>Render\ModelRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="ModPoly.h">
+      <Filter>Render\ModelRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">
@@ -272,6 +284,12 @@
     <ClCompile Include="render\SkyPoly.cpp">
       <Filter>Render\SkyRenderer</Filter>
     </ClCompile>
+    <ClCompile Include="ModRenderer.cpp">
+      <Filter>Render\ModelRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ModPoly.cpp">
+      <Filter>Render\ModelRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\UITexture.hlsl">
@@ -284,6 +302,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="shaders\Beam.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\Model.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

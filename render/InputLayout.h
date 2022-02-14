@@ -9,7 +9,8 @@ enum Layout {
 	UI_QUAD,
 	SKY_POLYGON,
 	BSP_POLYGON,
-	BEAM_POLYGON
+	BEAM_POLYGON,
+	MOD_POLYGON
 };
 
 ID3D11InputLayout* MakeLayout(ID3DBlob* blob, std::vector<D3D11_INPUT_ELEMENT_DESC> desc);
