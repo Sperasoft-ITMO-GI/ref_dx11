@@ -718,6 +718,8 @@ void R_DrawAliasModel(entity_t* e)
 	}
 
 	//qglPushMatrix();
+	auto saveMatrix = renderer->GetModelView();
+
 	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
 	R_RotateForEntity(e);
 	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
@@ -777,6 +779,7 @@ void R_DrawAliasModel(entity_t* e)
 	//qglShadeModel(GL_FLAT);
 
 	//qglPopMatrix();
+	renderer->SetModelViewMatrix(saveMatrix);
 
 	if ((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
 	{
@@ -801,7 +804,8 @@ void R_DrawAliasModel(entity_t* e)
 	if (false/*gl_shadows->value*/ && !(currententity->flags & (RF_TRANSLUCENT | RF_WEAPONMODEL)))
 	{
 		//qglPushMatrix();
-		//R_RotateForEntity(e);
+		auto saveMatrix = renderer->GetModelView();
+		R_RotateForEntity(e);
 		//qglDisable(GL_TEXTURE_2D);
 		//qglEnable(GL_BLEND);
 		//qglColor4f(0, 0, 0, 0.5);
@@ -809,6 +813,7 @@ void R_DrawAliasModel(entity_t* e)
 		//qglEnable(GL_TEXTURE_2D);
 		//qglDisable(GL_BLEND);
 		//qglPopMatrix();
+		renderer->SetModelViewMatrix(saveMatrix);
 	}
 #endif
 	//qglColor4f(1, 1, 1, 1);

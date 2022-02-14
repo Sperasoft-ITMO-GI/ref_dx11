@@ -568,24 +568,6 @@ void R_DrawSkyBox(void)
 			return;		// nothing visible
 	}
 
-	ConstantBufferPolygon cbp;
-	if ((skyaxis[0] == 0) && (skyaxis[0] == 0) && (skyaxis[0] == 0))
-	{
-		cbp.position_transform = DirectX::XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
-			                     * renderer->GetModelView() * renderer->GetPerspective();
-	}
-	else
-	{
-		printf("POWERNULOS NEBO!!!!\n");
-		cbp.position_transform = DirectX::XMMatrixRotationAxis({ skyaxis[0], skyaxis[1], skyaxis[2] }, r_newrefdef.time * skyrotate);
-		cbp.position_transform *= DirectX::XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2]) * renderer->GetModelView() * renderer->GetPerspective();
-	}	
-
-	cbp.color[0] = 1.0f;
-	cbp.color[1] = 1.0f;
-	cbp.color[2] = 1.0f;
-	cbp.color[3] = 1.0f;
-
 	for (i = 0; i < 6; i++)
 	{
 		if (skyrotate)
@@ -607,12 +589,24 @@ void R_DrawSkyBox(void)
 		sky_renderer->is_exist = true;
 		//IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
 		ConstantBufferSkyBox cbsb;
-		XMVECTOR v_axis = { skyaxis[0], skyaxis[1], skyaxis[2] };
-		cbsb.position_transform *= renderer->GetModelView() //* XMMatrixRotationX(XMConvertToRadians(90)) 
-			//* XMMatrixRotationAxis(v_axis, XMConvertToRadians(r_newrefdef.time * skyrotate))
-						   * XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
-				           * renderer->GetPerspective();
+
+		if ((skyaxis[0] == 0) && (skyaxis[0] == 0) && (skyaxis[0] == 0))
+		{
+			cbsb.position_transform = XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
+				* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
+				* renderer->GetModelView() * renderer->GetPerspective();
+		}
+		else
+		{
+			printf("POWERNULOS NEBO!!!!\n");
+			cbsb.position_transform = XMMatrixRotationAxis({ skyaxis[0], skyaxis[1], skyaxis[2] }, XMConvertToRadians(r_newrefdef.time * skyrotate))
+				* XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
+				* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
+				* renderer->GetModelView() * renderer->GetPerspective();
+		}
+
 		sky_renderer->Add(cbsb);
+
 		//std::vector<SkyVertex> vect;
 		//vect.push_back(MakeSkyVec(skymins[0][i], skymins[1][i], i));
 		//vect.push_back(MakeSkyVec(skymins[0][i], skymaxs[1][i], i));

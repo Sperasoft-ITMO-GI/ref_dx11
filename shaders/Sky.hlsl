@@ -29,6 +29,6 @@ VSOut VSMain(VSIn IN)
 float4 PSMain(VSOut IN) : SV_Target
 {
 
-    return tex.Sample(Sampler, IN.texCoord.yzx);
+    return tex.Sample(Sampler, float3(IN.texCoord.x, IN.texCoord.z, IN.texCoord.y));
 }
 
