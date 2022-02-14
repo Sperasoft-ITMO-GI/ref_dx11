@@ -355,11 +355,17 @@ void Renderer::UpdateTextureInSRV(int width, int height, int xOffset, int yOffse
 
 void Renderer::CreateSkyBoxSRV()
 {
+
 	if (skyBoxIterator > 0)
 	{
 		sky_box_view->Release();
 		skyBoxIterator = 0;
 	}
+
+
+	sky_data = new unsigned char* [6];
+	for (int i = 0; i < 6; ++i)
+		sky_data[i] = new unsigned char[256 * 256 * 4];
 
 	int	skytexorder[6] = { 0,2,1,3,4,5 };
 	int width = 256;
@@ -397,9 +403,14 @@ void Renderer::IterativeUpdateSkyBoxSrv(int width, int height, int bits, unsigne
 	ID3D11Resource* res = nullptr;
 	sky_box_view->GetResource(&res);
 
-	context->UpdateSubresource(res, skyBoxIterator, NULL, data, width * (bits / 8), 0);
-	skyBoxIterator++;
 
+	for (int i = 0; i < width * height * 4; ++i) {
+		sky_data[skyBoxIterator][i] = *(data + i);
+	}
+
+	//context->UpdateSubresource(res, skyBoxIterator, NULL, data, width * (bits / 8), 0);
+	skyBoxIterator++;
+	
 	ReleaseCOM(res);
 }
 

@@ -79,6 +79,10 @@ public:
 		return sky_box_view;
 	}
 
+	unsigned char** GetSkyBoxData() {
+		return sky_data;
+	}
+
 private:
 	Renderer();
 
@@ -100,6 +104,9 @@ private:
 	bool is_initialized;
 
 	int skyBoxIterator = 0;
+	int sky_width = 256;
+	int sky_bits = 32;
+	unsigned char** sky_data;
 	
 	ID3D11SamplerState* sampler;
 	ID3D11ShaderResourceView* texture_array_srv[1600];

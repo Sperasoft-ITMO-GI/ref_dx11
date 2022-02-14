@@ -571,7 +571,8 @@ void R_DrawSkyBox(void)
 	ConstantBufferPolygon cbp;
 	if ((skyaxis[0] == 0) && (skyaxis[0] == 0) && (skyaxis[0] == 0))
 	{
-		cbp.position_transform = DirectX::XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2]) * renderer->GetModelView() * renderer->GetPerspective();
+		cbp.position_transform = DirectX::XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
+			                     * renderer->GetModelView() * renderer->GetPerspective();
 	}
 	else
 	{

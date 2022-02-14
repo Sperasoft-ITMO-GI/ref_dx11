@@ -35,8 +35,20 @@ void SkyRenderer::InitCB()
 {
 	Renderer* renderer = Renderer::GetInstance();
 	ConstantBufferSkyBox cbsb;
-	cbsb.position_transform = /*renderer->GetModelView() **/ renderer->GetPerspective();
+	
+	cbsb.position_transform = renderer->GetPerspective();
 	sp->CreateCB(cbsb);
+
+	unsigned char** data = renderer->GetSkyBoxData();
+	ID3D11Resource* res = nullptr;
+	renderer->GetSkyBoxSRV()->GetResource(&res);
+	for (int i = 0; i < 6; ++i) {
+		renderer->GetContext()->UpdateSubresource(
+			res,
+			i, NULL,
+			data[sky_box_order[i]],
+			256 * (32 / 8), 0);
+	}
 }
 
 void SkyRenderer::Add(ConstantBufferSkyBox& cbsb)
