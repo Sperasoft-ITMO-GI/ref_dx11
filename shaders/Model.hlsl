@@ -41,7 +41,7 @@ float4 PSMain(VSOut IN) : SV_Target
     float4 result;
 
 #ifdef ALPHA
-	result = diffuseText.Sample(Sampler, IN.texCoord) * IN.col;
+	result = (diffuseText.Sample(Sampler, IN.texCoord) * IN.col) * IN.CbCol;
 #endif
 
     return result;

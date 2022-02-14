@@ -17,8 +17,8 @@ ModRenderer::~ModRenderer()
 void ModRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\Model.hlsl", new ModelPSProvider, macro);
 	p = new ModPoly();
-	p->CreateDynamicVB(4096);
-	p->CreateDynamicIB(8192);
+	p->CreateDynamicVB(32);
+	p->CreateDynamicIB(64);
 }
 
 void ModRenderer::InitCB() {
@@ -62,7 +62,7 @@ void ModRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 	if (defines & MOD_ALPHA)
 	{
 		state->bs = states->blend_states.at(BlendState::ALPHABS);
-		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_BACK);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::MOD_POLYGON));
 		state->topology = states->topology.at(Topology::TRIANGLE_STRIP);
 	}
