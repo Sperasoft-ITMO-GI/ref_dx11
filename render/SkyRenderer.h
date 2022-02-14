@@ -44,6 +44,8 @@ private:
 	PipelineFactory* factory_temp;
 	SkyPoly* sp;
 
+	int sky_box_order[6] = { 3, 1, 4, 5, 0, 2 };
+
 public:
 	bool is_exist = false;
 };

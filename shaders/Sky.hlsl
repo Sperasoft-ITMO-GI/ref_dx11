@@ -8,8 +8,8 @@ cbuffer Cbuf
 
 struct VSOut
 {
-    float3 worldPos : Position;
     float4 pos : SV_Position;
+    float3 texCoord : TEXCOORD;
 };
 
 struct VSIn
@@ -20,7 +20,7 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
-    OUT.worldPos = IN.pos;
+    OUT.texCoord = IN.pos;
     OUT.pos = mul(position_transform, float4(IN.pos, 0.0f) );
     OUT.pos.z = OUT.pos.w;
     return OUT;
@@ -28,6 +28,7 @@ VSOut VSMain(VSIn IN)
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    return tex.Sample(Sampler, IN.worldPos);
+
+    return tex.Sample(Sampler, IN.texCoord.yzx);
 }
 
