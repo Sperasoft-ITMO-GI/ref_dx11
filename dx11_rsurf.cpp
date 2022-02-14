@@ -880,7 +880,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				std::vector<uint16_t> indexes;
 
-				SmartTriangulation(&indexes, p->numverts);
+				SmartTriangulation(&indexes, nv);
 
 				ConstantBufferPolygon cbp;
 				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
@@ -915,6 +915,9 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 					//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
 					//qglVertex3fv(v);
 
+					//float soffset = (surf->light_s - surf->dlight_s) * (1.0 / 128.0);
+					//float toffset = (surf->light_t - surf->dlight_t) * (1.0 / 128.0);
+
 					vert.position.x = v[0];
 					vert.position.y = v[1];
 					vert.position.z = v[2];
@@ -928,7 +931,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				std::vector<uint16_t> indexes;
 
-				SmartTriangulation(&indexes, p->numverts);
+				SmartTriangulation(&indexes, nv);
 
 				ConstantBufferPolygon cbp;
 				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
@@ -992,7 +995,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				std::vector<uint16_t> indexes;
 
-				SmartTriangulation(&indexes, p->numverts);
+				SmartTriangulation(&indexes, nv);
 
 				ConstantBufferPolygon cbp;
 				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
@@ -1040,7 +1043,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				std::vector<uint16_t> indexes;
 
-				SmartTriangulation(&indexes, p->numverts);
+				SmartTriangulation(&indexes, nv);
 
 				ConstantBufferPolygon cbp;
 				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();

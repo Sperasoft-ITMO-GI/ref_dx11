@@ -54,8 +54,8 @@ float4 PSMain(VSOut IN) : SV_Target
 #endif
 
 #ifdef LIGHTMAPPEDPOLY
-	result = diffuseText.Sample(Sampler, IN.texCoord);
-	result = result * lightMapText.Sample(Sampler, IN.lightmapCoord);
+	//result = diffuseText.Sample(Sampler, IN.texCoord);
+	result = lightMapText.Sample(Sampler, IN.lightmapCoord);
 	result = result * IN.col;
 #endif
 

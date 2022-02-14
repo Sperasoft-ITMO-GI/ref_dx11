@@ -30,6 +30,8 @@ public:
 	void UpdateTextureInSRV(int width, int height, int xOffset, int yOffset, int bits, unsigned char* data, int texNum);
 	void CreateSkyBoxSRV();
 
+	void AddCustomTextureToSrv(char* path, int texNum, bool mipmap);
+
 	void IterativeUpdateSkyBoxSrv(int width, int height, int bits, unsigned char* data);
 
 	void DeleteTextureFromSRV(int texNum);

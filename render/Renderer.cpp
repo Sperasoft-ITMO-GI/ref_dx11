@@ -271,6 +271,74 @@ void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* d
 	}
 }
 
+void Renderer::AddCustomTextureToSrv(char* path, int texNum, bool mipmap)
+{
+	int width;
+	int height;
+	int comp;
+	unsigned char* image = stbi_load(path, &width, &height, &comp, NULL);
+
+	D3D11_SUBRESOURCE_DATA initData;
+	initData.pSysMem = image;
+	initData.SysMemPitch = width * comp;
+	initData.SysMemSlicePitch = 0;
+
+	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	D3D11_USAGE usage = D3D11_USAGE_DEFAULT;
+
+	UINT bindFlags = D3D11_BIND_SHADER_RESOURCE;
+	UINT miscFlags = 0;
+	UINT mipLevelsTexture = 1;
+	UINT mipLevelsSRV = 1;
+	if (mipmap)
+	{
+		bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+		miscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+		mipLevelsTexture = 0;
+		mipLevelsSRV = -1;
+	}
+
+	D3D11_TEXTURE2D_DESC desc = {};
+	desc.Width = width;
+	desc.Height = height;
+	desc.MipLevels = mipLevelsTexture;
+	desc.ArraySize = 1;
+	desc.Format = format;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = usage;
+	desc.CPUAccessFlags = 0;
+	desc.BindFlags = bindFlags;
+	desc.MiscFlags = miscFlags;
+
+	ID3D11Texture2D* tex = nullptr;
+
+	if (mipmap)
+	{
+		DXCHECK(device->CreateTexture2D(&desc, nullptr, &tex));
+		context->UpdateSubresource(tex, 0u, NULL, initData.pSysMem, initData.SysMemPitch, 0u);
+	}
+	else
+	{
+		DXCHECK(device->CreateTexture2D(&desc, &initData, &tex));
+	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+	SRVDesc.Format = format;
+	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	SRVDesc.Texture2D.MipLevels = mipLevelsSRV;
+
+	DXCHECK(device->CreateShaderResourceView(tex, &SRVDesc, &texture_array_srv[texNum]));
+
+	if (mipmap)
+	{
+		context->GenerateMips(texture_array_srv[texNum]);
+	}
+
+	STBI_FREE(image);
+}
+
 void Renderer::UpdateTextureInSRV(int width, int height, int xOffset, int yOffset, int bits, unsigned char* data, int texNum) {
 
 	ID3D11Resource* res = nullptr;

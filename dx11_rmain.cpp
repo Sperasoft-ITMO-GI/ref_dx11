@@ -1107,6 +1107,8 @@ qboolean R_Init(void* hinstance, void* hWnd)
 			{ {0.0f, 1.0f}, {0.0f, 1.0f} }
 		}
 	);
+
+	//renderer->AddCustomTextureToSrv("UV_cheker.png", 1590, true);
 	
 	Quad::ib.Create({ 2, 1, 0, 0, 3, 2 });
 
