@@ -11,9 +11,6 @@
     <Filter Include="Render">
       <UniqueIdentifier>{98008a03-f18c-46db-9004-d2eeb4deacfd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\UIRenderer">
-      <UniqueIdentifier>{1f5b892d-7579-4ca9-afc2-3867620674a9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Bindable">
       <UniqueIdentifier>{432478ee-18e3-4ef5-81b1-86dae159c2fd}</UniqueIdentifier>
     </Filter>
@@ -26,20 +23,29 @@
     <Filter Include="Interface">
       <UniqueIdentifier>{9d61d061-0617-46aa-94a3-ef3379b0ff65}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\BSPRenderer">
-      <UniqueIdentifier>{99ac3113-0604-4795-bfc1-3f677f111c9e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Utilites">
       <UniqueIdentifier>{292974b1-70a4-41d6-9172-3c058d712e58}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\SkyRenderer">
-      <UniqueIdentifier>{cc301a4c-90ba-4641-bafe-bb90d86d1a22}</UniqueIdentifier>
+    <Filter Include="Render\Renderers">
+      <UniqueIdentifier>{31f008f2-3645-42f7-ac6c-48925d6c1657}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\BeamRenderer">
+    <Filter Include="Render\Renderers\ModelRenderer">
+      <UniqueIdentifier>{9007ad48-f03c-4d10-b1e0-fe7cce6b87bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Renderers\BeamRenderer">
       <UniqueIdentifier>{6d6e70a2-ccfa-4154-ac2f-6ea33da17b8b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\ModelRenderer">
-      <UniqueIdentifier>{9007ad48-f03c-4d10-b1e0-fe7cce6b87bd}</UniqueIdentifier>
+    <Filter Include="Render\Renderers\SkyRenderer">
+      <UniqueIdentifier>{cc301a4c-90ba-4641-bafe-bb90d86d1a22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Renderers\UIRenderer">
+      <UniqueIdentifier>{1f5b892d-7579-4ca9-afc2-3867620674a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Renderers\BSPRenderer">
+      <UniqueIdentifier>{99ac3113-0604-4795-bfc1-3f677f111c9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Renderers\ParticlesRenderer">
+      <UniqueIdentifier>{e2280561-29c4-469c-9609-bd1a471e026b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -103,10 +109,10 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="render\UIRenderer.h">
-      <Filter>Render\UIRenderer</Filter>
+      <Filter>Render\Renderers\UIRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\UIVertex.h">
-      <Filter>Render\UIRenderer</Filter>
+      <Filter>Render\Renderers\UIRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\Topology.h">
       <Filter>Render\States</Filter>
@@ -124,7 +130,7 @@
       <Filter>Interface</Filter>
     </ClInclude>
     <ClInclude Include="render\BSPRenderer.h">
-      <Filter>Render\BSPRenderer</Filter>
+      <Filter>Render\Renderers\BSPRenderer</Filter>
     </ClInclude>
     <ClInclude Include="dx11_model.h">
       <Filter>Interface</Filter>
@@ -139,22 +145,22 @@
       <Filter>Interface</Filter>
     </ClInclude>
     <ClInclude Include="render\BSPVertex.h">
-      <Filter>Render\BSPRenderer</Filter>
+      <Filter>Render\Renderers\BSPRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\Utils.h">
       <Filter>Render\Utilites</Filter>
     </ClInclude>
     <ClInclude Include="render\SkyRenderer.h">
-      <Filter>Render\SkyRenderer</Filter>
+      <Filter>Render\Renderers\SkyRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\SkyVertex.h">
-      <Filter>Render\SkyRenderer</Filter>
+      <Filter>Render\Renderers\SkyRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\Quad.h">
-      <Filter>Render\UIRenderer</Filter>
+      <Filter>Render\Renderers\UIRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\BSPPoly.h">
-      <Filter>Render\BSPRenderer</Filter>
+      <Filter>Render\Renderers\BSPRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\Primitive.h">
       <Filter>Render</Filter>
@@ -163,25 +169,34 @@
       <Filter>Render\Utilites</Filter>
     </ClInclude>
     <ClInclude Include="render\BeamRenderer.h">
-      <Filter>Render\BeamRenderer</Filter>
+      <Filter>Render\Renderers\BeamRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\BeamVertex.h">
-      <Filter>Render\BeamRenderer</Filter>
+      <Filter>Render\Renderers\BeamRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\BeamPoly.h">
-      <Filter>Render\BeamRenderer</Filter>
+      <Filter>Render\Renderers\BeamRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\SkyPoly.h">
-      <Filter>Render\SkyRenderer</Filter>
+      <Filter>Render\Renderers\SkyRenderer</Filter>
     </ClInclude>
     <ClInclude Include="ModRenderer.h">
-      <Filter>Render\ModelRenderer</Filter>
+      <Filter>Render\Renderers\ModelRenderer</Filter>
     </ClInclude>
     <ClInclude Include="ModVertex.h">
-      <Filter>Render\ModelRenderer</Filter>
+      <Filter>Render\Renderers\ModelRenderer</Filter>
     </ClInclude>
     <ClInclude Include="ModPoly.h">
-      <Filter>Render\ModelRenderer</Filter>
+      <Filter>Render\Renderers\ModelRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ParticlesPoly.h">
+      <Filter>Render\Renderers\ParticlesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ParticlesRenderer.h">
+      <Filter>Render\Renderers\ParticlesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ParticlesVertex.h">
+      <Filter>Render\Renderers\ParticlesRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -210,7 +225,7 @@
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="render\UIRenderer.cpp">
-      <Filter>Render\UIRenderer</Filter>
+      <Filter>Render\Renderers\UIRenderer</Filter>
     </ClCompile>
     <ClCompile Include="render\VertexBuffer.cpp">
       <Filter>Render\Bindable</Filter>
@@ -240,7 +255,7 @@
       <Filter>Interface</Filter>
     </ClCompile>
     <ClCompile Include="render\BSPRenderer.cpp">
-      <Filter>Render\BSPRenderer</Filter>
+      <Filter>Render\Renderers\BSPRenderer</Filter>
     </ClCompile>
     <ClCompile Include="dx11_model.cpp">
       <Filter>Interface</Filter>
@@ -264,31 +279,37 @@
       <Filter>Render\Utilites</Filter>
     </ClCompile>
     <ClCompile Include="render\SkyRenderer.cpp">
-      <Filter>Render\SkyRenderer</Filter>
+      <Filter>Render\Renderers\SkyRenderer</Filter>
     </ClCompile>
     <ClCompile Include="render\Quad.cpp">
-      <Filter>Render\UIRenderer</Filter>
+      <Filter>Render\Renderers\UIRenderer</Filter>
     </ClCompile>
     <ClCompile Include="render\BSPPoly.cpp">
-      <Filter>Render\BSPRenderer</Filter>
+      <Filter>Render\Renderers\BSPRenderer</Filter>
     </ClCompile>
     <ClCompile Include="render\Primitive.cpp">
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="render\BeamRenderer.cpp">
-      <Filter>Render\BeamRenderer</Filter>
+      <Filter>Render\Renderers\BeamRenderer</Filter>
     </ClCompile>
     <ClCompile Include="render\BeamPoly.cpp">
-      <Filter>Render\BeamRenderer</Filter>
+      <Filter>Render\Renderers\BeamRenderer</Filter>
     </ClCompile>
     <ClCompile Include="render\SkyPoly.cpp">
-      <Filter>Render\SkyRenderer</Filter>
+      <Filter>Render\Renderers\SkyRenderer</Filter>
     </ClCompile>
     <ClCompile Include="ModRenderer.cpp">
-      <Filter>Render\ModelRenderer</Filter>
+      <Filter>Render\Renderers\ModelRenderer</Filter>
     </ClCompile>
     <ClCompile Include="ModPoly.cpp">
-      <Filter>Render\ModelRenderer</Filter>
+      <Filter>Render\Renderers\ModelRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ParticlesPoly.cpp">
+      <Filter>Render\Renderers\ParticlesRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ParticlesRenderer.cpp">
+      <Filter>Render\Renderers\ParticlesRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -305,6 +326,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="shaders\Model.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\Particles.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

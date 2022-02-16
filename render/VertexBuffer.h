@@ -12,6 +12,7 @@
 #include <ModVertex.h>
 #include <SkyVertex.h>
 #include <BeamVertex.h>
+#include <ParticlesVertex.h>
 
 class VertexBuffer : public Bindable {
 public:

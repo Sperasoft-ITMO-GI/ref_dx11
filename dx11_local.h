@@ -39,12 +39,13 @@ extern	int		c_visible_textures;
 
 extern	float	r_world_matrix[16];
 
-extern Renderer*    renderer;
-extern UIRenderer*  ui_renderer;
-extern BSPRenderer* bsp_renderer;
-extern SkyRenderer* sky_renderer;
-extern BeamRenderer* beam_renderer;
-extern ModRenderer* mod_renderer;
+extern Renderer*          renderer;
+extern UIRenderer*        ui_renderer;
+extern BSPRenderer*       bsp_renderer;
+extern SkyRenderer*       sky_renderer;
+extern BeamRenderer*      beam_renderer;
+extern ModRenderer*       mod_renderer;
+extern ParticlesRenderer* particles_renderer;
 
 extern bool multiTexture;
 

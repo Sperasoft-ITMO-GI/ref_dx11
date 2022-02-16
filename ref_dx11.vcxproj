@@ -186,6 +186,9 @@
     <ClInclude Include="render\InputLayout.h" />
     <ClInclude Include="render\IStateProvider.h" />
     <ClInclude Include="render\BSPRenderer.h" />
+    <ClInclude Include="render\ParticlesPoly.h" />
+    <ClInclude Include="render\ParticlesRenderer.h" />
+    <ClInclude Include="render\ParticlesVertex.h" />
     <ClInclude Include="render\PipelineFactory.h" />
     <ClInclude Include="render\PipelineState.h" />
     <ClInclude Include="render\PixelShader.h" />
@@ -231,6 +234,8 @@
     <ClCompile Include="render\IndexBuffer.cpp" />
     <ClCompile Include="render\InputLayout.cpp" />
     <ClCompile Include="render\BSPRenderer.cpp" />
+    <ClCompile Include="render\ParticlesPoly.cpp" />
+    <ClCompile Include="render\ParticlesRenderer.cpp" />
     <ClCompile Include="render\PipelineFactory.cpp" />
     <ClCompile Include="render\PipelineState.cpp" />
     <ClCompile Include="render\PixelShader.cpp" />
@@ -264,6 +269,12 @@
     <FxCompile Include="shaders\Model.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="shaders\Particles.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="shaders\Sky.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

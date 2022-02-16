@@ -8,3 +8,4 @@
 #include <SkyRenderer.h>
 #include <BeamRenderer.h>
 #include <ModRenderer.h>
+#include <ParticlesRenderer.h>

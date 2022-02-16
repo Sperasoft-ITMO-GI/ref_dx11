@@ -17,8 +17,8 @@ ModRenderer::~ModRenderer()
 void ModRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\Model.hlsl", new ModelPSProvider, macro);
 	p = new ModPoly();
-	p->CreateDynamicVB(32);
-	p->CreateDynamicIB(64);
+	p->CreateDynamicVB(64);
+	p->CreateDynamicIB(128);
 }
 
 void ModRenderer::InitCB() {

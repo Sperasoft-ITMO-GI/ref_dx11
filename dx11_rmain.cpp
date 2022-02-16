@@ -78,6 +78,7 @@ BSPRenderer* bsp_renderer =   new BSPRenderer();
 SkyRenderer* sky_renderer =   new SkyRenderer();
 BeamRenderer* beam_renderer = new BeamRenderer();
 ModRenderer* mod_renderer = new ModRenderer();
+ParticlesRenderer* particles_renderer = new ParticlesRenderer();
 
 States* States::states = nullptr;
 
@@ -121,6 +122,11 @@ void CompileShaders()
 	mod_renderer->InitNewFactory(L"ref_dx11\\shaders\\Model.hlsl");
 	mod_renderer->CompileWithDefines(MOD_ALPHA);
 	mod_renderer->BindNewFactory();
+
+	// Particles_Renderer
+	particles_renderer->InitNewFactory(L"ref_dx11\\shaders\\Particles.hlsl");
+	particles_renderer->CompileWithDefines(PARTICLES_DEFAULT);
+	particles_renderer->BindNewFactory();
 }
 
 
@@ -427,9 +433,14 @@ void GL_DrawParticles(int num_particles, const particle_t particles[], const uns
 	//VectorScale(vup, 1.5, up);
 	//VectorScale(vright, 1.5, right);
 
+	//ParticlesDefinitions pd;
+	//pd.cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	//pd.flags = PARTICLES_DEFAULT;
+	//pd.texture_index = r_particletexture->texnum;
+	//ParticlesVertex pv;
 	//for (p = particles, i = 0; i < num_particles; i++, p++)
 	//{
-	//	// hack a scale up to keep particles from disapearing
+	//	 hack a scale up to keep particles from disapearing
 	//	scale = (p->origin[0] - r_origin[0]) * vpn[0] +
 	//		(p->origin[1] - r_origin[1]) * vpn[1] +
 	//		(p->origin[2] - r_origin[2]) * vpn[2];
@@ -441,9 +452,34 @@ void GL_DrawParticles(int num_particles, const particle_t particles[], const uns
 
 	//	*(int*)color = colortable[p->color];
 	//	color[3] = p->alpha * 255;
+	//	
+	//	pd.cbp.color[0] = (float)color[0];
+	//	pd.cbp.color[1] = (float)color[1];
+	//	pd.cbp.color[2] = (float)color[2];
+	//	pd.cbp.color[3] = (float)color[3];
+
+	//	pv.texture_coord = { 0.0625, 0.0625 };
+	//	pv.position = {p->origin[0], p->origin[1], p->origin[2]};
+
+	//	pd.vert.push_back(pv);		
+	//	
+	//	pv.texture_coord = { 1.0625, 0.0625 };
+	//	pv.position = { p->origin[0] + up[0] * scale,
+	//			        p->origin[1] + up[1] * scale,
+	//			        p->origin[2] + up[2] * scale
+	//	};
+
+	//	pd.vert.push_back(pv);		
+
+	//	pv.texture_coord = { 0.0625, 1.0625 };
+	//	pv.position = { p->origin[0] + right[0] * scale,
+	//			p->origin[1] + right[1] * scale,
+	//		    p->origin[2] + right[2] * scale
+	//	};
+
+	//	pd.vert.push_back(pv);
 
 	//	qglColor4ubv(color);
-
 	//	qglTexCoord2f(0.0625, 0.0625);
 	//	qglVertex3fv(p->origin);
 
@@ -458,6 +494,10 @@ void GL_DrawParticles(int num_particles, const particle_t particles[], const uns
 	//		p->origin[2] + right[2] * scale);
 	//}
 
+	//if (num_particles > 0) {
+	//	SmartTriangulation(&pd.ind, num_particles * 3);
+	//	particles_renderer->Add(pd);
+	//}
 	//qglEnd();
 	//qglDisable(GL_BLEND);
 	//qglColor4f(1, 1, 1, 1);
@@ -472,40 +512,40 @@ R_DrawParticles
 */
 void R_DrawParticles(void)
 {
-	/*if (gl_ext_pointparameters->value && qglPointParameterfEXT)
-	{
-		int i;
+	//if (gl_ext_pointparameters->value && qglPointParameterfEXT)
+	//{
+	/*	int i;
 		unsigned char color[4];
-		const particle_t* p;
+		const particle_t* p;*/
 
-		qglDepthMask(GL_FALSE);
-		qglEnable(GL_BLEND);
-		qglDisable(GL_TEXTURE_2D);
+		//qglDepthMask(GL_FALSE);
+		//qglEnable(GL_BLEND);
+		//qglDisable(GL_TEXTURE_2D);
 
-		qglPointSize(gl_particle_size->value);
+		//qglPointSize(gl_particle_size->value);
 
-		qglBegin(GL_POINTS);
-		for (i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++)
-		{
-			*(int*)color = d_8to24table[p->color];
-			color[3] = p->alpha * 255;
+		//qglBegin(GL_POINTS);
+		//for (i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++)
+		//{
+		//	*(int*)color = d_8to24table[p->color];
+		//	color[3] = p->alpha * 255;
 
-			qglColor4ubv(color);
+		//	qglColor4ubv(color);
 
-			qglVertex3fv(p->origin);
-		}
-		qglEnd();
+		//	qglVertex3fv(p->origin);
+		//}
+		//qglEnd();
 
-		qglDisable(GL_BLEND);
-		qglColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		qglDepthMask(GL_TRUE);
-		qglEnable(GL_TEXTURE_2D);
+		//qglDisable(GL_BLEND);
+		//qglColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		//qglDepthMask(GL_TRUE);
+		//qglEnable(GL_TEXTURE_2D);
 
-	}
-	else
-	{
-		GL_DrawParticles(r_newrefdef.num_particles, r_newrefdef.particles, d_8to24table);
-	}*/
+	//}
+	//else
+	//{
+	//	GL_DrawParticles(r_newrefdef.num_particles, r_newrefdef.particles, d_8to24table);
+	//}
 }
 
 /*
@@ -744,6 +784,8 @@ void R_SetupDX(void)
 	sky_renderer->InitCB();
 	beam_renderer->InitCB();
 	mod_renderer->InitCB();
+	particles_renderer->InitCB();
+
 
 	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
 	//qglRotatef(90, 0, 0, 1);	    // put Z going up
@@ -1108,6 +1150,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	sky_renderer->Init();
 	beam_renderer->Init();
 	mod_renderer->Init();
+	particles_renderer->Init();
 
 	Quad::vb.Create(
 		std::vector<UIVertex>{
@@ -1263,6 +1306,7 @@ void DX11_EndFrame(void)
 	bsp_renderer->Render();
 	mod_renderer->Render();
 	beam_renderer->Render();
+	particles_renderer->Render();
 	sky_renderer->Render();
 
 	renderer->UnSetDepthBuffer();
