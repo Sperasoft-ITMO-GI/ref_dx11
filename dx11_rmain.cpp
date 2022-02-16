@@ -1138,8 +1138,8 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 	SkyPoly::ib.Create(
 		{
-		 2, 7, 6, 2, 3, 7, 
-		 0, 2, 1, 0, 3, 2, 
+		 6, 7, 2, 7, 3, 2, 
+		 1, 2, 0, 2, 3, 0, 
 		 0, 5, 1, 0, 4, 5, 
 		 4, 6, 5, 4, 7, 6, 
 		 1, 5, 6, 1, 6, 2, 
@@ -1264,6 +1264,7 @@ void DX11_EndFrame(void)
 	mod_renderer->Render();
 	beam_renderer->Render();
 	sky_renderer->Render();
+
 	renderer->UnSetDepthBuffer();
 	ui_renderer->Render();
 	renderer->SetDepthBuffer();
