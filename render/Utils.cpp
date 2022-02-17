@@ -29,8 +29,6 @@ ID3DBlob* CompileShader(
 	ID3DBlob* byteCode;
 	ID3DBlob* errors;
 
-	printf("%s\n", defines[0].Name);
-
 	D3DCompileFromFile(filename, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		entrypoint, target, compileFlags, 0, &byteCode, &errors);
 

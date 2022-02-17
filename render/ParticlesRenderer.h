@@ -31,8 +31,6 @@ public:
 
 	void Render();
 
-	void AddElement(const ParticlesPoly& polygon);
-
 	void Add(const ParticlesDefinitions& polygon);
 
 	void InitNewFactory(const wchar_t* path);

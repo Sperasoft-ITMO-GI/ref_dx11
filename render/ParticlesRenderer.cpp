@@ -24,7 +24,7 @@ void ParticlesRenderer::Init() {
 void ParticlesRenderer::InitCB() {
 	Renderer* renderer = Renderer::GetInstance();
 	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetPerspective();
+	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
 	p->CreateCB(cbp);
 }
 
@@ -36,12 +36,12 @@ void ParticlesRenderer::Render() {
 			SetPipelineState(factory->GetState(PARTICLES_DEFAULT));
 		}
 
-		renderer->Bind(poly.texture_index, 0);
-
-		p->UpdateDynamicVB(poly.vert);
-		p->UpdateDynamicIB(poly.ind);
 		p->UpdateCB(poly.cbp);
-		p->DrawIndexed();
+		p->UpdateDynamicVB(poly.vert);
+		//p->UpdateDynamicIB(poly.ind);
+		//p->DrawIndexed();
+
+		p->Draw();
 	}
 
 	particles_defs.clear();
@@ -56,10 +56,10 @@ void ParticlesRenderer::ParticlesPSProvider::PatchPipelineState(PipelineState* s
 
 	if (defines & PARTICLES_DEFAULT)
 	{
-		state->bs = states->blend_states.at(BlendState::ALPHABS);
-		state->rs = states->rasterization_states.at(RasterizationState::CULL_BACK);
+		state->bs = states->blend_states.at(BlendState::NOBS);
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::PARTICLES_POLYGON));
-		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
+		state->topology = states->topology.at(Topology::POINT_LISTS);
 	}
 
 }

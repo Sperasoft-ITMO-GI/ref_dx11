@@ -4,5 +4,5 @@
 
 struct ParticlesVertex {
 	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT2 texture_coord;
+	DirectX::XMFLOAT4 color;
 };

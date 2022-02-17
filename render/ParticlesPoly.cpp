@@ -24,8 +24,10 @@ void ParticlesPoly::Draw() {
 
 	dynamic_vb.Bind();
 	cb.Bind<ConstantBufferPolygon>();
+	ID3D11Buffer* buffer = cb.GetBuffer();
+	renderer->GetContext()->GSSetConstantBuffers(0u, 1u, &buffer);
 
-	renderer->GetContext()->Draw(vb.GetCount(), 0u);
+	renderer->GetContext()->Draw(dynamic_vb.GetCount(), 0u);
 }
 
 void ParticlesPoly::DrawIndexed() {
@@ -54,7 +56,7 @@ void ParticlesPoly::CreateCB(const ConstantBufferPolygon& cbp) {
 
 void ParticlesPoly::CreateDynamicVB(UINT size)
 {
-	dynamic_vb.CreateDynamic<ModVertex>(size);
+	dynamic_vb.CreateDynamic<ParticlesVertex>(size);
 }
 
 void ParticlesPoly::CreateDynamicIB(UINT size)

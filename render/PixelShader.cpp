@@ -13,6 +13,8 @@ void PixelShader::Bind() {
 }
 
 void PixelShader::Create(ID3DBlob* blob) {
-	Renderer* renderer = Renderer::GetInstance();
-	renderer->GetDevice()->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader);
+	if (blob != nullptr) {
+		Renderer* renderer = Renderer::GetInstance();
+		renderer->GetDevice()->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader);
+	}
 }

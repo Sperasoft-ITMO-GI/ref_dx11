@@ -15,9 +15,11 @@ PipelineState* PipelineFactory::GetState(int defs)
 	{
 		ps = new PipelineState();
 		ps->vs = new VertexShader();
+		ps->gs = new GeometryShader();
 		ps->ps = new PixelShader();
 
 		ps->vs->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "VSMain", "vs_5_0"));
+		ps->gs->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "GSMain", "gs_5_0"));
 		ps->ps->Create(CompileShader(shader_path.c_str(), def_to_sm.at(defs), "PSMain", "ps_5_0"));
 		
 		provider->PatchPipelineState(ps, defs);

@@ -10,10 +10,12 @@ VertexShader::~VertexShader() {
 	blob->Release();
 }
 
-void VertexShader::Create(ID3DBlob* b) {
-	blob = b;
-	Renderer* renderer = Renderer::GetInstance();
-	renderer->GetDevice()->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader);
+void VertexShader::Create(ID3DBlob* in_blob) {
+	if (in_blob != nullptr) {
+		blob = in_blob;
+		Renderer* renderer = Renderer::GetInstance();
+		renderer->GetDevice()->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader);
+	}
 }
 
 void VertexShader::Bind() {

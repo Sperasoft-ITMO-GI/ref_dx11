@@ -181,15 +181,6 @@
     <ClInclude Include="render\SkyPoly.h">
       <Filter>Render\Renderers\SkyRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="ModRenderer.h">
-      <Filter>Render\Renderers\ModelRenderer</Filter>
-    </ClInclude>
-    <ClInclude Include="ModVertex.h">
-      <Filter>Render\Renderers\ModelRenderer</Filter>
-    </ClInclude>
-    <ClInclude Include="ModPoly.h">
-      <Filter>Render\Renderers\ModelRenderer</Filter>
-    </ClInclude>
     <ClInclude Include="render\ParticlesPoly.h">
       <Filter>Render\Renderers\ParticlesRenderer</Filter>
     </ClInclude>
@@ -198,6 +189,18 @@
     </ClInclude>
     <ClInclude Include="render\ParticlesVertex.h">
       <Filter>Render\Renderers\ParticlesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ModPoly.h">
+      <Filter>Render\Renderers\ModelRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ModRenderer.h">
+      <Filter>Render\Renderers\ModelRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ModVertex.h">
+      <Filter>Render\Renderers\ModelRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\GeometryShader.h">
+      <Filter>Render\Bindable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -300,17 +303,20 @@
     <ClCompile Include="render\SkyPoly.cpp">
       <Filter>Render\Renderers\SkyRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="ModRenderer.cpp">
-      <Filter>Render\Renderers\ModelRenderer</Filter>
-    </ClCompile>
-    <ClCompile Include="ModPoly.cpp">
-      <Filter>Render\Renderers\ModelRenderer</Filter>
-    </ClCompile>
     <ClCompile Include="render\ParticlesPoly.cpp">
       <Filter>Render\Renderers\ParticlesRenderer</Filter>
     </ClCompile>
     <ClCompile Include="render\ParticlesRenderer.cpp">
       <Filter>Render\Renderers\ParticlesRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ModPoly.cpp">
+      <Filter>Render\Renderers\ModelRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ModRenderer.cpp">
+      <Filter>Render\Renderers\ModelRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\GeometryShader.cpp">
+      <Filter>Render\Bindable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

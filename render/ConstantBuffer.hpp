@@ -88,6 +88,11 @@ public:
 		renderer->GetContext()->VSSetConstantBuffers(0u, 1u, &buffer);
 		renderer->GetContext()->PSSetConstantBuffers(0u, 1u, &buffer);
 	}
+
+	ID3D11Buffer* GetBuffer() {
+		return buffer;
+	}
+
 private:
 	T transforms;
 	ID3D11Buffer* buffer;
