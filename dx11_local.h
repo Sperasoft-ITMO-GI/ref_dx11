@@ -49,6 +49,23 @@ extern BeamRenderer*      beam_renderer;
 extern ModRenderer*       mod_renderer;
 extern ParticlesRenderer* particles_renderer;
 
+#define DEBUG_MARKERS
+
+#ifdef DEBUG_MARKERS
+
+#define BEGIN_EVENT(X) renderer->BeginEvent(X);
+#define END_EVENT() renderer->EndEvent();
+#define SET_MARKER(X) renderer->SetMarker(X);
+
+#else
+
+#define BEGIN_EVENT(X)
+#define END_EVENT()
+#define SET_MARKER(X) 
+
+#endif
+
+
 extern bool multiTexture;
 
 /*

@@ -52,6 +52,7 @@
     <None Include="ref_dx11.def">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\Window.h">

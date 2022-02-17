@@ -4,6 +4,7 @@
 #include <wrl.h>
 #include <dxgi1_4.h>
 #include <d3d11.h>
+#include <d3d11_1.h>
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
@@ -14,3 +15,11 @@
 #include <../dxerr.h>
 
 #include <stdio.h>
+
+
+
+#if defined(DEBUG) || defined(_DEBUG)
+
+//#include <pix3.h>
+
+#endif

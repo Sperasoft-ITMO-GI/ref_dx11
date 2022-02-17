@@ -1301,17 +1301,31 @@ void R_BeginFrame(float camera_separation)
 */
 void DX11_EndFrame(void)
 {
-	// Чтобы увидеть лайтмапы, нужно рендерить BSP с отключённым буфером глубины
-
+	BEGIN_EVENT(L"BSP renderer");
 	bsp_renderer->Render();
-	mod_renderer->Render();
-	beam_renderer->Render();
-	particles_renderer->Render();
-	sky_renderer->Render();
+	END_EVENT();
 
+	BEGIN_EVENT(L"Model renderer");
+	mod_renderer->Render();
+	END_EVENT();
+
+	BEGIN_EVENT(L"Beam renderer");
+	beam_renderer->Render();
+	END_EVENT();
+
+	BEGIN_EVENT(L"Particles renderer");
+	particles_renderer->Render();
+	END_EVENT();
+
+	BEGIN_EVENT(L"Sky renderer");
+	sky_renderer->Render();
+	END_EVENT();
+
+	BEGIN_EVENT(L"UI renderer");
 	renderer->UnSetDepthBuffer();
 	ui_renderer->Render();
 	renderer->SetDepthBuffer();
+	END_EVENT();
 
 	renderer->Swap();
 }

@@ -863,9 +863,10 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 			/*renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 				(unsigned char*)temp, dx11_state.lightmap_textures + 0);*/
 
+
+
 			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 				(unsigned char*)temp, dx11_state.lightmap_textures + 0);
-
 		}
 
 		c_brush_polys++;

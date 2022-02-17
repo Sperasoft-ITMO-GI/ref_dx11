@@ -62,6 +62,10 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 			)
 		);
 
+		HRESULT hr = context->QueryInterface(__uuidof(perf), reinterpret_cast<void**>(&perf));
+		if (FAILED(hr))
+			return false;
+
 		if (feature_level != D3D_FEATURE_LEVEL_11_0) {
 			printf("[DX11]: Direct3D Feature Level 11 unsupported.");
 			MessageBoxA(0, "Direct3D Feature Level 11 unsupported.", 0, 0);
@@ -525,4 +529,19 @@ Renderer::~Renderer()
 
 	// destroy window
 	window.get()->~Window();
+}
+
+void Renderer::BeginEvent(wchar_t* name)
+{
+	perf->BeginEvent(name);
+}
+
+void Renderer::EndEvent()
+{
+	perf->EndEvent();
+}
+
+void Renderer::SetMarker(wchar_t* name)
+{
+	perf->SetMarker(name);
 }

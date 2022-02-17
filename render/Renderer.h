@@ -21,6 +21,10 @@ public:
 
 	bool Initialize(const HINSTANCE instance, const WNDPROC wndproc);
 
+	void BeginEvent(wchar_t* name);
+	void EndEvent();
+	void SetMarker(wchar_t* name);
+
 public:
 	void SetWindowMode(const int posX, const int posY, const int w, const int h, const bool fullscreen);
 	void SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far);
@@ -107,6 +111,8 @@ private:
 	int sky_width = 256;
 	int sky_bits = 32;
 	unsigned char** sky_data;
+
+	ID3DUserDefinedAnnotation* perf;
 	
 	ID3D11SamplerState* sampler;
 	ID3D11ShaderResourceView* texture_array_srv[1600];
