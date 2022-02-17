@@ -259,7 +259,7 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp, int texNum, Direct
 
 			int numVerts = count;
 
-			assert(numVerts < 32);
+			assert(numVerts < 64);
 
 			ModVertex vert = {};
 			std::vector<ModVertex> vect;
@@ -326,23 +326,12 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp, int texNum, Direct
 
 			if (triangleFan)
 			{
-				for (i = 0; i < numVerts; i++)
-				{
-					if (i % 2 == 0)
-						indexes.push_back(i / 2);
-					else
-						indexes.push_back(numVerts - 1 - i / 2);
-				}
+				SmartTriangulationClockwise(&indexes, numVerts);
 			}
 			else
 			{
-				for (i = 0; i < numVerts; i++)
-				{
-					indexes.push_back(i);
-				}
+				TriangulationTriangleStripToListClockwise(&indexes, numVerts);
 			}
-
-			SmartTriangulation(&indexes, numVerts);
 
 			ConstantBufferPolygon cbp;
 			cbp.position_transform = modView * proj;
