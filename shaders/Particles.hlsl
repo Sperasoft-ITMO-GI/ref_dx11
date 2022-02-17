@@ -32,7 +32,7 @@ VSOut VSMain(VSIn IN)
     return OUT;
 }
 
-[maxvertexcount(64)]
+[maxvertexcount(4)]
 void GSMain(point VSOut IN[1], inout TriangleStream<GeoOut> tristream)
 {
     float3 v[4];
