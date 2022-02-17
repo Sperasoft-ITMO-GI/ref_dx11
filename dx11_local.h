@@ -12,6 +12,8 @@
 #include <RendererIncludes.h>
 
 
+
+
 #define	REF_VERSION	"DX11 0.01"
 
 extern unsigned	d_8to24table[256];

@@ -86,6 +86,7 @@ public:
 	void Bind() {
 		Renderer* renderer = Renderer::GetInstance();
 		renderer->GetContext()->VSSetConstantBuffers(0u, 1u, &buffer);
+		renderer->GetContext()->PSSetConstantBuffers(0u, 1u, &buffer);
 	}
 private:
 	T transforms;

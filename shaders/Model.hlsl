@@ -14,7 +14,6 @@ struct VSOut
     float2 texCoord : TEXCOORD;
     float2 lightmapCoord : LMTEXCOORD;
 	float4 col : Color;
-    float4 CbCol : Color_Cb;
 };
 
 struct VSIn
@@ -32,17 +31,12 @@ VSOut VSMain(VSIn IN)
     OUT.texCoord = IN.texCoord;
 	OUT.lightmapCoord = IN.lightmapCoord;
 	OUT.col = IN.col;
-    OUT.CbCol = color;
     return OUT;
 }
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    float4 result;
-
-#ifdef ALPHA
-	result = (diffuseText.Sample(Sampler, IN.texCoord) * IN.col) * IN.CbCol;
-#endif
+    float4 result = (diffuseText.Sample(Sampler, IN.texCoord) * IN.col) * color;
 
     return result;
 }

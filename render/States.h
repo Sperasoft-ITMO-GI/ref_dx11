@@ -30,7 +30,8 @@ public:
 	const std::unordered_map<RasterizationState, ID3D11RasterizerState*> rasterization_states{
 		{CULL_NONE,  MakeCullNoneRS()},
 		{CULL_BACK,  MakeCullBackRS()},
-		{CULL_FRONT, MakeCullFrontRS()}
+		{CULL_FRONT, MakeCullFrontRS()},
+		{WIREFRAME, MakeWireframeRS()}
 	};
 	const std::unordered_map<Layout, std::vector<D3D11_INPUT_ELEMENT_DESC>> input_layouts{		
 		{

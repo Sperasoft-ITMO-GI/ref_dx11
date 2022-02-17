@@ -7,7 +7,6 @@ cbuffer Cbuf
 struct VSOut
 {
     float4 pos : SV_Position;
-    float4 color : COLOR;
 };
 
 struct VSIn
@@ -19,13 +18,12 @@ VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
     OUT.pos = mul(position_transform, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
-    OUT.color = color;
     return OUT;
 }
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    float4 result = IN.color;
+    float4 result = color;
     return result;
 }
 

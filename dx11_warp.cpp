@@ -556,38 +556,11 @@ R_DrawSkyBox
 int	skytexorder[6] = { 0,2,1,3,4,5 };
 void R_DrawSkyBox(void)
 {
-	int		i;
-
-	if (skyrotate)
-	{	// check for no sky at all
-		for (i = 0; i < 6; i++)
-			if (skymins[0][i] < skymaxs[0][i]
-				&& skymins[1][i] < skymaxs[1][i])
-				break;
-		if (i == 6)
-			return;		// nothing visible
-	}
-
-	for (i = 0; i < 6; i++)
+	for (int i = 0; i < 6; i++)
 	{
-		if (skyrotate)
-		{	// hack, forces full sky to draw when rotating
-			skymins[0][i] = -1;
-			skymins[1][i] = -1;
-			skymaxs[0][i] = 1;
-			skymaxs[1][i] = 1;
-		}
-
-		if (skymins[0][i] >= skymaxs[0][i]
-			|| skymins[1][i] >= skymaxs[1][i])
-			continue;
-
-		//GL_Bind(sky_images[skytexorder[i]]->texnum);
-
-		//qglBegin(GL_QUADS);
 		using namespace DirectX;
 		sky_renderer->is_exist = true;
-		//IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
+
 		ConstantBufferSkyBox cbsb;
 
 		if ((skyaxis[0] == 0) && (skyaxis[0] == 0) && (skyaxis[0] == 0))
@@ -606,23 +579,6 @@ void R_DrawSkyBox(void)
 		}
 
 		sky_renderer->Add(cbsb);
-
-		//std::vector<SkyVertex> vect;
-		//vect.push_back(MakeSkyVec(skymins[0][i], skymins[1][i], i));
-		//vect.push_back(MakeSkyVec(skymins[0][i], skymaxs[1][i], i));
-		//vect.push_back(MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i));
-		//vect.push_back(MakeSkyVec(skymaxs[0][i], skymins[1][i], i));
-
-		//SkyDefinitions sd{
-		//	vect, { 2, 1, 0, 0, 3, 2 }, cbq, SKY_DEFAULT, sky_images[skytexorder[i]]->texnum
-		//};
-		//sky_renderer->Add(sd);
-
-
-		//VertexBuffer vb(vect);
-		//Quad sky_quad(cb, vb, ib, SKY_DEFAULT, sky_images[skytexorder[i]]->texnum);
-		//sky_renderer->AddElement(sky_quad);
-		//qglEnd();
 	}
 }
 

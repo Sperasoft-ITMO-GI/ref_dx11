@@ -10,7 +10,6 @@ cbuffer Cbuf
 struct VSOut
 {
     float4 pos : SV_Position;
-    float4 col : Color;
     float2 texCoord : TEXCOORD;
 };
 
@@ -24,7 +23,6 @@ VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
     OUT.pos = mul(position_transform, float4(IN.pos, 1.0f));
-    OUT.col = color;
     OUT.texCoord = IN.texCoord;
     return OUT;
 }
@@ -34,7 +32,7 @@ float4 PSMain(VSOut IN) : SV_Target
     float4 result;
 
 #ifdef DEFAULT
-	result = (Texture.Sample(Sampler, IN.texCoord) * IN.col);
+	result = (Texture.Sample(Sampler, IN.texCoord) * color);
 #endif
 
     return result;
