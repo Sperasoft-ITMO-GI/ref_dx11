@@ -524,7 +524,7 @@ void R_DrawParticles(void)
 		//qglBegin(GL_POINTS);
 		ParticlesVertex part_vert;
 		ParticlesDefinitions part_defs;
-		part_defs.cbp.position_transform =  renderer->GetModelView() * renderer->GetPerspective() * DirectX::XMMatrixScaling(0.7, 0.7, 0.7);
+		part_defs.cbp.position_transform =  renderer->GetModelView() * renderer->GetPerspective() * DirectX::XMMatrixScaling(0.5, 0.5, 0.5);
 		part_defs.flags = PARTICLES_DEFAULT;
 		for (i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++)
 		{

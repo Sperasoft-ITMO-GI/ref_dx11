@@ -56,7 +56,7 @@ void ParticlesRenderer::ParticlesPSProvider::PatchPipelineState(PipelineState* s
 
 	if (defines & PARTICLES_DEFAULT)
 	{
-		state->bs = states->blend_states.at(BlendState::NOBS);
+		state->bs = states->blend_states.at(BlendState::ALPHABS);
 		state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::PARTICLES_POLYGON));
 		state->topology = states->topology.at(Topology::POINT_LISTS);
