@@ -25,10 +25,8 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
-    OUT = IN;
-    //GeoOut OUT;
-    //OUT.pos = mul(position_transform, float4(IN.pos, 1.0f));
-    //OUT.color = IN.color;
+    OUT.pos = IN.pos;
+    OUT.color = normalize(IN.color);
     return OUT;
 }
 

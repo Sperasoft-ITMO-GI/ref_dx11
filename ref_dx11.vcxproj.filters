@@ -106,9 +106,6 @@
     <ClInclude Include="render\States.h">
       <Filter>Render\States</Filter>
     </ClInclude>
-    <ClInclude Include="render\Renderer.h">
-      <Filter>Render</Filter>
-    </ClInclude>
     <ClInclude Include="render\UIRenderer.h">
       <Filter>Render\Renderers\UIRenderer</Filter>
     </ClInclude>
@@ -202,6 +199,9 @@
     <ClInclude Include="render\GeometryShader.h">
       <Filter>Render\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="render\Renderer.h">
+      <Filter>Render\Renderers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">
@@ -224,9 +224,6 @@
     </ClCompile>
     <ClCompile Include="render\RasterizationState.cpp">
       <Filter>Render\States</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Renderer.cpp">
-      <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="render\UIRenderer.cpp">
       <Filter>Render\Renderers\UIRenderer</Filter>
@@ -317,6 +314,9 @@
     </ClCompile>
     <ClCompile Include="render\GeometryShader.cpp">
       <Filter>Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Renderer.cpp">
+      <Filter>Render\Renderers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
