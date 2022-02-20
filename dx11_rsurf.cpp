@@ -927,6 +927,10 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				bsp_renderer->Add(bspd);
 
+				// Immediate draw dynamic lightmapped polygon
+				// before dynamic texture will updated
+				bsp_renderer->Render();
+
 				//qglEnd();
 			}
 		}
@@ -975,6 +979,10 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 				};
 
 				bsp_renderer->Add(bspd);
+
+				// Immediate draw dynamic lightmapped polygon
+				// before dynamic texture will updated
+				bsp_renderer->Render();
 
 				//qglEnd();
 			}
