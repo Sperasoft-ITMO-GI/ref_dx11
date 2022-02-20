@@ -364,8 +364,12 @@ void Renderer::CreateSkyBoxSRV()
 	{
 		sky_box_view->Release();
 		skyBoxIterator = 0;
-	}
 
+		for (int i = 0; i < 6; ++i)
+			delete sky_data[i];
+
+		delete sky_data;
+	}
 
 	sky_data = new unsigned char* [6];
 	for (int i = 0; i < 6; ++i)

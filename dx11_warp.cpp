@@ -607,6 +607,8 @@ void R_SetSky(char* name, float rotate, vec3_t axis)
 		if (gl_skymip->value || skyrotate)
 			gl_picmip->value++;
 
+		if(sky_images[i])
+			memset(sky_images[i], 0, sizeof(image_t));
 
 		Com_sprintf(pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
 
