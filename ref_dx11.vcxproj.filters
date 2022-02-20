@@ -47,6 +47,9 @@
     <Filter Include="Render\Renderers\ParticlesRenderer">
       <UniqueIdentifier>{e2280561-29c4-469c-9609-bd1a471e026b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render\Renderers\EffectsRenderer">
+      <UniqueIdentifier>{aa8a1c0e-1d0f-4918-9b4e-51d65b53679e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ref_dx11.def">
@@ -163,9 +166,6 @@
     <ClInclude Include="render\Primitive.h">
       <Filter>Render</Filter>
     </ClInclude>
-    <ClInclude Include="render\Utils.hpp">
-      <Filter>Render\Utilites</Filter>
-    </ClInclude>
     <ClInclude Include="render\BeamRenderer.h">
       <Filter>Render\Renderers\BeamRenderer</Filter>
     </ClInclude>
@@ -201,6 +201,15 @@
     </ClInclude>
     <ClInclude Include="render\Renderer.h">
       <Filter>Render\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="render\EffectsQuad.h">
+      <Filter>Render\Renderers\EffectsRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\EffectsRenderer.h">
+      <Filter>Render\Renderers\EffectsRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\EffectsVertex.h">
+      <Filter>Render\Renderers\EffectsRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -318,6 +327,12 @@
     <ClCompile Include="render\Renderer.cpp">
       <Filter>Render\Renderers</Filter>
     </ClCompile>
+    <ClCompile Include="render\EffectsQuad.cpp">
+      <Filter>Render\Renderers\EffectsRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\EffectsRenderer.cpp">
+      <Filter>Render\Renderers\EffectsRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\UITexture.hlsl">
@@ -336,6 +351,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="shaders\Particles.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\Effects.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

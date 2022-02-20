@@ -24,8 +24,8 @@ void ParticlesPoly::Draw() {
 
 	dynamic_vb.Bind();
 	cb.Bind<ConstantBufferPolygon>();
-	ID3D11Buffer* buffer = cb.GetBuffer();
-	renderer->GetContext()->GSSetConstantBuffers(0u, 1u, &buffer);
+	//ID3D11Buffer* buffer = cb.GetBuffer();
+	//renderer->GetContext()->GSSetConstantBuffers(0u, 1u, &buffer);
 
 	renderer->GetContext()->Draw(dynamic_vb.GetCount(), 0u);
 }

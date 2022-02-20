@@ -8,7 +8,6 @@
 #include <Renderer.h>
 #include <IStateProvider.h>
 #include <BSPPoly.h>
-#include <Utils.hpp>
 
 // There should be defines
 #define BSP_SOLID				0x001

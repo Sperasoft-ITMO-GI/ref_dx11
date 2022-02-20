@@ -48,6 +48,7 @@ extern SkyRenderer*       sky_renderer;
 extern BeamRenderer*      beam_renderer;
 extern ModRenderer*       mod_renderer;
 extern ParticlesRenderer* particles_renderer;
+extern EffectsRenderer*   effects_renderer;
 
 #define DEBUG_MARKERS
 

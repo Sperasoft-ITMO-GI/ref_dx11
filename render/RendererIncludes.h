@@ -9,3 +9,4 @@
 #include <BeamRenderer.h>
 #include <ModRenderer.h>
 #include <ParticlesRenderer.h>
+#include <EffectsRenderer.h>

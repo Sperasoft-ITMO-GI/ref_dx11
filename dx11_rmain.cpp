@@ -79,6 +79,7 @@ SkyRenderer* sky_renderer =   new SkyRenderer();
 BeamRenderer* beam_renderer = new BeamRenderer();
 ModRenderer* mod_renderer = new ModRenderer();
 ParticlesRenderer* particles_renderer = new ParticlesRenderer();
+EffectsRenderer* effects_renderer = new EffectsRenderer();
 
 States* States::states = nullptr;
 
@@ -524,7 +525,9 @@ void R_DrawParticles(void)
 		//qglBegin(GL_POINTS);
 		ParticlesVertex part_vert;
 		ParticlesDefinitions part_defs;
-		part_defs.cbp.position_transform =  renderer->GetModelView() * renderer->GetPerspective() * DirectX::XMMatrixScaling(0.5, 0.5, 0.5);
+		part_defs.cbp.position_transform =  renderer->GetModelView() 
+			                              * renderer->GetPerspective() 
+			                              * DirectX::XMMatrixScaling(0.5, 0.5, 0.5);
 		part_defs.flags = PARTICLES_DEFAULT;
 		for (i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++)
 		{
@@ -561,8 +564,8 @@ R_PolyBlend
 */
 void R_PolyBlend(void)
 {
-	if (true/*!gl_polyblend->value*/)
-		return;
+	//if (true/*!gl_polyblend->value*/)
+	//	return;
 	if (!v_blend[3])
 		return;
 
@@ -586,7 +589,19 @@ void R_PolyBlend(void)
 	//qglVertex3f(10, -100, -100);
 	//qglVertex3f(10, 100, -100);
 	//qglEnd();
+	ConstantBufferEffects cbe;
+	for (int i = 0; i < 4; ++i) {
+		cbe.color[i] = v_blend[i];
+	}
+	cbe.position_transform = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(-45))
+		* DirectX::XMMatrixScaling(10, 100, 100)
+		* renderer->GetModelView()
+		* renderer->GetPerspective();
+	effects_renderer->Add(cbe);
 
+	BEGIN_EVENT(L"Effects renderer");
+	effects_renderer->Render();
+	END_EVENT();
 	//qglDisable(GL_BLEND);
 	//qglEnable(GL_TEXTURE_2D);
 	//qglEnable(GL_ALPHA_TEST);
@@ -791,6 +806,7 @@ void R_SetupDX(void)
 	beam_renderer->InitCB();
 	mod_renderer->InitCB();
 	particles_renderer->InitCB();
+	effects_renderer->InitCB();
 
 
 	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
@@ -1157,6 +1173,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	beam_renderer->Init();
 	mod_renderer->Init();
 	particles_renderer->Init();
+	effects_renderer->Init();
 
 	Quad::vb.Create(
 		std::vector<UIVertex>{
@@ -1170,6 +1187,17 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	//renderer->AddCustomTextureToSrv("UV_cheker.png", 1590, true);
 	
 	Quad::ib.Create({ 2, 1, 0, 0, 3, 2 });
+
+	EffectsQuad::vb.Create(
+		std::vector<EffectsVertex>{
+			{ {1.0f, 1.0f, 1.0f } },
+			{ {1.0f, -1.0f, 1.0f } },
+			{ {1.0f, -1.0f, -1.0f } },
+			{ {1.0f, 1.0f, -1.0f } }
+	}
+	);
+
+	EffectsQuad::ib.Create({ 2, 1, 0, 0, 3, 2 });
 
 	SkyPoly::vb.Create(
 		std::vector<SkyVertex>{
@@ -1319,8 +1347,6 @@ void DX11_EndFrame(void)
 	beam_renderer->Render();
 	END_EVENT();
 
-
-
 	BEGIN_EVENT(L"Sky renderer");
 	sky_renderer->Render();
 	END_EVENT();
@@ -1328,6 +1354,10 @@ void DX11_EndFrame(void)
 	BEGIN_EVENT(L"Particles renderer");
 	particles_renderer->Render();
 	END_EVENT();
+
+	//BEGIN_EVENT(L"Effects renderer");
+	//effects_renderer->Render();
+	//END_EVENT();
 
 	BEGIN_EVENT(L"UI renderer");
 	renderer->UnSetDepthBuffer();

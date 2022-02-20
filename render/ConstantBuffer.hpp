@@ -19,6 +19,11 @@ struct ConstantBufferSkyBox {
 	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
 };
 
+struct ConstantBufferEffects {
+	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
+	float color[4];
+};
+
 template<typename T>
 class ConstantBuffer {
 public:
@@ -86,6 +91,7 @@ public:
 	void Bind() {
 		Renderer* renderer = Renderer::GetInstance();
 		renderer->GetContext()->VSSetConstantBuffers(0u, 1u, &buffer);
+		renderer->GetContext()->GSSetConstantBuffers(0u, 1u, &buffer);
 		renderer->GetContext()->PSSetConstantBuffers(0u, 1u, &buffer);
 	}
 

@@ -559,7 +559,6 @@ void R_DrawSkyBox(void)
 	for (int i = 0; i < 6; i++)
 	{
 		using namespace DirectX;
-		sky_renderer->is_exist = true;
 
 		ConstantBufferSkyBox cbsb;
 

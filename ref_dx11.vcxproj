@@ -180,6 +180,9 @@
     <ClInclude Include="render\BlendState.h" />
     <ClInclude Include="render\BSPVertex.h" />
     <ClInclude Include="render\ConstantBuffer.hpp" />
+    <ClInclude Include="render\EffectsQuad.h" />
+    <ClInclude Include="render\EffectsRenderer.h" />
+    <ClInclude Include="render\EffectsVertex.h" />
     <ClInclude Include="render\GeometryShader.h" />
     <ClInclude Include="render\IndexBuffer.h" />
     <ClInclude Include="render\InputLayout.h" />
@@ -210,7 +213,6 @@
     <ClInclude Include="render\UIRenderer.h" />
     <ClInclude Include="render\UIVertex.h" />
     <ClInclude Include="render\Utils.h" />
-    <ClInclude Include="render\Utils.hpp" />
     <ClInclude Include="render\VertexBuffer.h" />
     <ClInclude Include="render\VertexShader.h" />
     <ClInclude Include="render\Window.h" />
@@ -231,6 +233,8 @@
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="render\BeamRenderer.cpp" />
     <ClCompile Include="render\BlendState.cpp" />
+    <ClCompile Include="render\EffectsQuad.cpp" />
+    <ClCompile Include="render\EffectsRenderer.cpp" />
     <ClCompile Include="render\GeometryShader.cpp" />
     <ClCompile Include="render\IndexBuffer.cpp" />
     <ClCompile Include="render\InputLayout.cpp" />
@@ -268,6 +272,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="shaders\Effects.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="shaders\Model.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

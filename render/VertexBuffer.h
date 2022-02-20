@@ -13,6 +13,7 @@
 #include <SkyVertex.h>
 #include <BeamVertex.h>
 #include <ParticlesVertex.h>
+#include <EffectsVertex.h>
 
 class VertexBuffer : public Bindable {
 public:

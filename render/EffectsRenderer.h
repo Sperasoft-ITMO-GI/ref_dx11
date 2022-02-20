@@ -7,14 +7,14 @@
 #include <PipelineFactory.h>
 #include <Renderer.h>
 #include <IStateProvider.h>
-#include <SkyPoly.h>
+#include <EffectsQuad.h>
 
-#define SKY_DEFAULT  0x001
+#define EFFECTS_DEFAULT  0x001
 
-class SkyRenderer {
+class EffectsRenderer {
 public:
 
-	~SkyRenderer();
+	~EffectsRenderer();
 
 	void Init();
 
@@ -22,7 +22,7 @@ public:
 
 	void InitCB();
 
-	void Add(ConstantBufferSkyBox& cbsb);
+	void Add(ConstantBufferEffects& cbe);
 
 	void InitNewFactory(const wchar_t* path);
 
@@ -33,7 +33,7 @@ public:
 	void ClearTempFactory();
 
 private:
-	class SkyPSProvider : public IStateProvider {
+	class EffectsPSProvider : public IStateProvider {
 	public:
 		virtual void PatchPipelineState(PipelineState* state, int defines) override;
 	};
@@ -41,10 +41,5 @@ private:
 private:
 	PipelineFactory* factory;
 	PipelineFactory* factory_temp;
-	SkyPoly* sp;
-
-	int sky_box_order[6] = { 3, 1, 4, 5, 0, 2 };
-
-public:
-	bool is_exist = false;
+	EffectsQuad* eq;
 };

@@ -24,7 +24,6 @@ public:
 
 	void DrawStatic();
 
-	
 	void CreateCB(const ConstantBufferQuad& cbq);
 	void CreateDynamicVB(UINT size);
 	void CreateDynamicIB(UINT size);
