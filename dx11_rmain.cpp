@@ -564,6 +564,8 @@ R_PolyBlend
 */
 void R_PolyBlend(void)
 {
+	using namespace DirectX;
+
 	//if (true/*!gl_polyblend->value*/)
 	//	return;
 	if (!v_blend[3])
@@ -593,15 +595,12 @@ void R_PolyBlend(void)
 	for (int i = 0; i < 4; ++i) {
 		cbe.color[i] = v_blend[i];
 	}
-	cbe.position_transform = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(-45))
-		* DirectX::XMMatrixScaling(10, 100, 100)
-		* renderer->GetModelView()
-		* renderer->GetPerspective();
+
+	// Z-axis is null in vertex quad
+	cbe.position_transform = XMMatrixScaling(vid.width, vid.height, 0) * renderer->GetOrthogonal();
+
 	effects_renderer->Add(cbe);
 
-	BEGIN_EVENT(L"Effects renderer");
-	effects_renderer->Render();
-	END_EVENT();
 	//qglDisable(GL_BLEND);
 	//qglEnable(GL_TEXTURE_2D);
 	//qglEnable(GL_ALPHA_TEST);
@@ -928,6 +927,7 @@ void R_RenderView(refdef_t* fd)
 
 	R_MarkLeaves();	// done here so we know if we're in water
 
+	BEGIN_EVENT(L"BSP renderer");
 	R_DrawWorld();
 
 	R_DrawEntitiesOnList();
@@ -1188,12 +1188,13 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	
 	Quad::ib.Create({ 2, 1, 0, 0, 3, 2 });
 
+	// Z-axis is null
 	EffectsQuad::vb.Create(
 		std::vector<EffectsVertex>{
-			{ {1.0f, 1.0f, 1.0f } },
-			{ {1.0f, -1.0f, 1.0f } },
-			{ {1.0f, -1.0f, -1.0f } },
-			{ {1.0f, 1.0f, -1.0f } }
+			{ {0.0f, 0.0f, 0.0f } },
+			{ {1.0f, 0.0f, 0.0f } },
+			{ {1.0f, 1.0f, 0.0f } },
+			{ {0.0f, 1.0f, 0.0f } }
 	}
 	);
 
@@ -1335,7 +1336,7 @@ void R_BeginFrame(float camera_separation)
 */
 void DX11_EndFrame(void)
 {
-	BEGIN_EVENT(L"BSP renderer");
+	// BEGIN_EVENT(L"BSP renderer");
 	bsp_renderer->Render();
 	END_EVENT();
 
@@ -1355,15 +1356,17 @@ void DX11_EndFrame(void)
 	particles_renderer->Render();
 	END_EVENT();
 
-	//BEGIN_EVENT(L"Effects renderer");
-	//effects_renderer->Render();
-	//END_EVENT();
+	renderer->UnSetDepthBuffer();
+
+	BEGIN_EVENT(L"Effects renderer");
+	effects_renderer->Render();
+	END_EVENT();
 
 	BEGIN_EVENT(L"UI renderer");
-	renderer->UnSetDepthBuffer();
 	ui_renderer->Render();
-	renderer->SetDepthBuffer();
 	END_EVENT();
+
+	renderer->SetDepthBuffer();
 
 	renderer->Swap();
 }
