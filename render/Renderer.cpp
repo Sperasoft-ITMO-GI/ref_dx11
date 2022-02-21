@@ -118,6 +118,7 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		ID3D11Texture2D* back_buffer;
 		DXCHECK(swap_chain->GetBuffer(0u, __uuidof(ID3D11Texture2D), (void**)&back_buffer));
 		DXCHECK(device->CreateRenderTargetView(back_buffer, 0, &render_target_view));
+
 		back_buffer->Release();
 
 		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;

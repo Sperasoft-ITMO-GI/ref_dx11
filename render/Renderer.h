@@ -87,6 +87,10 @@ public:
 		return sky_data;
 	}
 
+	ID3D11DepthStencilView* GetDepthStencilView() {
+		return depth_stencil_view;
+	}
+
 private:
 	Renderer();
 

@@ -10,6 +10,7 @@
 #include <EffectsQuad.h>
 
 #define EFFECTS_DEFAULT  0x001
+#define EFFECTS_SCENE    0x002
 
 class EffectsRenderer {
 public:
@@ -42,4 +43,11 @@ private:
 	PipelineFactory* factory;
 	PipelineFactory* factory_temp;
 	EffectsQuad* eq;
+
+	ID3D11Texture2D* texture;
+	ID3D11RenderTargetView* render_target;
+	ID3D11ShaderResourceView* resource_view;
+
+public:
+	bool is_render = false;
 };

@@ -4,4 +4,5 @@
 
 struct EffectsVertex {
 	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT2 texCoord;
 };

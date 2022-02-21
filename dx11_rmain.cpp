@@ -568,8 +568,10 @@ void R_PolyBlend(void)
 
 	//if (true/*!gl_polyblend->value*/)
 	//	return;
-	if (!v_blend[3])
+	if (!v_blend[3]) {
+		effects_renderer->is_render = false;
 		return;
+	}
 
 	//qglDisable(GL_ALPHA_TEST);
 	//qglEnable(GL_BLEND);
@@ -597,9 +599,10 @@ void R_PolyBlend(void)
 	}
 
 	// Z-axis is null in vertex quad
-	cbe.position_transform = XMMatrixScaling(vid.width, vid.height, 0) * renderer->GetOrthogonal();
+	cbe.position_transform = XMMatrixScaling(vid.width, vid.height, 100) * renderer->GetOrthogonal();
 
 	effects_renderer->Add(cbe);
+	effects_renderer->is_render = true;
 
 	//qglDisable(GL_BLEND);
 	//qglEnable(GL_TEXTURE_2D);
@@ -1191,10 +1194,10 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	// Z-axis is null
 	EffectsQuad::vb.Create(
 		std::vector<EffectsVertex>{
-			{ {0.0f, 0.0f, 0.0f } },
-			{ {1.0f, 0.0f, 0.0f } },
-			{ {1.0f, 1.0f, 0.0f } },
-			{ {0.0f, 1.0f, 0.0f } }
+			{ {0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+			{ {1.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+			{ {1.0f, 1.0f, 0.0f }, {1.0f, 1.0f} },
+			{ {0.0f, 1.0f, 0.0f }, {0.0f, 1.0f} }
 	}
 	);
 
@@ -1357,10 +1360,11 @@ void DX11_EndFrame(void)
 	END_EVENT();
 
 	renderer->UnSetDepthBuffer();
-
-	BEGIN_EVENT(L"Effects renderer");
-	effects_renderer->Render();
-	END_EVENT();
+	if (effects_renderer->is_render) {
+		BEGIN_EVENT(L"Effects renderer");
+		effects_renderer->Render();
+		END_EVENT();
+	}
 
 	BEGIN_EVENT(L"UI renderer");
 	ui_renderer->Render();
