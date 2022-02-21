@@ -33,13 +33,17 @@ VSOut VSMain(VSIn IN)
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    float4 result = diffuseText.Sample(Sampler, IN.texCoord);
+    float4 texColor = diffuseText.Sample(Sampler, IN.texCoord);
+	
+	float luma = dot(texColor.rgb, float3(0.3f, 0.5f, 0.2f));
+	float mask = saturate(luma * 4 - 3);
+	float3 glow = texColor.rgb * mask;
 
 #ifdef LIGHTMAPPEDPOLY
-	result *= lightMapText.Sample(Sampler, IN.lightmapCoord);
+	texColor *= lightMapText.Sample(Sampler, IN.lightmapCoord);
 #endif
 	
-	result *= color;
+	float4 result = texColor * color + float4(glow, 0.0f);
 
     return result;
 }
