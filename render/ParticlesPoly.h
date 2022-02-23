@@ -11,9 +11,9 @@
 class ParticlesPoly : public Primitive {
 public:
 	ParticlesPoly();
-	ParticlesPoly(ConstantBuffer<ConstantBufferPolygon>& cb);
-	ParticlesPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, IndexBuffer& ib);
-	ParticlesPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb);
+	ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cb);
+	ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cb, VertexBuffer& vb, IndexBuffer& ib);
+	ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cb, VertexBuffer& vb);
 
 	~ParticlesPoly();
 
@@ -23,10 +23,10 @@ public:
 
 	void DrawStatic();
 
-	void CreateCB(const ConstantBufferPolygon& cbp);
+	void CreateCB(const ConstantBufferParticles& cbp);
 	void CreateDynamicVB(UINT size);
 	void CreateDynamicIB(UINT size);
-	void UpdateCB(const ConstantBufferPolygon& cbp);
+	void UpdateCB(const ConstantBufferParticles& cbp);
 	void UpdateDynamicVB(std::vector<ParticlesVertex> vertexes);
 	void UpdateDynamicIB(std::vector<uint16_t> indexes);
 
@@ -35,5 +35,5 @@ private:
 	static IndexBuffer ib;
 
 private:
-	ConstantBuffer<ConstantBufferPolygon> cb;
+	ConstantBuffer<ConstantBufferParticles> cb;
 };

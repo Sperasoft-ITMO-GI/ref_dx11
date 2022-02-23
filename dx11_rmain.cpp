@@ -435,7 +435,7 @@ void GL_DrawParticles(int num_particles, const particle_t particles[], const uns
 	VectorScale(vright, 1.5, right);
 
 	ParticlesDefinitions pd;
-	pd.cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	//pd.cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
 	pd.flags = PARTICLES_DEFAULT;
 	pd.texture_index = r_particletexture->texnum;
 	ParticlesVertex pv;
@@ -525,9 +525,8 @@ void R_DrawParticles(void)
 		//qglBegin(GL_POINTS);
 		ParticlesVertex part_vert;
 		ParticlesDefinitions part_defs;
-		part_defs.cbp.position_transform =  renderer->GetModelView() 
-			                              * renderer->GetPerspective() 
-			                              * DirectX::XMMatrixScaling(0.5, 0.5, 0.5);
+		part_defs.cbp.view = renderer->GetModelView();
+		part_defs.cbp.projection = renderer->GetPerspective();
 		part_defs.flags = PARTICLES_DEFAULT;
 		for (i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++)
 		{

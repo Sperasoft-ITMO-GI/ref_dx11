@@ -23,8 +23,9 @@ void ParticlesRenderer::Init() {
 
 void ParticlesRenderer::InitCB() {
 	Renderer* renderer = Renderer::GetInstance();
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	ConstantBufferParticles cbp;
+	cbp.view = renderer->GetModelView();
+	cbp.projection = renderer->GetPerspective();
 	p->CreateCB(cbp);
 }
 

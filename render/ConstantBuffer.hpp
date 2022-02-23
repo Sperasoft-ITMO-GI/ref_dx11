@@ -19,6 +19,11 @@ struct ConstantBufferSkyBox {
 	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
 };
 
+struct ConstantBufferParticles {
+	DirectX::XMMATRIX view = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX projection = DirectX::XMMatrixIdentity();
+};
+
 struct ConstantBufferEffects {
 	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
 	float color[4];

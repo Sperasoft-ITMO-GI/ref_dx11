@@ -66,7 +66,6 @@ void EffectsRenderer::Render() {
 	SetPipelineState(factory->GetState(EFFECTS_DEFAULT));
 	eq->DrawStatic();
 
-
 	SetPipelineState(factory->GetState(EFFECTS_SCENE));
 	ID3D11RenderTargetView* tv = renderer->GetRenderTargetView();
 	renderer->GetContext()->OMSetRenderTargets(1, &tv, renderer->GetDepthStencilView());

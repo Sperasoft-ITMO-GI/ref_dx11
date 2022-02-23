@@ -7,11 +7,11 @@ ParticlesPoly::ParticlesPoly() : Primitive(true), cb()
 {
 }
 
-ParticlesPoly::ParticlesPoly(ConstantBuffer<ConstantBufferPolygon>& cb)
+ParticlesPoly::ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cb)
 	: Primitive(true), cb(cb) {
 }
 
-ParticlesPoly::ParticlesPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, IndexBuffer& ib)
+ParticlesPoly::ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cb, VertexBuffer& vb, IndexBuffer& ib)
 	: Primitive(vb, ib, true), cb(cb) {
 }
 
@@ -23,7 +23,7 @@ void ParticlesPoly::Draw() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	dynamic_vb.Bind();
-	cb.Bind<ConstantBufferPolygon>();
+	cb.Bind<ConstantBufferParticles>();
 	//ID3D11Buffer* buffer = cb.GetBuffer();
 	//renderer->GetContext()->GSSetConstantBuffers(0u, 1u, &buffer);
 
@@ -35,7 +35,7 @@ void ParticlesPoly::DrawIndexed() {
 
 	dynamic_vb.Bind();
 	dynamic_ib.Bind();
-	cb.Bind<ConstantBufferPolygon>();
+	cb.Bind<ConstantBufferParticles>();
 
 	renderer->GetContext()->DrawIndexed(dynamic_ib.GetCount(), 0u, 0u);
 }
@@ -50,7 +50,7 @@ void ParticlesPoly::DrawStatic() {
 	renderer->GetContext()->DrawIndexed(ib.GetCount(), 0u, 0u);
 }
 
-void ParticlesPoly::CreateCB(const ConstantBufferPolygon& cbp) {
+void ParticlesPoly::CreateCB(const ConstantBufferParticles& cbp) {
 	cb.Create(cbp);
 }
 
@@ -64,7 +64,7 @@ void ParticlesPoly::CreateDynamicIB(UINT size)
 	dynamic_ib.CreateDynamic(size);
 }
 
-void ParticlesPoly::UpdateCB(const ConstantBufferPolygon& cbp)
+void ParticlesPoly::UpdateCB(const ConstantBufferParticles& cbp)
 {
 	cb.Update(cbp);
 }

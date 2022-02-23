@@ -1,12 +1,18 @@
 cbuffer Cbuf
 {
-    matrix position_transform;
-	float4 color;
+    matrix view;
+    matrix projection;
+};
+
+struct VSIn
+{
+    float3 pos : Position;
+    float4 color : COLOR;
 };
 
 struct VSOut
 {
-    float3 pos : Position;
+    float4 pos : Position;
     float4 color : COLOR;
 };
 
@@ -16,16 +22,10 @@ struct GeoOut
     float4 color : COLOR;
 };
 
-struct VSIn
-{
-    float3 pos : Position;
-    float4 color : COLOR;
-};
-
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
-    OUT.pos = IN.pos;
+    OUT.pos = mul(view, float4(IN.pos, 1.0f));
     OUT.color = normalize(IN.color);
     return OUT;
 }
@@ -33,9 +33,9 @@ VSOut VSMain(VSIn IN)
 GeoOut CreateQuadVertex(VSOut data, float2 offset)
 {
     GeoOut o = (GeoOut) 0;
-    float3 vert = data.pos;
-    vert.xz += offset;
-    o.pos = mul(position_transform, float4(vert, 1.0f));
+    float4 vert = data.pos;
+    vert.xy += offset;
+    o.pos = mul(projection, vert);
     o.color = data.color;
     return o;
 }
