@@ -15,7 +15,7 @@ SkyRenderer::~SkyRenderer() {
 
 void SkyRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\Sky.hlsl", new SkyPSProvider(), macro);
-	sp = new SkyPoly();
+	sp = new SkyCube();
 }
 
 void SkyRenderer::Render() {

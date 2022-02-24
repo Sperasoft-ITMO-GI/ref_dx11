@@ -7,7 +7,7 @@
 #include <PipelineFactory.h>
 #include <Renderer.h>
 #include <IStateProvider.h>
-#include <SkyPoly.h>
+#include <SkyCube.h>
 
 #define SKY_DEFAULT  0x001
 
@@ -41,7 +41,7 @@ private:
 private:
 	PipelineFactory* factory;
 	PipelineFactory* factory_temp;
-	SkyPoly* sp;
+	SkyCube* sp;
 
 	int sky_box_order[6] = { 3, 1, 4, 5, 0, 2 };
 

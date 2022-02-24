@@ -175,7 +175,7 @@
     <ClInclude Include="render\BeamPoly.h">
       <Filter>Render\Renderers\BeamRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="render\SkyPoly.h">
+    <ClInclude Include="render\SkyCube.h">
       <Filter>Render\Renderers\SkyRenderer</Filter>
     </ClInclude>
     <ClInclude Include="render\ParticlesPoly.h">
@@ -306,7 +306,7 @@
     <ClCompile Include="render\BeamPoly.cpp">
       <Filter>Render\Renderers\BeamRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="render\SkyPoly.cpp">
+    <ClCompile Include="render\SkyCube.cpp">
       <Filter>Render\Renderers\SkyRenderer</Filter>
     </ClCompile>
     <ClCompile Include="render\ParticlesPoly.cpp">

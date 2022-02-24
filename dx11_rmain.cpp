@@ -1202,7 +1202,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 	EffectsQuad::index_buffer.Create({ 2, 1, 0, 0, 3, 2 });
 
-	SkyPoly::vb.Create(
+	SkyCube::vertex_buffer.Create(
 		std::vector<SkyVertex>{
 			{ {-1, -1, -1} },
 			{ {-1,  1, -1} },
@@ -1216,7 +1216,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 		}
 	);
 
-	SkyPoly::ib.Create(
+	SkyCube::index_buffer.Create(
 		{
 		 6, 7, 2, 7, 3, 2, 
 		 1, 2, 0, 2, 3, 0, 

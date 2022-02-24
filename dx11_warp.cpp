@@ -297,7 +297,7 @@ int	vec_to_st[6][3] =
 float	skymins[2][6], skymaxs[2][6];
 float	sky_min, sky_max;
 
-void DrawSkyPolygon(int nump, vec3_t vecs)
+void DrawSkyCubegon(int nump, vec3_t vecs)
 {
 	int		i, j;
 	vec3_t	v, av;
@@ -372,7 +372,7 @@ void DrawSkyPolygon(int nump, vec3_t vecs)
 
 #define	ON_EPSILON		0.1			// point on plane side epsilon
 #define	MAX_CLIP_VERTS	64
-void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
+void ClipSkyCubegon(int nump, vec3_t vecs, int stage)
 {
 	float* norm;
 	float* v;
@@ -385,10 +385,10 @@ void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 	int		i, j;
 
 	if (nump > MAX_CLIP_VERTS - 2)
-		ri.Sys_Error(ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS");
+		ri.Sys_Error(ERR_DROP, "ClipSkyCubegon: MAX_CLIP_VERTS");
 	if (stage == 6)
 	{	// fully clipped, so draw it
-		DrawSkyPolygon(nump, vecs);
+		DrawSkyCubegon(nump, vecs);
 		return;
 	}
 
@@ -414,7 +414,7 @@ void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 
 	if (!front || !back)
 	{	// not clipped
-		ClipSkyPolygon(nump, vecs, stage + 1);
+		ClipSkyCubegon(nump, vecs, stage + 1);
 		return;
 	}
 
@@ -459,8 +459,8 @@ void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 	}
 
 	// continue
-	ClipSkyPolygon(newc[0], newv[0][0], stage + 1);
-	ClipSkyPolygon(newc[1], newv[1][0], stage + 1);
+	ClipSkyCubegon(newc[0], newv[0][0], stage + 1);
+	ClipSkyCubegon(newc[1], newv[1][0], stage + 1);
 }
 
 /*
@@ -481,7 +481,7 @@ void R_AddSkySurface(msurface_t* fa)
 		{
 			VectorSubtract(p->verts[i], r_origin, verts[i]);
 		}
-		ClipSkyPolygon(p->numverts, verts[0], 0);
+		ClipSkyCubegon(p->numverts, verts[0], 0);
 	}
 }
 
