@@ -1,18 +1,15 @@
 #include <BeamPoly.h>
 
-VertexBuffer BeamPoly::vb;
-IndexBuffer  BeamPoly::ib;
-
-BeamPoly::BeamPoly() : Primitive(true), cb()
+BeamPoly::BeamPoly() : constant_buffer()
 {
 }
 
-BeamPoly::BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cb)
-	: Primitive(true), cb(cb) {
+BeamPoly::BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cbp)
+	: constant_buffer(cbp) {
 }
 
-BeamPoly::BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cb, VertexBuffer& vb, IndexBuffer& ib)
-	: Primitive(vb, ib, true), cb(cb) {
+BeamPoly::BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vb, IndexBuffer& ib)
+	: constant_buffer(cbp), vertex_buffer(vb), index_buffer(ib) {
 }
 
 BeamPoly::~BeamPoly()
@@ -23,60 +20,60 @@ void BeamPoly::Draw()
 {
 	Renderer* renderer = Renderer::GetInstance();
 
-	dynamic_vb.Bind();
-	cb.Bind<ConstantBufferPolygon>();
+	vertex_buffer.Bind();
+	constant_buffer.Bind<ConstantBufferPolygon>();
 
-	renderer->GetContext()->Draw(dynamic_vb.GetCount(), 0u);
+	renderer->GetContext()->Draw(vertex_buffer.GetCount(), 0u);
 }
 
 void BeamPoly::DrawIndexed()
 {
 	Renderer* renderer = Renderer::GetInstance();
 
-	dynamic_vb.Bind();
-	dynamic_ib.Bind();
-	cb.Bind<ConstantBufferPolygon>();
+	vertex_buffer.Bind();
+	index_buffer.Bind();
+	constant_buffer.Bind<ConstantBufferPolygon>();
 
-	renderer->GetContext()->DrawIndexed(dynamic_ib.GetCount(), 0u, 0u);
+	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }
 
 void BeamPoly::DrawStatic()
 {
 	Renderer* renderer = Renderer::GetInstance();
 
-	vb.Bind();
-	ib.Bind();
-	cb.Bind<ConstantBufferQuad>();
+	vertex_buffer.Bind();
+	index_buffer.Bind();
+	constant_buffer.Bind<ConstantBufferQuad>();
 
-	renderer->GetContext()->DrawIndexed(ib.GetCount(), 0u, 0u);
+	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }
 
 void BeamPoly::CreateCB(const ConstantBufferPolygon& cbp)
 {
-	cb.Create(cbp);
+	constant_buffer.Create(cbp);
 }
 
 void BeamPoly::CreateDynamicVB(UINT size)
 {
-	dynamic_vb.CreateDynamic<BeamVertex>(size);
+	vertex_buffer.CreateDynamic<BeamVertex>(size);
 }
 
 void BeamPoly::CreateDynamicIB(UINT size)
 {
-	dynamic_ib.CreateDynamic(size);
+	index_buffer.CreateDynamic(size);
 }
 
 void BeamPoly::UpdateCB(const ConstantBufferPolygon& cbp)
 {
-	cb.Update(cbp);
+	constant_buffer.Update(cbp);
 }
 
 void BeamPoly::UpdateDynamicVB(std::vector<BeamVertex> vertexes)
 {
-	dynamic_vb.Update(vertexes);
+	vertex_buffer.Update(vertexes);
 }
 
 void BeamPoly::UpdateDynamicIB(std::vector<uint16_t> indexes)
 {
-	dynamic_ib.Update(indexes);
+	index_buffer.Update(indexes);
 }

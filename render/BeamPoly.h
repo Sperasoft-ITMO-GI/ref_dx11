@@ -8,7 +8,7 @@
 #include <ConstantBuffer.hpp>
 #include <Primitive.h>
 
-class BeamPoly : public Primitive {
+class BeamPoly {
 public:
 	BeamPoly();
 	BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cb);
@@ -31,9 +31,9 @@ public:
 	void UpdateDynamicIB(std::vector<uint16_t> indexes);
 
 public:
-	static VertexBuffer vb;
-	static IndexBuffer ib;
+	VertexBuffer vertex_buffer;
+	IndexBuffer index_buffer;
 
 private:
-	ConstantBuffer<ConstantBufferPolygon> cb;
+	ConstantBuffer<ConstantBufferPolygon> constant_buffer;
 };
