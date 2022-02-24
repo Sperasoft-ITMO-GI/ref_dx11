@@ -1177,7 +1177,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	particles_renderer->Init();
 	effects_renderer->Init();
 
-	Quad::vb.Create(
+	Quad::vertex_buffer.Create(
 		std::vector<UIVertex>{
 			{ {0.0f, 0.0f}, {0.0f, 0.0f} },
 			{ {1.0f, 0.0f}, {1.0f, 0.0f} },
@@ -1188,10 +1188,10 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 	//renderer->AddCustomTextureToSrv("UV_cheker.png", 1590, true);
 	
-	Quad::ib.Create({ 2, 1, 0, 0, 3, 2 });
+	Quad::index_buffer.Create({ 2, 1, 0, 0, 3, 2 });
 
 	// Z-axis is null
-	EffectsQuad::vb.Create(
+	EffectsQuad::vertex_buffer.Create(
 		std::vector<EffectsVertex>{
 			{ {0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
 			{ {1.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
@@ -1200,7 +1200,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	}
 	);
 
-	EffectsQuad::ib.Create({ 2, 1, 0, 0, 3, 2 });
+	EffectsQuad::index_buffer.Create({ 2, 1, 0, 0, 3, 2 });
 
 	SkyPoly::vb.Create(
 		std::vector<SkyVertex>{

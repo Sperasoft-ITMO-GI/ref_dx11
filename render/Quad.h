@@ -11,6 +11,7 @@
 
 class Quad  {
 public:
+	Quad();
 
 	Quad(ConstantBufferQuad& cbq);
 
@@ -23,10 +24,10 @@ public:
 	void UpdateCB(ConstantBufferQuad& cbq);
 
 public:
-	static VertexBuffer vb;
-	static IndexBuffer  ib;
+	static VertexBuffer vertex_buffer;
+	static IndexBuffer  index_buffer;
 
 private:
-	ConstantBuffer<ConstantBufferQuad> cb;
+	ConstantBuffer<ConstantBufferQuad> constant_buffer;
 };
 

@@ -1,10 +1,14 @@
 #include <Quad.h>
 
-VertexBuffer Quad::vb;
-IndexBuffer  Quad::ib;
+VertexBuffer Quad::vertex_buffer;
+IndexBuffer  Quad::index_buffer;
 
-Quad::Quad(ConstantBufferQuad& cbq) 
-	: cb(cbq) {
+Quad::Quad() : constant_buffer()
+{
+}
+
+Quad::Quad(ConstantBufferQuad& cbq)
+	: constant_buffer(cbq) {
 }
 
 Quad::~Quad() {
@@ -13,19 +17,19 @@ Quad::~Quad() {
 void Quad::DrawStatic() {
 	Renderer* renderer = Renderer::GetInstance();
 
-	vb.Bind();
-	ib.Bind();
-	cb.Bind<ConstantBufferQuad>();
+	vertex_buffer.Bind();
+	index_buffer.Bind();
+	constant_buffer.Bind<ConstantBufferQuad>();
 
-	renderer->GetContext()->DrawIndexed(ib.GetCount(), 0u, 0u);
+	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }
 
 void Quad::CreateCB(const ConstantBufferQuad& cbq)
 {
-	cb.Create(cbq);
+	constant_buffer.Create(cbq);
 }
 
 void Quad::UpdateCB(ConstantBufferQuad& cbq) {
-	cb.Update(cbq);
+	constant_buffer.Update(cbq);
 }
 

@@ -9,34 +9,24 @@
 #include <ConstantBuffer.hpp>
 #include <Primitive.h>
 
-class EffectsQuad : public Primitive {
+class EffectsQuad {
 public:
 	EffectsQuad();
-	EffectsQuad(ConstantBufferEffects& cbsb);
-	EffectsQuad(ConstantBuffer<ConstantBufferEffects>& cb, VertexBuffer& vb, IndexBuffer& ib);
-	EffectsQuad(ConstantBuffer<ConstantBufferEffects>& cb, VertexBuffer& vb);
+	EffectsQuad(ConstantBufferEffects& cbe);
 
 	~EffectsQuad();
 
-	void Draw();
-
-	void DrawIndexed();
-
 	void DrawStatic();
 
+	void CreateCB(const ConstantBufferEffects& cbe);
 
-	void CreateCB(const ConstantBufferEffects& cbsb);
-	void CreateDynamicVB(UINT size);
-	void CreateDynamicIB(UINT size);
-	void UpdateCB(ConstantBufferEffects& cbsb);
-	void UpdateDynamicVB(std::vector<EffectsVertex> vertexes);
-	void UpdateDynamicIB(std::vector<uint16_t> indexes);
+	void UpdateCB(ConstantBufferEffects& cbe);
 
 public:
-	static VertexBuffer vb;
-	static IndexBuffer  ib;
+	static VertexBuffer vertex_buffer;
+	static IndexBuffer  index_buffer;
 
 private:
-	ConstantBuffer<ConstantBufferEffects> cb;
+	ConstantBuffer<ConstantBufferEffects> constant_buffer;
 };
 
