@@ -22,3 +22,4 @@ protected:
 	bool is_indexed;
 	bool is_static;
 };
+
