@@ -96,6 +96,7 @@ void EffectsRenderer::EffectsPSProvider::PatchPipelineState(PipelineState* state
 
 	state->bs = states->blend_states.at(BlendState::ALPHABS);
 	state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
+	state->dss = states->depth_stencil_states.at(DepthStencilState::LESS);
 	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::EFFECTS_QUAD));
 	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 }

@@ -180,6 +180,7 @@
     <ClInclude Include="render\BlendState.h" />
     <ClInclude Include="render\BSPVertex.h" />
     <ClInclude Include="render\ConstantBuffer.hpp" />
+    <ClInclude Include="render\DepthStencilState.h" />
     <ClInclude Include="render\EffectsQuad.h" />
     <ClInclude Include="render\EffectsRenderer.h" />
     <ClInclude Include="render\EffectsVertex.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="render\BeamRenderer.cpp" />
     <ClCompile Include="render\BlendState.cpp" />
+    <ClCompile Include="render\DepthStencilState.cpp" />
     <ClCompile Include="render\EffectsQuad.cpp" />
     <ClCompile Include="render\EffectsRenderer.cpp" />
     <ClCompile Include="render\GeometryShader.cpp" />

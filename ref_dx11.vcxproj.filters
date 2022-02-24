@@ -211,6 +211,9 @@
     <ClInclude Include="render\EffectsVertex.h">
       <Filter>Render\Renderers\EffectsRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="render\DepthStencilState.h">
+      <Filter>Render\States</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">
@@ -332,6 +335,9 @@
     </ClCompile>
     <ClCompile Include="render\EffectsRenderer.cpp">
       <Filter>Render\Renderers\EffectsRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\DepthStencilState.cpp">
+      <Filter>Render\States</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

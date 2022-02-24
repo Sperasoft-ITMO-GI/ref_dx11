@@ -1358,7 +1358,7 @@ void DX11_EndFrame(void)
 	particles_renderer->Render();
 	END_EVENT();
 
-	renderer->UnSetDepthBuffer();
+	//renderer->UnSetDepthBuffer();
 	if (effects_renderer->is_render) {
 		BEGIN_EVENT(L"Effects renderer");
 		effects_renderer->Render();
@@ -1369,7 +1369,7 @@ void DX11_EndFrame(void)
 	ui_renderer->Render();
 	END_EVENT();
 
-	renderer->SetDepthBuffer();
+	//renderer->SetDepthBuffer();
 
 	renderer->Swap();
 }

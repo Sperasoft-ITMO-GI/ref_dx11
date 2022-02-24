@@ -98,43 +98,32 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 	if (defines & BSP_SOLID)
 	{
 		state->bs = states->blend_states.at(BlendState::NOBS);
-		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
-		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BSP_POLYGON));
-		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 	}
 
 	if (defines & BSP_ALPHA)
 	{
 		state->bs = states->blend_states.at(BlendState::ALPHABS);
-		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
-		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BSP_POLYGON));
-		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 	}
 
 	if (defines & BSP_WATER)
 	{
 		state->bs = states->blend_states.at(BlendState::ALPHABS);
-		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
-		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BSP_POLYGON));
-		state->topology = states->topology.at(Topology::TRIANGLE_STRIP);
 	}
 
 	if (defines & BSP_LIGHTMAP)
 	{
 		state->bs = states->blend_states.at(BlendState::SURFLIGHTMAPBS);
-		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
-		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BSP_POLYGON));
-		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 	}
 
 	if (defines & BSP_LIGHTMAPPEDPOLY)
 	{
 		state->bs = states->blend_states.at(BlendState::NOBS);
-		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
-		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BSP_POLYGON));
-		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 	}
-	
+
+	state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
+	state->dss = states->depth_stencil_states.at(DepthStencilState::LESS);
+	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BSP_POLYGON));
+	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 }
 
 

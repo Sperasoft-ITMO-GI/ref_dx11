@@ -5,6 +5,7 @@
 #include <WndDxIncludes.h>
 #include <BlendState.h>
 #include <RasterizationState.h>
+#include <DepthStencilState.h>
 #include <InputLayout.h>
 #include <Topology.h>
 
@@ -32,6 +33,11 @@ public:
 		{CULL_BACK,  MakeCullBackRS()},
 		{CULL_FRONT, MakeCullFrontRS()},
 		{WIREFRAME, MakeWireframeRS()}
+	};
+	const std::unordered_map<DepthStencilState, ID3D11DepthStencilState*> depth_stencil_states{
+		{NEVER,      MakeNeverDSS()},
+		{LESS,       MakeLessDSS()},
+		{LESS_EQUAL, MakeLessEqualDSS()},
 	};
 	const std::unordered_map<Layout, std::vector<D3D11_INPUT_ELEMENT_DESC>> input_layouts{		
 		{

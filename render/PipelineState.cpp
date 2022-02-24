@@ -16,6 +16,7 @@ void SetPipelineState(PipelineState* state) {
 	UINT sample_mask = 0xffffffff;
 	context->OMSetBlendState(state->bs, blend_factor, sample_mask);
 	context->RSSetState(state->rs);
+	context->OMSetDepthStencilState(state->dss, 1u);
 	context->IASetInputLayout(state->layout);
 	context->IASetPrimitiveTopology(state->topology);
 }
