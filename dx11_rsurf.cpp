@@ -220,7 +220,7 @@ void DrawGLFlowingPoly(msurface_t* fa, int texNum, int defines)
 	cbp.color[3] = colorBuf[3];
 
 	BSPDefinitions bspd{
-		vect, indexes, cbp, BSP_SOLID, texNum, -1
+		vect, indexes, cbp, BSP_ALPHA, texNum, -1
 	};
 
 	bsp_renderer->Add(bspd);
@@ -320,7 +320,7 @@ void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset, int texNum)
 			SmartTriangulation(&indexes, p->numverts);
 
 			BSPDefinitions bspd{
-				vect, indexes, cbp, BSP_LIGHTMAP, texNum, -1
+				vect, indexes, cbp, BSP_ALPHA, texNum, -1
 			};
 
 			bsp_renderer->Add(bspd);
@@ -361,7 +361,7 @@ void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset, int texNum)
 			SmartTriangulation(&indexes, p->numverts);
 
 			BSPDefinitions bspd{
-				vect, indexes, cbp, BSP_LIGHTMAP, texNum, -1
+				vect, indexes, cbp, BSP_ALPHA, texNum, -1
 			};
 
 			bsp_renderer->Add(bspd);
@@ -581,9 +581,9 @@ void R_RenderBrushPoly(msurface_t* fa)
 	//======
 	//PGM
 	if (fa->texinfo->flags & SURF_FLOWING)
-		DrawGLFlowingPoly(fa, image->texnum, BSP_SOLID);
+		DrawGLFlowingPoly(fa, image->texnum, BSP_ALPHA);
 	else
-		DrawGLPoly(fa->polys, image->texnum, BSP_SOLID);
+		DrawGLPoly(fa->polys, image->texnum, BSP_ALPHA);
 	//PGM
 	//======
 

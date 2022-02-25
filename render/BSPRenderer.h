@@ -10,10 +10,8 @@
 #include <BSPPoly.h>
 
 // There should be defines
-#define BSP_SOLID				0x001
 #define BSP_ALPHA				0x002
 #define BSP_WATER				0x004
-#define BSP_LIGHTMAP			0x008
 #define BSP_LIGHTMAPPEDPOLY		0x010
 
 struct BSPDefinitions {
@@ -42,7 +40,7 @@ public:
 
 	void InitNewFactory(const wchar_t* path);
 
-	void CompileWithDefines(int defines);
+	bool CompileWithDefines(int defines);
 
 	void BindNewFactory();
 
@@ -60,4 +58,6 @@ private:
 	std::vector<BSPPoly> polygons;
 	BSPPoly* p;
 	std::vector<BSPDefinitions> bsp_defs;
+
+	int currentState;
 };

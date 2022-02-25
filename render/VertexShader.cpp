@@ -6,8 +6,11 @@ VertexShader::VertexShader() : shader(nullptr) {
 }
 
 VertexShader::~VertexShader() {
-	shader->Release();
-	blob->Release();
+	if (shader != nullptr)
+		shader->Release();
+
+	if (blob != nullptr)
+		blob->Release();
 }
 
 void VertexShader::Create(ID3DBlob* in_blob) {

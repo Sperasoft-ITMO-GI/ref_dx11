@@ -4,8 +4,13 @@ static D3D_SHADER_MACRO defMac[] = {
 	"DEFAULT", "1", NULL, NULL
 };
 
-static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
-	{BEAM_DEFAULT, defMac},
+static ShaderOptions defOpt{
+	defMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
+static std::unordered_map<int, ShaderOptions> macro{
+	{BEAM_DEFAULT, defOpt},
 };
 
 BeamRenderer::~BeamRenderer() {
@@ -28,9 +33,17 @@ void BeamRenderer::InitCB() {
 }
 
 void BeamRenderer::Render() {
+
+	currentState = 0;
+
 	for (auto& poly : beam_defs) {
-		if (poly.flags & BEAM_DEFAULT) {
-			SetPipelineState(factory->GetState(BEAM_DEFAULT));
+
+		if (currentState != poly.flags)
+		{
+			if (poly.flags & BEAM_DEFAULT) {
+				SetPipelineState(factory->GetState(BEAM_DEFAULT));
+				currentState = BEAM_DEFAULT;
+			}
 		}
 
 		p->UpdateDynamicVB(poly.vert);
@@ -52,7 +65,7 @@ void BeamRenderer::BeamPSProvider::PatchPipelineState(PipelineState* state, int 
 	if (defines & BEAM_DEFAULT)
 	{
 		state->bs = states->blend_states.at(BlendState::ALPHABS);
-		state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_BACK);
 		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BEAM_POLYGON));
 		state->topology = states->topology.at(Topology::TRIANGLE_STRIP);
@@ -66,18 +79,29 @@ void BeamRenderer::InitNewFactory(const wchar_t* path)
 	factory_temp = new PipelineFactory(path, new BeamPSProvider(), macro);
 }
 
-void BeamRenderer::CompileWithDefines(int defines)
+bool BeamRenderer::CompileWithDefines(int defines)
 {
-	factory_temp->GetState(defines);
+	bool error = false;
+	factory_temp->GetState(defines, &error);
+
+	if (error)
+		return false;
+
+	return true;
 }
 
 void BeamRenderer::ClearTempFactory()
 {
-	delete factory_temp;
+	if (factory_temp != nullptr)
+		delete factory_temp;
+
+	factory_temp = nullptr;
 }
 
 void BeamRenderer::BindNewFactory()
 {
-	delete factory;
+	if (factory != nullptr)
+		delete factory;
+
 	factory = factory_temp;
 }

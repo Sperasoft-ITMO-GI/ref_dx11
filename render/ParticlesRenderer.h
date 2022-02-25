@@ -35,7 +35,7 @@ public:
 
 	void InitNewFactory(const wchar_t* path);
 
-	void CompileWithDefines(int defines);
+	bool CompileWithDefines(int defines);
 
 	void BindNewFactory();
 
@@ -52,4 +52,6 @@ private:
 	PipelineFactory* factory_temp;
 	ParticlesPoly* p;
 	std::vector<ParticlesDefinitions> particles_defs;
+
+	int currentState;
 };

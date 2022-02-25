@@ -4,7 +4,8 @@ GeometryShader::GeometryShader() : shader(nullptr) {
 }
 
 GeometryShader::~GeometryShader() {
-	shader->Release();
+	if(shader != nullptr)
+		shader->Release();
 }
 
 void GeometryShader::Bind() {

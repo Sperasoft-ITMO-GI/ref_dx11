@@ -7,9 +7,19 @@ static D3D_SHADER_MACRO texMac[] = {
 	"TEXTURED", "2", NULL, NULL
 };
 
-static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
-	{UI_COLORED, colMac},
-	{UI_TEXTURED,  texMac}
+static ShaderOptions colOpt{
+	colMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
+static ShaderOptions texOpt{
+	texMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
+static std::unordered_map<int, ShaderOptions> macro{
+	{UI_COLORED, colOpt},
+	{UI_TEXTURED,  texOpt}
 };
 
 UIRenderer::~UIRenderer() {
@@ -25,13 +35,21 @@ void UIRenderer::Init() {
 void UIRenderer::Render() {
 	Renderer* renderer = Renderer::GetInstance();
 
+	currentState = 0;
+
 	for (auto& qd : qds) {
-		if (qd.flags & UI_COLORED) {
-			SetPipelineState(factory->GetState(UI_COLORED));
-		}
-		if (qd.flags & UI_TEXTURED) {
-			SetPipelineState(factory->GetState(UI_TEXTURED));
-		}
+
+		if (currentState != qd.flags)
+		{
+			if (qd.flags & UI_COLORED) {
+				SetPipelineState(factory->GetState(UI_COLORED));
+				currentState = UI_COLORED;
+			}
+			if (qd.flags & UI_TEXTURED) {
+				SetPipelineState(factory->GetState(UI_TEXTURED));
+				currentState = UI_TEXTURED;
+			}
+		}		
 
 		renderer->Bind(qd.teture_index, 0);
 		quad->UpdateCB(qd.cbq);
@@ -60,18 +78,27 @@ void UIRenderer::InitNewFactory(const wchar_t* path)
 	factory_temp = new PipelineFactory(path, new UIPSProvider(), macro);
 }
 
-void UIRenderer::CompileWithDefines(int defines)
+bool UIRenderer::CompileWithDefines(int defines)
 {
-	factory_temp->GetState(defines);
+	bool error = false;
+	factory_temp->GetState(defines, &error);
+
+	if (error)
+		return false;
+
+	return true;
 }
 
 void UIRenderer::ClearTempFactory()
 {
-	delete factory_temp;
+	if (factory_temp != nullptr)
+		delete factory_temp;
 }
 
 void UIRenderer::BindNewFactory()
 {
-	delete factory;
+	if (factory != nullptr)
+		delete factory;
+
 	factory = factory_temp;
 }

@@ -9,6 +9,26 @@
 
 // for now it will be a singletone with base dx11 structured reailized
 
+//	cs_5_0	DirectCompute 5.0 (compute shader)
+//	ds_5_0	Domain shader
+//	gs_5_0	Geometry shader
+//	hs_5_0	Hull shader
+//	ps_5_0	Pixel shader
+//	vs_5_0	Vertex shader
+
+#define CS_SHADER_ENTRY 0b0000'0001
+#define DS_SHADER_ENTRY 0b0000'0010
+#define GS_SHADER_ENTRY 0b0000'0100
+#define HS_SHADER_ENTRY 0b0000'1000
+#define PS_SHADER_ENTRY 0b0001'0000
+#define VS_SHADER_ENTRY 0b0010'0000
+
+struct ShaderOptions
+{
+	D3D_SHADER_MACRO* mac;
+	int entrys;
+};
+
 class Renderer {
 public:
 	Renderer(const Renderer&) = delete;

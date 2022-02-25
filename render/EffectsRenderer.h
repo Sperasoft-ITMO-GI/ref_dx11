@@ -27,7 +27,7 @@ public:
 
 	void InitNewFactory(const wchar_t* path);
 
-	void CompileWithDefines(int defines);
+	bool CompileWithDefines(int defines);
 
 	void BindNewFactory();
 
@@ -47,6 +47,8 @@ private:
 	ID3D11Texture2D* texture;
 	ID3D11RenderTargetView* render_target;
 	ID3D11ShaderResourceView* resource_view;
+
+	int currentState;
 
 public:
 	bool is_render = false;

@@ -1,11 +1,16 @@
 #include <ParticlesRenderer.h>
 
-static D3D_SHADER_MACRO solMac[] = {
+static D3D_SHADER_MACRO defMac[] = {
 	"DEFAULT", "1", NULL, NULL
 };
 
-static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
-	{PARTICLES_DEFAULT, solMac}
+static ShaderOptions defOpt{
+	defMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY | GS_SHADER_ENTRY
+};
+
+static std::unordered_map<int, ShaderOptions> macro{
+	{PARTICLES_DEFAULT, defOpt}
 };
 
 ParticlesRenderer::~ParticlesRenderer()
@@ -30,11 +35,18 @@ void ParticlesRenderer::InitCB() {
 }
 
 void ParticlesRenderer::Render() {
-
 	Renderer* renderer = Renderer::GetInstance();
+
+	currentState = 0;
+
 	for (auto& poly : particles_defs) {
-		if (poly.flags & PARTICLES_DEFAULT) {
-			SetPipelineState(factory->GetState(PARTICLES_DEFAULT));
+
+		if (currentState != poly.flags)
+		{
+			if (poly.flags & PARTICLES_DEFAULT) {
+				SetPipelineState(factory->GetState(PARTICLES_DEFAULT));
+				currentState = PARTICLES_DEFAULT;
+			}
 		}
 
 		p->UpdateCB(poly.cbp);
@@ -72,18 +84,29 @@ void ParticlesRenderer::InitNewFactory(const wchar_t* path)
 	factory_temp = new PipelineFactory(path, new ParticlesPSProvider(), macro);
 }
 
-void ParticlesRenderer::CompileWithDefines(int defines)
+bool ParticlesRenderer::CompileWithDefines(int defines)
 {
-	factory_temp->GetState(defines);
+	bool error = false;
+	factory_temp->GetState(defines, &error);
+
+	if (error)
+		return false;
+
+	return true;
 }
 
 void ParticlesRenderer::ClearTempFactory()
 {
-	delete factory_temp;
+	if (factory_temp != nullptr)
+		delete factory_temp;
+
+	factory_temp = nullptr;
 }
 
 void ParticlesRenderer::BindNewFactory()
 {
-	delete factory;
+	if (factory != nullptr)
+		delete factory;
+
 	factory = factory_temp;
 }
