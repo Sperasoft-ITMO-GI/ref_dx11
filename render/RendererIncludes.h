@@ -10,3 +10,5 @@
 #include <ModRenderer.h>
 #include <ParticlesRenderer.h>
 #include <EffectsRenderer.h>
+
+#include <external/profile.h>

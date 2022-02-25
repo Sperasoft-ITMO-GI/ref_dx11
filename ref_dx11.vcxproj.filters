@@ -211,6 +211,9 @@
     <ClInclude Include="render\DepthStencilState.h">
       <Filter>Render\States</Filter>
     </ClInclude>
+    <ClInclude Include="external\profile.h">
+      <Filter>Render\Utilites</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">
