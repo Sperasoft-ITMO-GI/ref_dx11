@@ -8,7 +8,7 @@
 #include <ConstantBuffer.hpp>
 #include <Primitive.h>
 
-class ParticlesPoly : public Primitive {
+class ParticlesPoly {
 public:
 	ParticlesPoly();
 	ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cb);
@@ -31,9 +31,9 @@ public:
 	void UpdateDynamicIB(std::vector<uint16_t> indexes);
 
 private:
-	static VertexBuffer vb;
-	static IndexBuffer ib;
+	VertexBuffer vertex_buffer;
+	IndexBuffer  index_buffer;
 
 private:
-	ConstantBuffer<ConstantBufferParticles> cb;
+	ConstantBuffer<ConstantBufferParticles> constant_buffer;
 };
