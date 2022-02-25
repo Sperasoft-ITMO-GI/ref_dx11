@@ -1580,7 +1580,11 @@ static void LM_UploadBlock(qboolean dynamic)
 	}
 	else
 	{
-		renderer->AddTexturetoSRV(BLOCK_WIDTH, BLOCK_HEIGHT, 32, 
+		char name[30] = "lm_tex_";
+		char value[10];
+		_itoa(texture, value, 10);
+		strcat(name, value);
+		renderer->AddTexturetoSRV(name, BLOCK_WIDTH, BLOCK_HEIGHT, 32, 
 			gl_lms.lightmap_buffer, dx11_state.lightmap_textures + texture, true);
 		/*qglTexImage2D(GL_TEXTURE_2D,
 			0,
@@ -1837,7 +1841,9 @@ void GL_BeginBuildingLightmaps(model_t* m)
 		GL_UNSIGNED_BYTE,
 		dummy);*/
 
-	renderer->AddTexturetoSRV(BLOCK_WIDTH, BLOCK_HEIGHT, 32,
+	char name[] = "lm_tex_0";
+
+	renderer->AddTexturetoSRV(name, BLOCK_WIDTH, BLOCK_HEIGHT, 32,
 		(unsigned char*)dummy, dx11_state.lightmap_textures + 0, true);
 }
 

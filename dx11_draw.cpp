@@ -285,7 +285,7 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 
 	if (firstLoading)
 	{
-		renderer->AddTexturetoSRV(256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE, false);
+		renderer->AddTexturetoSRV("cinematic", 256, 256, 32, (unsigned char*)image32, CINEMATIC_PICTURE, false);
 		firstLoading = false;
 	}
 	else
