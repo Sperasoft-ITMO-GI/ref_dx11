@@ -8,9 +8,19 @@ static D3D_SHADER_MACRO sceneMac[] = {
 	"SCENE", "1", NULL, NULL
 };
 
-static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
-	{EFFECTS_DEFAULT, defMac},
-	{EFFECTS_SCENE, sceneMac},
+static ShaderOptions defOpt{
+	defMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
+static ShaderOptions sceneOpt{
+	sceneMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
+static std::unordered_map<int, ShaderOptions> macro{
+	{EFFECTS_DEFAULT, defOpt},
+	{EFFECTS_SCENE, sceneOpt},
 };
 
 EffectsRenderer::~EffectsRenderer() {
@@ -107,18 +117,29 @@ void EffectsRenderer::InitNewFactory(const wchar_t* path)
 	factory_temp = new PipelineFactory(path, new EffectsPSProvider(), macro);
 }
 
-void EffectsRenderer::CompileWithDefines(int defines)
+bool EffectsRenderer::CompileWithDefines(int defines)
 {
-	factory_temp->GetState(defines);
+	bool error = false;
+	factory_temp->GetState(defines, &error);
+
+	if (error)
+		return false;
+
+	return true;
 }
 
 void EffectsRenderer::ClearTempFactory()
 {
-	delete factory_temp;
+	if (factory_temp != nullptr)
+		delete factory_temp;
+
+	factory_temp = nullptr;
 }
 
 void EffectsRenderer::BindNewFactory()
 {
-	delete factory;
+	if (factory != nullptr)
+		delete factory;
+
 	factory = factory_temp;
 }

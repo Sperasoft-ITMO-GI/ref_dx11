@@ -4,7 +4,8 @@ PixelShader::PixelShader() : shader(nullptr) {
 }
 
 PixelShader::~PixelShader() {
-	shader->Release();
+	if (shader != nullptr)
+		shader->Release();
 }
 
 void PixelShader::Bind() {

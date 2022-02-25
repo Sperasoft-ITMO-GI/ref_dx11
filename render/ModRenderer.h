@@ -38,7 +38,7 @@ public:
 
 	void InitNewFactory(const wchar_t* path);
 
-	void CompileWithDefines(int defines);
+	bool CompileWithDefines(int defines);
 
 	void BindNewFactory();
 
@@ -56,4 +56,6 @@ private:
 	std::vector<ModPoly> polygons;
 	ModPoly* p;
 	std::vector<ModDefinitions> mod_defs;
+
+	int currentState;
 };

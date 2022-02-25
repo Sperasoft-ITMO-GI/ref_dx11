@@ -1,11 +1,16 @@
 #include <ModRenderer.h>
 
-static D3D_SHADER_MACRO solMac[] = {
+static D3D_SHADER_MACRO alpMac[] = {
 	"ALPHA", "1", NULL, NULL
 };
 
-static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
-	{MOD_ALPHA, solMac}
+static ShaderOptions defOpt{
+	alpMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
+static std::unordered_map<int, ShaderOptions> macro{
+	{MOD_ALPHA, defOpt}
 };
 
 ModRenderer::~ModRenderer()
@@ -29,12 +34,19 @@ void ModRenderer::InitCB() {
 }
 
 void ModRenderer::Render() {
-
 	Renderer* renderer = Renderer::GetInstance();
+
+	currentState = 0;
+
 	for (auto& poly : mod_defs) {
-		if (poly.flags & MOD_ALPHA) {
-			SetPipelineState(factory->GetState(MOD_ALPHA));
-		}
+
+		if (currentState != poly.flags)
+		{
+			if (poly.flags & MOD_ALPHA) {
+				SetPipelineState(factory->GetState(MOD_ALPHA));
+				currentState = MOD_ALPHA;
+			}
+		}		
 
 		renderer->Bind(poly.texture_index, 0);
 		renderer->Bind(poly.lightmap_index, 1);
@@ -76,18 +88,29 @@ void ModRenderer::InitNewFactory(const wchar_t* path)
 	factory_temp = new PipelineFactory(path, new ModelPSProvider(), macro);
 }
 
-void ModRenderer::CompileWithDefines(int defines)
+bool ModRenderer::CompileWithDefines(int defines)
 {
-	factory_temp->GetState(defines);
+	bool error = false;
+	factory_temp->GetState(defines, &error);
+
+	if (error)
+		return false;
+
+	return true;
 }
 
 void ModRenderer::ClearTempFactory()
 {
-	delete factory_temp;
+	if (factory_temp != nullptr)
+		delete factory_temp;
+
+	factory_temp = nullptr;
 }
 
 void ModRenderer::BindNewFactory()
 {
-	delete factory;
+	if (factory != nullptr)
+		delete factory;
+
 	factory = factory_temp;
 }

@@ -26,7 +26,7 @@ public:
 
 	void InitNewFactory(const wchar_t* path);
 
-	void CompileWithDefines(int defines);
+	bool CompileWithDefines(int defines);
 
 	void BindNewFactory();
 
@@ -44,6 +44,8 @@ private:
 	SkyCube* sp;
 
 	int sky_box_order[6] = { 3, 1, 4, 5, 0, 2 };
+
+	int currentState;
 
 public:
 	bool is_exist = false;

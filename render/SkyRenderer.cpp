@@ -4,8 +4,13 @@ static D3D_SHADER_MACRO defMac[] = {
 	"DEFAULT", "1", NULL, NULL
 };
 
-static std::unordered_map<int, D3D_SHADER_MACRO*> macro{
-	{SKY_DEFAULT, defMac},
+static ShaderOptions defOpt{
+	defMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
+static std::unordered_map<int, ShaderOptions> macro{
+	{SKY_DEFAULT, defOpt},
 };
 
 SkyRenderer::~SkyRenderer() {
@@ -70,18 +75,27 @@ void SkyRenderer::InitNewFactory(const wchar_t* path)
 	factory_temp = new PipelineFactory(path, new SkyPSProvider(), macro);
 }
 
-void SkyRenderer::CompileWithDefines(int defines)
+bool SkyRenderer::CompileWithDefines(int defines)
 {
-	factory_temp->GetState(defines);
+	bool error = false;
+	factory_temp->GetState(defines, &error);
+
+	if (error)
+		return false;
+
+	return true;
 }
 
 void SkyRenderer::ClearTempFactory()
 {
-	delete factory_temp;
+	if (factory_temp != nullptr)
+		delete factory_temp;
 }
 
 void SkyRenderer::BindNewFactory()
 {
-	delete factory;
+	if (factory != nullptr)
+		delete factory;
+
 	factory = factory_temp;
 }

@@ -211,7 +211,7 @@ void Renderer::SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx) {
 	model_view = model_view_mx;
 }
 
-void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* data, int texNum, bool mipmap)
+void Renderer::AddTexturetoSRV(char* name, int width, int height, int bits, unsigned char* data, int texNum, bool mipmap)
 {
 	D3D11_SUBRESOURCE_DATA initData;
 	initData.pSysMem = data;
@@ -269,6 +269,10 @@ void Renderer::AddTexturetoSRV(int width, int height, int bits, unsigned char* d
 	SRVDesc.Texture2D.MipLevels = mipLevelsSRV;
 
 	DXCHECK(device->CreateShaderResourceView(tex, &SRVDesc, &texture_array_srv[texNum]));
+
+#if defined(DEBUG) || defined(_DEBUG)
+	texture_array_srv[texNum]->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name), name);
+#endif
 
 	if (mipmap)
 	{

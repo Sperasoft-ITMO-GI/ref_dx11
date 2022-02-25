@@ -92,42 +92,51 @@ void CompileShaders()
 	
 	// UI_Renderer
 	ui_renderer->InitNewFactory(L"ref_dx11\\shaders\\UITexture.hlsl");
-	ui_renderer->CompileWithDefines(UI_COLORED);
-	ui_renderer->CompileWithDefines(UI_TEXTURED);
-	ui_renderer->BindNewFactory();
-
-	// Если ошибка, то нужно вызывать эту функцию ниже
-	// Но как обрабатывать ошибки эти, я не знаю
-	//ui_renderer->ClearTempFactory();
-
+	if (!ui_renderer->CompileWithDefines(UI_COLORED))
+		ui_renderer->ClearTempFactory();
+	else if (!ui_renderer->CompileWithDefines(UI_TEXTURED))
+		ui_renderer->ClearTempFactory();
+	else
+		ui_renderer->BindNewFactory();
 
 	// BSP_Renderer
 	bsp_renderer->InitNewFactory(L"ref_dx11\\shaders\\BSP.hlsl");
-	bsp_renderer->CompileWithDefines(BSP_SOLID);
-	bsp_renderer->CompileWithDefines(BSP_ALPHA);
-	bsp_renderer->CompileWithDefines(BSP_LIGHTMAP);
-	bsp_renderer->CompileWithDefines(BSP_LIGHTMAPPEDPOLY);
-	bsp_renderer->BindNewFactory();
+	if (!bsp_renderer->CompileWithDefines(BSP_ALPHA))
+		bsp_renderer->ClearTempFactory();
+	else if (!bsp_renderer->CompileWithDefines(BSP_LIGHTMAPPEDPOLY))
+		bsp_renderer->ClearTempFactory();
+	else if (!bsp_renderer->CompileWithDefines(BSP_WATER))
+		bsp_renderer->ClearTempFactory();
+	else
+		bsp_renderer->BindNewFactory();
 
 	// SKY_Renderer
 	sky_renderer->InitNewFactory(L"ref_dx11\\shaders\\Sky.hlsl");
-	sky_renderer->CompileWithDefines(SKY_DEFAULT);
-	sky_renderer->BindNewFactory();
+	if (!sky_renderer->CompileWithDefines(SKY_DEFAULT))
+		sky_renderer->ClearTempFactory();
+	else
+		sky_renderer->BindNewFactory();
 
 	// Beam_Renderer
 	beam_renderer->InitNewFactory(L"ref_dx11\\shaders\\Beam.hlsl");
-	beam_renderer->CompileWithDefines(BEAM_DEFAULT);
-	beam_renderer->BindNewFactory();
+	if (!beam_renderer->CompileWithDefines(BEAM_DEFAULT))
+		beam_renderer->ClearTempFactory();
+	else
+		beam_renderer->BindNewFactory();
 
 	// Mod_Renderer
 	mod_renderer->InitNewFactory(L"ref_dx11\\shaders\\Model.hlsl");
-	mod_renderer->CompileWithDefines(MOD_ALPHA);
-	mod_renderer->BindNewFactory();
+	if (!mod_renderer->CompileWithDefines(MOD_ALPHA))
+		mod_renderer->ClearTempFactory();
+	else
+		mod_renderer->BindNewFactory();
 
 	// Particles_Renderer
 	particles_renderer->InitNewFactory(L"ref_dx11\\shaders\\Particles.hlsl");
-	particles_renderer->CompileWithDefines(PARTICLES_DEFAULT);
-	particles_renderer->BindNewFactory();
+	if (!particles_renderer->CompileWithDefines(PARTICLES_DEFAULT))
+		particles_renderer->ClearTempFactory();
+	else
+		particles_renderer->BindNewFactory();
 }
 
 
