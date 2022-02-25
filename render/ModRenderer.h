@@ -8,6 +8,7 @@
 #include <Renderer.h>
 #include <IStateProvider.h>
 #include <ModPoly.h>
+#include <Utils.h>
 
 // There should be defines
 #define MOD_ALPHA				0x001

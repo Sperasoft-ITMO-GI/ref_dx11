@@ -42,8 +42,8 @@ BSPRenderer::~BSPRenderer()
 void BSPRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\BSP.hlsl", new ModelPSProvider, macro);
 	p = new BSPPoly();
-	p->CreateDynamicVB(32);
-	p->CreateDynamicIB(64);
+	p->CreateDynamicVB(64);
+	p->CreateDynamicIB(1024);
 }
 
 void BSPRenderer::InitCB() {
@@ -77,7 +77,7 @@ void BSPRenderer::Render() {
 				currentState = BSP_LIGHTMAPPEDPOLY;
 			}
 		}
-		
+
 		renderer->Bind(poly.texture_index, 0);
 		renderer->Bind(poly.lightmap_index, 1);
 
@@ -95,7 +95,23 @@ void BSPRenderer::AddElement(const BSPPoly& polygon) {
 }
 
 void BSPRenderer::Add(const BSPDefinitions& polygon) {
-	bsp_defs.push_back(polygon);
+	//if (!bsp_defs.empty()) {
+	//	auto current_poly = std::find_if(bsp_defs.begin(), bsp_defs.end(), 
+	//		[&](const BSPDefinitions& def) {
+	//			return polygon.texture_index == def.texture_index;
+	//		}
+	//	);
+
+	//	if (current_poly != bsp_defs.end()) {
+	//		for (auto& vert : polygon.vert) {
+	//			current_poly->vert.push_back(vert);
+	//		}
+	//	} else {
+	//		bsp_defs.push_back(polygon);
+	//	}
+	//} else {
+		bsp_defs.push_back(polygon);
+	//}
 }
 
 void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int defines) {

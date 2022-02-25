@@ -22,8 +22,8 @@ ModRenderer::~ModRenderer()
 void ModRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\Model.hlsl", new ModelPSProvider, macro);
 	p = new ModPoly();
-	p->CreateDynamicVB(64);
-	p->CreateDynamicIB(128);
+	p->CreateDynamicVB(10000);
+	p->CreateDynamicIB(10000);
 }
 
 void ModRenderer::InitCB() {
@@ -48,6 +48,8 @@ void ModRenderer::Render() {
 			}
 		}		
 
+		TriangulationTriangleStripToListClockwise(&poly.ind, poly.vert.size());
+
 		renderer->Bind(poly.texture_index, 0);
 		renderer->Bind(poly.lightmap_index, 1);
 
@@ -65,7 +67,24 @@ void ModRenderer::AddElement(const ModPoly& polygon) {
 }
 
 void ModRenderer::Add(const ModDefinitions& polygon) {
-	mod_defs.push_back(polygon);
+	//if (!mod_defs.empty()) {
+	//	auto current_poly = std::find_if(mod_defs.begin(), mod_defs.end(),
+	//		[&](const ModDefinitions& def) {
+	//			return polygon.texture_index == def.texture_index;
+	//		}
+	//	);
+
+	//	if (current_poly != mod_defs.end()) {
+	//		for (auto& vert : polygon.vert) {
+	//			current_poly->vert.push_back(vert);
+	//		}
+	//	}
+	//	else {
+	//		mod_defs.push_back(polygon);
+	//	}
+	//} else {
+		mod_defs.push_back(polygon);
+	//}
 }
 
 void ModRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int defines) {
@@ -74,10 +93,10 @@ void ModRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 	if (defines & MOD_ALPHA)
 	{
 		state->bs = states->blend_states.at(BlendState::ALPHABS);
-		state->rs = states->rasterization_states.at(RasterizationState::CULL_BACK);
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
 		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::MOD_POLYGON));
-		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
+		state->topology = states->topology.at(Topology::TRIANGLE_STRIP);
 	}
 
 }

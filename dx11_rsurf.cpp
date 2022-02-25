@@ -50,45 +50,6 @@ extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 float colorBuf[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 bool multiTexture = true;
 
-void SmartTriangulation(std::vector<uint16_t>* ind, int num)
-{
-	for (int i = 1; i < num - 1; i++)
-	{
-		ind->push_back(0);
-		ind->push_back(i + 1);
-		ind->push_back(i);
-	}
-}
-
-void SmartTriangulationClockwise(std::vector<uint16_t>* ind, int num)
-{
-	for (int i = 1; i < num - 1; i++)
-	{
-		ind->push_back(0);
-		ind->push_back(i);
-		ind->push_back(i + 1);
-	}
-}
-
-void TriangulationTriangleStripToListClockwise(std::vector<uint16_t>* ind, int num)
-{
-	for (int i = 0; i < num - 2; i++)
-	{
-		if (i % 2 == 0)
-		{
-			ind->push_back(i);
-			ind->push_back(i + 1);
-			ind->push_back(i + 2);
-		}
-		else
-		{
-			ind->push_back(i);
-			ind->push_back(i + 2);
-			ind->push_back(i + 1);
-		}
-	}
-}
-
 /*
 =============================================================
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <WndDxIncludes.h>
 #include <Shader.h>
@@ -35,3 +36,9 @@ ID3DBlob* CompileShader(const wchar_t* filename, const D3D_SHADER_MACRO* defines
                                                const char* entrypoint, const char* target);
 
 DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync);
+
+void SmartTriangulation(std::vector<uint16_t>* ind, int num);
+
+void SmartTriangulationClockwise(std::vector<uint16_t>* ind, int num);
+
+void TriangulationTriangleStripToListClockwise(std::vector<uint16_t>* ind, int num);

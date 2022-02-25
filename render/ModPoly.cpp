@@ -25,7 +25,7 @@ void ModPoly::Draw() {
 	dynamic_vb.Bind();
 	cb.Bind<ConstantBufferPolygon>();
 
-	renderer->GetContext()->Draw(vb.GetCount(), 0u);
+	renderer->GetContext()->Draw(dynamic_vb.GetCount(), 0u);
 }
 
 void ModPoly::DrawIndexed() {
