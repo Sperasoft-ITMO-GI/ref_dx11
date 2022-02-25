@@ -12,6 +12,10 @@ BeamPoly::BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vb,
 	: constant_buffer(cbp), vertex_buffer(vb), index_buffer(ib) {
 }
 
+BeamPoly::BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vb) 
+	: constant_buffer(cbp), vertex_buffer(vb) {
+}
+
 BeamPoly::~BeamPoly()
 {
 }
@@ -33,17 +37,6 @@ void BeamPoly::DrawIndexed()
 	vertex_buffer.Bind();
 	index_buffer.Bind();
 	constant_buffer.Bind<ConstantBufferPolygon>();
-
-	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
-}
-
-void BeamPoly::DrawStatic()
-{
-	Renderer* renderer = Renderer::GetInstance();
-
-	vertex_buffer.Bind();
-	index_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferQuad>();
 
 	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }

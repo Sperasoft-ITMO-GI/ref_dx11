@@ -7,7 +7,6 @@
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <ConstantBuffer.hpp>
-#include <Primitive.h>
 
 class EffectsQuad {
 public:
@@ -19,7 +18,6 @@ public:
 	void DrawStatic();
 
 	void CreateCB(const ConstantBufferEffects& cbe);
-
 	void UpdateCB(ConstantBufferEffects& cbe);
 
 public:

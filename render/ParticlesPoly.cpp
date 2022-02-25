@@ -8,6 +8,10 @@ ParticlesPoly::ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cbp)
 	: constant_buffer(cbp) {
 }
 
+ParticlesPoly::ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cbp, VertexBuffer& vb) 
+	: constant_buffer(cbp), vertex_buffer(vb) {
+}
+
 ParticlesPoly::ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cbp, VertexBuffer& vb, IndexBuffer& ib)
 	: constant_buffer(cbp), vertex_buffer(vb), index_buffer(ib) {
 }
@@ -31,16 +35,6 @@ void ParticlesPoly::DrawIndexed() {
 	vertex_buffer.Bind();
 	index_buffer.Bind();
 	constant_buffer.Bind<ConstantBufferParticles>();
-
-	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
-}
-
-void ParticlesPoly::DrawStatic() {
-	Renderer* renderer = Renderer::GetInstance();
-
-	vertex_buffer.Bind();
-	index_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferQuad>();
 
 	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }

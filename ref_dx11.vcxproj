@@ -200,7 +200,6 @@
     <ClInclude Include="render\PixelShader.h" />
     <ClInclude Include="render\BSPPoly.h" />
     <ClInclude Include="render\BeamPoly.h" />
-    <ClInclude Include="render\Primitive.h" />
     <ClInclude Include="render\Quad.h" />
     <ClInclude Include="render\RasterizationState.h" />
     <ClInclude Include="render\Renderer.h" />
@@ -250,7 +249,6 @@
     <ClCompile Include="render\PixelShader.cpp" />
     <ClCompile Include="render\BSPPoly.cpp" />
     <ClCompile Include="render\BeamPoly.cpp" />
-    <ClCompile Include="render\Primitive.cpp" />
     <ClCompile Include="render\Quad.cpp" />
     <ClCompile Include="render\RasterizationState.cpp" />
     <ClCompile Include="render\Renderer.cpp" />

@@ -7,12 +7,10 @@
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <ConstantBuffer.hpp>
-#include <Primitive.h>
 
 class Quad  {
 public:
 	Quad();
-
 	Quad(ConstantBufferQuad& cbq);
 
 	~Quad();

@@ -163,9 +163,6 @@
     <ClInclude Include="render\BSPPoly.h">
       <Filter>Render\Renderers\BSPRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="render\Primitive.h">
-      <Filter>Render</Filter>
-    </ClInclude>
     <ClInclude Include="render\BeamRenderer.h">
       <Filter>Render\Renderers\BeamRenderer</Filter>
     </ClInclude>
@@ -299,9 +296,6 @@
     </ClCompile>
     <ClCompile Include="render\BSPPoly.cpp">
       <Filter>Render\Renderers\BSPRenderer</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Primitive.cpp">
-      <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="render\BeamRenderer.cpp">
       <Filter>Render\Renderers\BeamRenderer</Filter>

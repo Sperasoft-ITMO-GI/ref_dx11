@@ -7,12 +7,10 @@
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <ConstantBuffer.hpp>
-#include <Primitive.h>
 
 class SkyCube {
 public:
 	SkyCube();
-
 	SkyCube(ConstantBufferSkyBox& cbsb);
 
 	~SkyCube();
