@@ -37,8 +37,10 @@ ID3DBlob* CompileShader(const wchar_t* filename, const D3D_SHADER_MACRO* defines
 
 DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync);
 
-void SmartTriangulation(std::vector<uint16_t>* ind, int num);
+void SmartTriangulation(std::vector<uint16_t>* ind, int num, int offset);
 
-void SmartTriangulationClockwise(std::vector<uint16_t>* ind, int num);
+void SmartTriangulationClockwise(std::vector<uint16_t>* ind, int num, int offset);
 
-void TriangulationTriangleStripToListClockwise(std::vector<uint16_t>* ind, int num);
+void TriangulationTriangleStripToList(std::vector<uint16_t>* ind, int num, int offset);
+
+void TriangulationTriangleStripToListClockwise(std::vector<uint16_t>* ind, int num, int offset);

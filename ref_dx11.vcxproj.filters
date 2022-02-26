@@ -214,6 +214,9 @@
     <ClInclude Include="external\profile.h">
       <Filter>Render\Utilites</Filter>
     </ClInclude>
+    <ClInclude Include="external\debug_console.h">
+      <Filter>Render\Utilites</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">
@@ -335,6 +338,9 @@
     </ClCompile>
     <ClCompile Include="render\DepthStencilState.cpp">
       <Filter>Render\States</Filter>
+    </ClCompile>
+    <ClCompile Include="external\debug_console.cpp">
+      <Filter>Render\Utilites</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

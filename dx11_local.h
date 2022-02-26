@@ -244,10 +244,6 @@ void GL_Bind(int texnum);
 //void GL_EnableMultitexture(qboolean enable);
 //void GL_SelectTexture(GLenum);
 
-void SmartTriangulation(std::vector<uint16_t>* ind, int num);
-void SmartTriangulationClockwise(std::vector<uint16_t>* ind, int num);
-void TriangulationTriangleStripToListClockwise(std::vector<uint16_t>* ind, int num);
-
 void R_LightPoint(vec3_t p, vec3_t color);
 void R_PushDlights(void);
 
@@ -271,7 +267,6 @@ void R_DrawBeam(entity_t* e);
 void R_DrawWorld(void);
 void R_RenderDlights(void);
 void R_DrawAlphaSurfaces(void);
-void R_RenderBrushPoly(msurface_t* fa);
 void R_InitParticleTexture(void);
 void Draw_InitLocal(void);
 void GL_SubdivideSurface(msurface_t* fa);

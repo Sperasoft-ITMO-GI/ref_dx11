@@ -12,3 +12,4 @@
 #include <EffectsRenderer.h>
 
 #include <external/profile.h>
+#include <external/debug_console.h>

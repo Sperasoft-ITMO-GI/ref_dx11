@@ -48,7 +48,7 @@ void ModRenderer::Render() {
 			}
 		}		
 
-		TriangulationTriangleStripToListClockwise(&poly.ind, poly.vert.size());
+		//TriangulationTriangleStripToListClockwise(&poly.ind, poly.vert.size());
 
 		renderer->Bind(poly.texture_index, 0);
 		renderer->Bind(poly.lightmap_index, 1);
@@ -93,10 +93,10 @@ void ModRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 	if (defines & MOD_ALPHA)
 	{
 		state->bs = states->blend_states.at(BlendState::ALPHABS);
-		state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_BACK);
 		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::MOD_POLYGON));
-		state->topology = states->topology.at(Topology::TRIANGLE_STRIP);
+		state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 	}
 
 }

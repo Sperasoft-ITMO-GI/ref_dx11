@@ -84,535 +84,6 @@ image_t* R_TextureAnimation(mtexinfo_t* tex)
 
 /*
 ================
-DrawGLPoly
-================
-*/
-void DrawGLPoly(glpoly_t* p, int texNum, int defines)
-{
-	int		i;
-	float* v;
-
-	BSPVertex vert = {};
-	std::vector<BSPVertex> vect;
-
-	v = p->verts[0];
-	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
-	{
-		//qglTexCoord2f(v[3], v[4]);
-		//qglVertex3fv(v);
-
-		vert.position.x = v[0];
-		vert.position.y = v[1];
-		vert.position.z = v[2];
-		vert.texture_coord.x = v[3];
-		vert.texture_coord.y = v[4];
-
-		vect.push_back(vert);
-	}
-
-	std::vector<uint16_t> indexes;
-
-	SmartTriangulation(&indexes, p->numverts);
-
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	cbp.color[0] = colorBuf[0];
-	cbp.color[1] = colorBuf[1];
-	cbp.color[2] = colorBuf[2];
-	cbp.color[3] = colorBuf[3];
-
-	BSPDefinitions bspd{
-		vect, indexes, cbp, defines, texNum, -1
-	};
-
-	bsp_renderer->Add(bspd);
-}
-
-//============
-//PGM
-/*
-================
-DrawGLFlowingPoly -- version of DrawGLPoly that handles scrolling texture
-================
-*/
-void DrawGLFlowingPoly(msurface_t* fa, int texNum, int defines)
-{
-	int		i;
-	float* v;
-	glpoly_t* p;
-	float	scroll;
-
-	p = fa->polys;
-
-	scroll = -64 * ((r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0));
-	if (scroll == 0.0)
-		scroll = -64.0;
-
-	//qglBegin(GL_POLYGON);
-	printf("DrawGLFlowingPoly found!!!\n");
-
-	BSPVertex vert = {};
-	std::vector<BSPVertex> vect;
-
-	v = p->verts[0];
-	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
-	{
-		//qglTexCoord2f((v[3] + scroll), v[4]);
-		//qglVertex3fv(v);
-
-		vert.position.x = v[0];
-		vert.position.y = v[1];
-		vert.position.z = v[2];
-		vert.texture_coord.x = v[3] + scroll;
-		vert.texture_coord.y = v[4];
-
-		vect.push_back(vert);
-	}
-
-	std::vector<uint16_t> indexes;
-
-	SmartTriangulation(&indexes, p->numverts);
-
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	cbp.color[0] = colorBuf[0];
-	cbp.color[1] = colorBuf[1];
-	cbp.color[2] = colorBuf[2];
-	cbp.color[3] = colorBuf[3];
-
-	BSPDefinitions bspd{
-		vect, indexes, cbp, BSP_ALPHA, texNum, -1
-	};
-
-	bsp_renderer->Add(bspd);
-
-	//qglEnd();
-}
-//PGM
-//============
-
-/*
-** R_DrawTriangleOutlines
-*/
-void R_DrawTriangleOutlines(void)
-{
-	int			i, j;
-	glpoly_t* p;
-
-	if (true/*!gl_showtris->value*/)
-		return;
-
-	//qglDisable(GL_TEXTURE_2D);
-	//qglDisable(GL_DEPTH_TEST);
-	//qglColor4f(1, 1, 1, 1);
-
-	colorBuf[0] = 1.0f;
-	colorBuf[1] = 1.0f;
-	colorBuf[2] = 1.0f;
-	colorBuf[3] = 1.0f;
-
-	for (i = 0; i < MAX_LIGHTMAPS; i++)
-	{
-		msurface_t* surf;
-
-		for (surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain)
-		{
-			p = surf->polys;
-			for (; p; p = p->chain)
-			{
-				for (j = 2; j < p->numverts; j++)
-				{
-					//qglBegin(GL_LINE_STRIP);
-					//qglVertex3fv(p->verts[0]);
-					//qglVertex3fv(p->verts[j - 1]);
-					//qglVertex3fv(p->verts[j]);
-					//qglVertex3fv(p->verts[0]);
-					//qglEnd();
-				}
-			}
-		}
-	}
-
-	//qglEnable(GL_DEPTH_TEST);
-	//qglEnable(GL_TEXTURE_2D);
-}
-
-/*
-** DrawGLPolyChain
-*/
-void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset, int texNum)
-{
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	cbp.color[0] = colorBuf[0];
-	cbp.color[1] = colorBuf[1];
-	cbp.color[2] = colorBuf[2];
-	cbp.color[3] = colorBuf[3];
-
-	if (soffset == 0 && toffset == 0)
-	{
-		for (; p != 0; p = p->chain)
-		{
-			float* v;
-			int j;
-
-			//qglBegin(GL_POLYGON);
-
-			BSPVertex vert = {};
-			std::vector<BSPVertex> vect;
-
-			v = p->verts[0];
-			for (j = 0; j < p->numverts; j++, v += VERTEXSIZE)
-			{
-				//qglTexCoord2f(v[5], v[6]);
-				//qglVertex3fv(v);
-
-				vert.position.x = v[0];
-				vert.position.y = v[1];
-				vert.position.z = v[2];
-				vert.texture_coord.x = v[5];
-				vert.texture_coord.y = v[6];
-
-				vect.push_back(vert);
-			}
-
-			std::vector<uint16_t> indexes;
-
-			SmartTriangulation(&indexes, p->numverts);
-
-			BSPDefinitions bspd{
-				vect, indexes, cbp, BSP_ALPHA, texNum, -1
-			};
-
-			bsp_renderer->Add(bspd);
-
-			//qglEnd();
-		}
-	}
-	else
-	{
-		for (; p != 0; p = p->chain)
-		{
-			float* v;
-			int j;
-
-			//qglBegin(GL_POLYGON);
-
-			BSPVertex vert = {};
-			std::vector<BSPVertex> vect;
-
-			v = p->verts[0];
-			for (j = 0; j < p->numverts; j++, v += VERTEXSIZE)
-			{
-				//qglTexCoord2f(v[5] - soffset, v[6] - toffset);
-				//qglVertex3fv(v);
-
-				vert.position.x = v[0];
-				vert.position.y = v[1];
-				vert.position.z = v[2];
-				vert.texture_coord.x = v[5] - soffset;
-				vert.texture_coord.y = v[6] - toffset;
-
-				vect.push_back(vert);
-			}
-
-			std::vector<uint16_t> indexes;
-
-			// Временно, пока не придумаем чего-нибудь получше
-			SmartTriangulation(&indexes, p->numverts);
-
-			BSPDefinitions bspd{
-				vect, indexes, cbp, BSP_ALPHA, texNum, -1
-			};
-
-			bsp_renderer->Add(bspd);
-
-			//qglEnd();
-		}
-	}
-}
-
-/*
-** R_BlendLightMaps
-**
-** This routine takes all the given light mapped surfaces in the world and
-** blends them into the framebuffer.
-*/
-void R_BlendLightmaps(void)
-{
-	int			i;
-	msurface_t* surf, * newdrawsurf = 0;
-
-	// don't bother if we're set to fullbright
-	if (r_fullbright->value)
-		return;
-	if (!r_worldmodel->lightdata)
-		return;
-
-	// Вырубаем Z-буффер
-	// don't bother writing Z
-	//qglDepthMask(0);
-
-	// Тут мы должны выбрать бленд стейт, по примеру ниже
-
-	/*
-	** set the appropriate blending mode unless we're only looking at the
-	** lightmaps.
-	*/
-	//if (true/*!gl_lightmap->value*/)
-	//{
-	//	qglEnable(GL_BLEND);
-
-	//	if (false/*gl_saturatelighting->value*/)
-	//	{
-	//		qglBlendFunc(GL_ONE, GL_ONE);
-	//	}
-	//	else
-	//	{
-	//		if (false/*gl_monolightmap->string[0] != '0'*/)
-	//		{
-	//			switch (toupper(gl_monolightmap->string[0]))
-	//			{
-	//			case 'I':
-	//				qglBlendFunc(GL_ZERO, GL_SRC_COLOR);
-	//				break;
-	//			case 'L':
-	//				qglBlendFunc(GL_ZERO, GL_SRC_COLOR);
-	//				break;
-	//			case 'A':
-	//			default:
-	//				qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//				break;
-	//			}
-	//		}
-	//		else
-	//		{
-	//			// Мы всегда попадаем вот сюда
-	//			qglBlendFunc(GL_ZERO, GL_SRC_COLOR);
-	//		}
-	//	}
-	//}
-
-	if (currentmodel == r_worldmodel)
-		c_visible_lightmaps = 0;
-
-	/*
-	** render static lightmaps first
-	*/
-	for (i = 1; i < MAX_LIGHTMAPS; i++)
-	{
-		if (gl_lms.lightmap_surfaces[i])
-		{
-			if (currentmodel == r_worldmodel)
-				c_visible_lightmaps++;
-			//GL_Bind(dx11_state.lightmap_textures + i);
-
-			for (surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain)
-			{
-				if (surf->polys)
-					DrawGLPolyChain(surf->polys, 0, 0, dx11_state.lightmap_textures + i);
-			}
-		}
-	}
-
-	/*
-	** render dynamic lightmaps
-	*/
-	if (true/*gl_dynamic->value*/)
-	{
-		LM_InitBlock();
-
-		//GL_Bind(dx11_state.lightmap_textures + 0);
-
-		if (currentmodel == r_worldmodel)
-			c_visible_lightmaps++;
-
-		newdrawsurf = gl_lms.lightmap_surfaces[0];
-
-		for (surf = gl_lms.lightmap_surfaces[0]; surf != 0; surf = surf->lightmapchain)
-		{
-			int		smax, tmax;
-			byte* base;
-
-			smax = (surf->extents[0] >> 4) + 1;
-			tmax = (surf->extents[1] >> 4) + 1;
-
-			if (LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
-			{
-				base = gl_lms.lightmap_buffer;
-				base += (surf->dlight_t * BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
-
-				R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
-			}
-			else
-			{
-				msurface_t* drawsurf;
-
-				// upload what we have so far
-				LM_UploadBlock(True);
-
-				// draw all surfaces that use this lightmap
-				for (drawsurf = newdrawsurf; drawsurf != surf; drawsurf = drawsurf->lightmapchain)
-				{
-					if (drawsurf->polys)
-						DrawGLPolyChain(drawsurf->polys,
-							(drawsurf->light_s - drawsurf->dlight_s) * (1.0 / 128.0),
-							(drawsurf->light_t - drawsurf->dlight_t) * (1.0 / 128.0),
-							dx11_state.lightmap_textures + 0);
-				}
-
-				newdrawsurf = drawsurf;
-
-				// clear the block
-				LM_InitBlock();
-
-				// try uploading the block now
-				if (!LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
-				{
-					ri.Sys_Error(ERR_FATAL, "Consecutive calls to LM_AllocBlock(%d,%d) failed (dynamic)\n", smax, tmax);
-				}
-
-				base = gl_lms.lightmap_buffer;
-				base += (surf->dlight_t * BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
-
-				R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
-			}
-		}
-
-		/*
-		** draw remainder of dynamic lightmaps that haven't been uploaded yet
-		*/
-		if (newdrawsurf)
-			LM_UploadBlock(True);
-
-		for (surf = newdrawsurf; surf != 0; surf = surf->lightmapchain)
-		{
-			if (surf->polys)
-				DrawGLPolyChain(surf->polys,
-					(surf->light_s - surf->dlight_s) * (1.0 / 128.0),
-					(surf->light_t - surf->dlight_t) * (1.0 / 128.0),
-					dx11_state.lightmap_textures + 0);
-		}
-	}
-
-	/*
-	** restore state
-	*/
-	//qglDisable(GL_BLEND);
-	//qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//qglDepthMask(1);
-}
-
-/*
-================
-R_RenderBrushPoly
-================
-*/
-void R_RenderBrushPoly(msurface_t* fa)
-{
-	int		 maps = 0;
-	image_t* image;
-	qboolean is_dynamic = False;
-
-	c_brush_polys++;
-
-	image = R_TextureAnimation(fa->texinfo);
-
-	if (fa->flags & SURF_DRAWTURB)
-	{
-		//GL_Bind(image->texnum);
-
-		// warp texture, no lightmaps
-		//qglColor4f(dx11_state.inverse_intensity, dx11_state.inverse_intensity, dx11_state.inverse_intensity, 1.0F);
-		colorBuf[0] = dx11_state.inverse_intensity;
-		colorBuf[1] = dx11_state.inverse_intensity;
-		colorBuf[2] = dx11_state.inverse_intensity;
-		colorBuf[3] = 1.0f;
-		EmitWaterPolys(fa);
-
-		return;
-	}
-	else
-	{
-		//GL_Bind(image->texnum);
-
-		//GL_TexEnv(GL_REPLACE);
-	}
-
-	//======
-	//PGM
-	if (fa->texinfo->flags & SURF_FLOWING)
-		DrawGLFlowingPoly(fa, image->texnum, BSP_ALPHA);
-	else
-		DrawGLPoly(fa->polys, image->texnum, BSP_ALPHA);
-	//PGM
-	//======
-
-	/*
-	** check for lightmap modification
-	*/
-	for (maps = 0; maps < MAXLIGHTMAPS && fa->styles[maps] != 255; maps++)
-	{
-		if (r_newrefdef.lightstyles[fa->styles[maps]].white != fa->cached_light[maps])
-			goto dynamic;
-	}
-
-	// dynamic this frame or dynamic previously
-	if ((fa->dlightframe == r_framecount))
-	{
-	dynamic:
-		if (/*gl_dynamic->value*/true)
-		{
-			if (!(fa->texinfo->flags & (SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP)))
-			{
-				is_dynamic = True;
-			}
-		}
-	}
-
-	if (is_dynamic)
-	{
-		if ((fa->styles[maps] >= 32 || fa->styles[maps] == 0) && (fa->dlightframe != r_framecount))
-		{
-			unsigned	temp[34 * 34];
-			int			smax, tmax;
-
-			smax = (fa->extents[0] >> 4) + 1;
-			tmax = (fa->extents[1] >> 4) + 1;
-
-			R_BuildLightMap(fa, (byte*)(void*)temp, smax * 4);
-			R_SetCacheState(fa);
-
-			/*GL_Bind(dx11_state.lightmap_textures + fa->lightmaptexturenum);
-
-			qglTexSubImage2D(GL_TEXTURE_2D, 0,
-				fa->light_s, fa->light_t,
-				smax, tmax,
-				GL_LIGHTMAP_FORMAT,
-				GL_UNSIGNED_BYTE, temp);*/
-
-			renderer->UpdateTextureInSRV(smax, tmax, fa->light_s, fa->light_t, 32,
-				(unsigned char*)temp, dx11_state.lightmap_textures + fa->lightmaptexturenum);
-
-			fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
-			gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
-		}
-		else
-		{
-			fa->lightmapchain = gl_lms.lightmap_surfaces[0];
-			gl_lms.lightmap_surfaces[0] = fa;
-		}
-	}
-	else
-	{
-		fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
-		gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
-	}
-}
-
-
-/*
-================
 R_DrawAlphaSurfaces
 
 Draw water surfaces and windows.
@@ -667,8 +138,6 @@ void R_DrawAlphaSurfaces(void)
 		}
 		if (s->flags & SURF_DRAWTURB)
 			EmitWaterPolys(s);
-		else
-			DrawGLPoly(s->polys, s->texinfo->image->texnum, BSP_ALPHA);
 	}
 
 	//qglColor4f(1, 1, 1, 1);
@@ -678,72 +147,6 @@ void R_DrawAlphaSurfaces(void)
 	colorBuf[3] = 1.0f;
 
 	r_alpha_surfaces = NULL;
-}
-
-/*
-================
-DrawTextureChains
-================
-*/
-void DrawTextureChains(void)
-{
-	int		i;
-	msurface_t* s;
-	image_t* image;
-
-	c_visible_textures = 0;
-
-	if (!multiTexture)
-	{
-		for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
-		{
-			if (!image->registration_sequence)
-				continue;
-			s = image->texturechain;
-			if (!s)
-				continue;
-			c_visible_textures++;
-
-			for (; s; s = s->texturechain)
-				R_RenderBrushPoly(s);
-
-			image->texturechain = NULL;
-		}
-	}
-	else
-	{
-		for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
-		{
-			if (!image->registration_sequence)
-				continue;
-			if (!image->texturechain)
-				continue;
-			c_visible_textures++;
-
-			for (s = image->texturechain; s; s = s->texturechain)
-			{
-				if (!(s->flags & SURF_DRAWTURB))
-					R_RenderBrushPoly(s);
-			}
-		}
-
-		for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
-		{
-			if (!image->registration_sequence)
-				continue;
-			s = image->texturechain;
-			if (!s)
-				continue;
-
-			for (; s; s = s->texturechain)
-			{
-				if (s->flags & SURF_DRAWTURB)
-					R_RenderBrushPoly(s);
-			}
-
-			image->texturechain = NULL;
-		}
-	}
 }
 
 static void GL_RenderLightmappedPoly(msurface_t* surf)
@@ -871,7 +274,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				std::vector<uint16_t> indexes;
 
-				SmartTriangulation(&indexes, nv);
+				SmartTriangulation(&indexes, nv, 0);
 
 				ConstantBufferPolygon cbp;
 				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
@@ -926,7 +329,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				std::vector<uint16_t> indexes;
 
-				SmartTriangulation(&indexes, nv);
+				SmartTriangulation(&indexes, nv, 0);
 
 				ConstantBufferPolygon cbp;
 				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
@@ -994,7 +397,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				std::vector<uint16_t> indexes;
 
-				SmartTriangulation(&indexes, nv);
+				SmartTriangulation(&indexes, nv, 0);
 
 				ConstantBufferPolygon cbp;
 				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
@@ -1042,7 +445,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				std::vector<uint16_t> indexes;
 
-				SmartTriangulation(&indexes, nv);
+				SmartTriangulation(&indexes, nv, 0);
 
 				ConstantBufferPolygon cbp;
 				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
@@ -1125,28 +528,13 @@ void R_DrawInlineBModel(void)
 			{
 				GL_RenderLightmappedPoly(psurf);
 			}
-			else
-			{
-				//GL_EnableMultitexture(False);
-				R_RenderBrushPoly(psurf);
-				//GL_EnableMultitexture(True);
-			}
 		}
 	}
 
-	if (!(currententity->flags & RF_TRANSLUCENT))
-	{
-		if(!multiTexture)
-			R_BlendLightmaps();
-	}
-	else
-	{
-		//qglColor4f(1, 1, 1, 1);
-		colorBuf[0] = 1.0f;
-		colorBuf[1] = 1.0f;
-		colorBuf[2] = 1.0f;
-		colorBuf[3] = 1.0f;
-	}
+	colorBuf[0] = 1.0f;
+	colorBuf[1] = 1.0f;
+	colorBuf[2] = 1.0f;
+	colorBuf[3] = 1.0f;
 }
 
 /*
@@ -1402,17 +790,8 @@ void R_DrawWorld(void)
 	{
 		R_RecursiveWorldNode(r_worldmodel->nodes);
 	}
-	
-	/*
-	** theoretically nothing should happen in the next two functions
-	** if multitexture is enabled
-	*/
-	DrawTextureChains();
-	R_BlendLightmaps();
 
 	R_DrawSkyBox();
-
-	R_DrawTriangleOutlines();
 }
 
 

@@ -231,7 +231,7 @@ void EmitWaterPolys(msurface_t* fa)
 
 		std::vector<uint16_t> indexes;
 
-		SmartTriangulation(&indexes, p->numverts);
+		SmartTriangulation(&indexes, p->numverts, 0);
 
 		ConstantBufferPolygon cbp;
 		cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();

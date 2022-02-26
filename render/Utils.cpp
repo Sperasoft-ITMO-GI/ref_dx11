@@ -127,41 +127,60 @@ DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync) 
 	return refreshRate;
 };
 
-void SmartTriangulation(std::vector<uint16_t>* ind, int num)
+void SmartTriangulation(std::vector<uint16_t>* ind, int num, int offset)
 {
-	for (int i = 1; i < num - 1; i++)
+	for (int i = offset; i < (num - 1) + offset; i++)
 	{
-		ind->push_back(0);
+		ind->push_back(offset);
 		ind->push_back(i + 1);
 		ind->push_back(i);
 	}
 }
 
-void SmartTriangulationClockwise(std::vector<uint16_t>* ind, int num)
+void SmartTriangulationClockwise(std::vector<uint16_t>* ind, int num, int offset)
 {
-	for (int i = 1; i < num - 1; i++)
+	for (int i = offset + 1; i < (num - 1) + offset; i++)
 	{
-		ind->push_back(0);
+		ind->push_back(offset);
 		ind->push_back(i);
 		ind->push_back(i + 1);
 	}
 }
 
-void TriangulationTriangleStripToListClockwise(std::vector<uint16_t>* ind, int num)
+void TriangulationTriangleStripToListClockwise(std::vector<uint16_t>* ind, int num, int offset)
 {
-	for (int i = 0; i < num - 2; i++)
+	for (int i = 0; i < (num - 2); i++)
 	{
 		if (i % 2 == 0)
 		{
-			ind->push_back(i);
-			ind->push_back(i + 1);
-			ind->push_back(i + 2);
+			ind->push_back(i + offset);
+			ind->push_back(i + 1 + offset);
+			ind->push_back(i + 2 + offset);
 		}
 		else
 		{
-			ind->push_back(i);
-			ind->push_back(i + 2);
-			ind->push_back(i + 1);
+			ind->push_back(i + offset);
+			ind->push_back(i + 2 + offset);
+			ind->push_back(i + 1 + offset);
+		}
+	}
+}
+
+void TriangulationTriangleStripToList(std::vector<uint16_t>* ind, int num, int offset)
+{
+	for (int i = 0; i < (num - 2); i++)
+	{
+		if (i % 2 != 0)
+		{
+			ind->push_back(i + offset);
+			ind->push_back(i + 1 + offset);
+			ind->push_back(i + 2 + offset);
+		}
+		else
+		{
+			ind->push_back(i + offset);
+			ind->push_back(i + 2 + offset);
+			ind->push_back(i + 1 + offset);
 		}
 	}
 }

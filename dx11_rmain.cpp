@@ -502,7 +502,7 @@ void GL_DrawParticles(int num_particles, const particle_t particles[], const uns
 	}
 
 	if (num_particles > 0) {
-		SmartTriangulation(&pd.ind, num_particles * 3);
+		SmartTriangulation(&pd.ind, num_particles * 3, 0);
 		particles_renderer->Add(pd);
 	}
 	//qglEnd();
@@ -1153,6 +1153,8 @@ R_Init
 */
 qboolean R_Init(void* hinstance, void* hWnd)
 {
+	con::InitConsole();
+
 	int width = 1280, height = 720;
 
 	extern float r_turbsin[256];
@@ -1242,6 +1244,8 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 	// can be call after creating context and Vid_NewWindow()
 	ri.Vid_MenuInit();
+
+	//con::Outf(L"Console rabotaet %m4\n", r_world_matrix);
 
 	DX_InitImages();
 	Mod_Init();

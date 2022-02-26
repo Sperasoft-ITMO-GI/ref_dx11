@@ -150,211 +150,185 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp, int texNum, Direct
 
 	GL_LerpVerts(paliashdr->num_xyz, v, ov, verts, lerp, move, frontv, backv);
 
-	if (false/*gl_vertex_arrays->value*/)
+	//ModVertex vert = {};
+	//std::vector<ModVertex> vect;
+
+	//if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
+	//{
+	//	// Здесь цвет всегда постоянный, не нужно передавать цвет в каждую вершину
+	//	//qglColor4f(shadelight[0], shadelight[1], shadelight[2], alpha);
+
+	//	for (i = 0; i < paliashdr->num_xyz; i++)
+	//	{
+	//		vert.color.x = shadelight[0];
+	//		vert.color.y = shadelight[1];
+	//		vert.color.z = shadelight[2];
+	//		vert.color.w = alpha;
+
+	//		vert.position.x = s_lerped[i][0];
+	//		vert.position.y = s_lerped[i][1];
+	//		vert.position.z = s_lerped[i][2];
+
+	//		vect.push_back(vert);
+	//	}
+	//}
+	//else
+	//{
+	//	count = *order++;
+
+	//	for (i = 0; i < paliashdr->num_xyz; i++)
+	//	{
+	//		if (!count)
+	//		{
+	//			count = *order++;
+	//			count = abs(count);
+	//		}
+
+	//		vert.texture_coord.x = ((float*)order)[0];
+	//		vert.texture_coord.y = ((float*)order)[1];
+
+	//		index_xyz = order[2];
+	//		order += 3;
+
+	//		float l = shadedots[verts[i].lightnormalindex];
+
+	//		vert.color.x = l * shadelight[0];
+	//		vert.color.y = l * shadelight[1];
+	//		vert.color.z = l * shadelight[2];
+	//		vert.color.w = alpha;
+
+	//		vert.position.x = s_lerped[i][0];
+	//		vert.position.y = s_lerped[i][1];
+	//		vert.position.z = s_lerped[i][2];
+
+	//		vect.push_back(vert);
+
+	//		count--;
+	//	}
+	//}
+
+	//std::vector<uint16_t> indexes;
+
+	////SmartTriangulationClockwise(&indexes, paliashdr->num_xyz, 0);
+	////TriangulationTriangleStripToListClockwise(&indexes, paliashdr->num_xyz, 0);
+
+	//SmartTriangulation(&indexes, paliashdr->num_xyz, 0);
+
+	//ConstantBufferPolygon cbp;
+	//cbp.position_transform = modView * proj;
+	//cbp.color[0] = colorBuf[0];
+	//cbp.color[1] = colorBuf[1];
+	//cbp.color[2] = colorBuf[2];
+	//cbp.color[3] = colorBuf[3];
+
+	//ModDefinitions bspd{
+	//	vect, indexes, cbp, MOD_ALPHA, texNum, -1
+	//};
+
+	//mod_renderer->Add(bspd);
+
+
+	// ================ OLD DUMMY MODEL DRAWING ==================
+
+	ModVertex vert = {};
+	std::vector<ModVertex> vect;
+	std::vector<uint16_t> indexes;
+
+	int vertffset = 0;
+
+	while (1)
 	{
-		float colorArray[MAX_VERTS * 4];
 
-		//qglEnableClientState(GL_VERTEX_ARRAY);
-		//qglVertexPointer(3, GL_FLOAT, 16, s_lerped);	// padded for SIMD
+		// get the vertex count and primitive type
+		count = *order++;
+		if (!count)
+			break;		// done
 
-		// PMM - added double damage shell
-		if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
+		bool triangleFan = true;
+
+		if (count < 0)
 		{
-			//qglColor4f(shadelight[0], shadelight[1], shadelight[2], alpha);
+			count = -count;
+			triangleFan = true;
 		}
 		else
 		{
-			//qglEnableClientState(GL_COLOR_ARRAY);
-			//qglColorPointer(3, GL_FLOAT, 0, colorArray);
-
-			//
-			// pre light everything
-			//
-			for (i = 0; i < paliashdr->num_xyz; i++)
-			{
-				float l = shadedots[verts[i].lightnormalindex];
-
-				colorArray[i * 3 + 0] = l * shadelight[0];
-				colorArray[i * 3 + 1] = l * shadelight[1];
-				colorArray[i * 3 + 2] = l * shadelight[2];
-			}
+			triangleFan = false;
 		}
 
-		//if (qglLockArraysEXT != 0)
-		//	qglLockArraysEXT(0, paliashdr->num_xyz);
+		int numVerts = count;
 
-		while (1)
+		if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE))
 		{
-			// get the vertex count and primitive type
-			count = *order++;
-			if (!count)
-				break;		// done
-			if (count < 0)
+			do
 			{
-				count = -count;
-				//qglBegin(GL_TRIANGLE_FAN);
-			}
-			else
-			{
-				//qglBegin(GL_TRIANGLE_STRIP);
-			}
+				index_xyz = order[2];
+				order += 3;
 
-			// PMM - added double damage shell
-			if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
-			{
-				do
-				{
-					index_xyz = order[2];
-					order += 3;
+				vert.color.x = shadelight[0];
+				vert.color.y = shadelight[1];
+				vert.color.z = shadelight[2];
+				vert.color.w = alpha;
 
-					//qglVertex3fv(s_lerped[index_xyz]);
+				vert.position.x = s_lerped[index_xyz][0];
+				vert.position.y = s_lerped[index_xyz][1];
+				vert.position.z = s_lerped[index_xyz][2];
 
-				} while (--count);
-			}
-			else
-			{
-				do
-				{
-					// texture coordinates come from the draw list
-					//qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
-					index_xyz = order[2];
+				vect.push_back(vert);
 
-					order += 3;
-
-					// normals and vertexes come from the frame list
-
-					//qglArrayElement(index_xyz);
-
-				} while (--count);
-			}
-			//qglEnd();
+			} while (--count);
 		}
-
-		//if (qglUnlockArraysEXT != 0)
-		//	qglUnlockArraysEXT();
-	}
-	else
-	{
-		while (1)
+		else
 		{
-
-			// get the vertex count and primitive type
-			count = *order++;
-			if (!count)
-				break;		// done
-
-			bool triangleFan = true;
-
-			if (count < 0)
+			do
 			{
-				count = -count;
-				triangleFan = true;
-				//qglBegin(GL_TRIANGLE_FAN);
-			}
-			else
-			{
-				triangleFan = false;
-				//qglBegin(GL_TRIANGLE_STRIP);
-			}
+				// texture coordinates come from the draw list
+				vert.texture_coord.x = ((float*)order)[0];
+				vert.texture_coord.y = ((float*)order)[1];
 
-			int numVerts = count;
+				index_xyz = order[2];
+				order += 3;
 
-			assert(numVerts < 64);
+				// normals and vertexes come from the frame list
+				l = shadedots[verts[index_xyz].lightnormalindex];
 
-			ModVertex vert = {};
-			std::vector<ModVertex> vect;
+				vert.color.x = l * shadelight[0];
+				vert.color.y = l * shadelight[1];
+				vert.color.z = l * shadelight[2];
+				vert.color.w = alpha;
 
-			if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE))
-			{
-				do
-				{
-					index_xyz = order[2];
-					order += 3;
+				vert.position.x = s_lerped[index_xyz][0];
+				vert.position.y = s_lerped[index_xyz][1];
+				vert.position.z = s_lerped[index_xyz][2];
 
-					//qglColor4f(shadelight[0], shadelight[1], shadelight[2], alpha);
-					vert.color.x = shadelight[0];
-					vert.color.y = shadelight[1];
-					vert.color.z = shadelight[2];
-					vert.color.w = alpha;
-
-					//qglVertex3fv(s_lerped[index_xyz]);
-					vert.position.x = s_lerped[index_xyz][0];
-					vert.position.y = s_lerped[index_xyz][1];
-					vert.position.z = s_lerped[index_xyz][2];
-
-					vect.push_back(vert);
-
-				} while (--count);
-			}
-			else
-			{
-				do
-				{
-					// texture coordinates come from the draw list
-					//qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
-					vert.texture_coord.x = ((float*)order)[0];
-					vert.texture_coord.y = ((float*)order)[1];
-
-					index_xyz = order[2];
-					order += 3;
-
-					// normals and vertexes come from the frame list
-					l = shadedots[verts[index_xyz].lightnormalindex];
-
-					//qglColor4f(l * shadelight[0], l * shadelight[1], l * shadelight[2], alpha);
-					vert.color.x = shadelight[0];
-					vert.color.y = shadelight[1];
-					vert.color.z = shadelight[2];
-					vert.color.w = alpha;
-
-					//qglVertex3fv(s_lerped[index_xyz]);
-					vert.position.x = s_lerped[index_xyz][0];
-					vert.position.y = s_lerped[index_xyz][1];
-					vert.position.z = s_lerped[index_xyz][2];
-
-					vect.push_back(vert);
-
-					/*if (vert.position.z == 0.0f)
-					{
-						printf("w\n");
-					}*/
-
-				} while (--count);
-			}
-
-			std::vector<uint16_t> indexes;
-
-			if (triangleFan)
-			{
-				SmartTriangulationClockwise(&indexes, numVerts);
-			}
-			else
-			{
-				TriangulationTriangleStripToListClockwise(&indexes, numVerts);
-			}
-
-			ConstantBufferPolygon cbp;
-			cbp.position_transform = modView * proj;
-			cbp.color[0] = colorBuf[0];
-			cbp.color[1] = colorBuf[1];
-			cbp.color[2] = colorBuf[2];
-			cbp.color[3] = colorBuf[3];
-
-			ModDefinitions bspd{
-				vect, indexes, cbp, MOD_ALPHA, texNum, -1
-			};
-
-			mod_renderer->Add(bspd);
-
-			//qglEnd();
+				vect.push_back(vert);
+			} while (--count);
 		}
+
+		if (triangleFan)
+		{
+			SmartTriangulationClockwise(&indexes, numVerts, vertffset);
+		}
+		else
+		{
+			TriangulationTriangleStripToListClockwise(&indexes, numVerts, vertffset);
+		}
+
+		vertffset += numVerts;
 	}
 
-		// PMM - added double damage shell
-		if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM))
-		{
-			//qglEnable(GL_TEXTURE_2D);
-		}
+	ConstantBufferPolygon cbp;
+	cbp.position_transform = modView * proj;
+	cbp.color[0] = colorBuf[0];
+	cbp.color[1] = colorBuf[1];
+	cbp.color[2] = colorBuf[2];
+	cbp.color[3] = colorBuf[3];
+
+	ModDefinitions bspd{
+		vect, indexes, cbp, MOD_ALPHA, texNum, -1
+	};
+
+	mod_renderer->Add(bspd);
 }
 
 
@@ -774,17 +748,6 @@ void R_DrawAliasModel(entity_t* e)
 
 	if ((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
 	{
-		//extern void MYgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
-		
-		//qglMatrixMode(GL_PROJECTION);
-		//qglPushMatrix();
-		//qglLoadIdentity();
-		//qglScalef(-1, 1, 1);
-		//MYgluPerspective(r_newrefdef.fov_y, (float)r_newrefdef.width / r_newrefdef.height, 4, 4096);
-		//qglMatrixMode(GL_MODELVIEW);
-
-		//qglCullFace(GL_BACK);
-
 		proj = DirectX::XMMatrixIdentity() * DirectX::XMMatrixScaling(-1.0f, 1.0f, 1.0f)
 			* DirectX::XMMatrixPerspectiveFovRH(DirectX::XMConvertToRadians(r_newrefdef.fov_y), (float)r_newrefdef.width / r_newrefdef.height, 4, 4096);
 	}
