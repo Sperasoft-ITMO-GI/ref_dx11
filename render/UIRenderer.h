@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include <vector>
 #include <unordered_map>
@@ -9,11 +9,13 @@
 #include <IStateProvider.h>
 #include <Quad.h>
 
+#include <shaders/shader_defines.h>
+
 #define UI_COLORED  0x001
 #define UI_TEXTURED 0x002
 
 struct QuadDefinitions {
-	ConstantBufferQuad cbq;
+	UI_BUFFER cbq;
 	int flags;
 	int teture_index;
 };

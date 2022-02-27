@@ -8,24 +8,26 @@
 #include <IndexBuffer.h>
 #include <ConstantBuffer.hpp>
 
+#include <shaders/shader_defines.h>
+
 class Quad  {
 public:
 	Quad();
-	Quad(ConstantBufferQuad& cbq);
+	Quad(UI_BUFFER& cbq);
 
 	~Quad();
 
 	void DrawStatic();
 
-	void CreateCB(const ConstantBufferQuad& cbq);
+	void CreateCB(const UI_BUFFER& cbq);
 
-	void UpdateCB(ConstantBufferQuad& cbq);
+	void UpdateCB(UI_BUFFER& cbq);
 
 public:
 	static VertexBuffer vertex_buffer;
 	static IndexBuffer  index_buffer;
 
 private:
-	ConstantBuffer<ConstantBufferQuad> constant_buffer;
+	ConstantBuffer<UI_BUFFER> constant_buffer;
 };
 

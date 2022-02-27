@@ -84,6 +84,52 @@ image_t* R_TextureAnimation(mtexinfo_t* tex)
 
 /*
 ================
+DrawGLPoly
+================
+*/
+void DrawGLPoly(glpoly_t* p, int texNum, int defines)
+{
+	int		i;
+	float* v;
+
+	BSPVertex vert = {};
+	std::vector<BSPVertex> vect;
+
+	v = p->verts[0];
+	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
+	{
+		//qglTexCoord2f(v[3], v[4]);
+		//qglVertex3fv(v);
+
+		vert.position.x = v[0];
+		vert.position.y = v[1];
+		vert.position.z = v[2];
+		vert.texture_coord.x = v[3];
+		vert.texture_coord.y = v[4];
+
+		vect.push_back(vert);
+	}
+
+	std::vector<uint16_t> indexes;
+
+	SmartTriangulation(&indexes, p->numverts, 0);
+
+	ConstantBufferPolygon cbp;
+	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
+	cbp.color[0] = colorBuf[0];
+	cbp.color[1] = colorBuf[1];
+	cbp.color[2] = colorBuf[2];
+	cbp.color[3] = colorBuf[3];
+
+	BSPDefinitions bspd{
+		vect, indexes, cbp, defines, texNum, -1
+	};
+
+	bsp_renderer->Add(bspd);
+}
+
+/*
+================
 R_DrawAlphaSurfaces
 
 Draw water surfaces and windows.
@@ -138,6 +184,8 @@ void R_DrawAlphaSurfaces(void)
 		}
 		if (s->flags & SURF_DRAWTURB)
 			EmitWaterPolys(s);
+		else
+			DrawGLPoly(s->polys, s->texinfo->image->texnum, BSP_ALPHA);
 	}
 
 	//qglColor4f(1, 1, 1, 1);

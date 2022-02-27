@@ -47,15 +47,15 @@ void Draw_Char(int x, int y, int num)
 	size = 0.0625;
 
 	using namespace DirectX;
-	ConstantBufferQuad cbq;
-	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(8, 8, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
-	cbq.texture_transform *= XMMatrixTranspose(XMMatrixScaling(size, size, 0) * XMMatrixTranslation(fcol, frow, 0));
-	cbq.color[0] = 1.0f;
-	cbq.color[1] = 1.0f;
-	cbq.color[2] = 1.0f;
-	cbq.color[3] = 1.0f;
+	UI_BUFFER cb = {};
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(8, 8, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
+	cb.texture_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(size, size, 0) * XMMatrixTranslation(fcol, frow, 0));
+	cb.color.x = 1.0f;
+	cb.color.y = 1.0f;
+	cb.color.z = 1.0f;
+	cb.color.w = 1.0f;
 
-	ui_renderer->Add(QuadDefinitions{ cbq, UI_TEXTURED, draw_chars->texnum });
+	ui_renderer->Add(QuadDefinitions{ cb, UI_TEXTURED, draw_chars->texnum });
 }
 
 /*
@@ -115,14 +115,15 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic)
 	}
 
 	using namespace DirectX;
-	ConstantBufferQuad cbq;
-	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(w, h, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
-	cbq.color[0] = 1.0f;
-	cbq.color[1] = 1.0f;
-	cbq.color[2] = 1.0f;
-	cbq.color[3] = 1.0f;
+	UI_BUFFER cb = {};
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(w, h, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
+	cb.texture_transform = XMMatrixIdentity();
+	cb.color.x = 1.0f;
+	cb.color.y = 1.0f;
+	cb.color.z = 1.0f;
+	cb.color.w = 1.0f;
 
-	ui_renderer->Add(QuadDefinitions{ cbq, UI_TEXTURED, gl->texnum });
+	ui_renderer->Add(QuadDefinitions{ cb, UI_TEXTURED, gl->texnum });
 }
 
 
@@ -143,14 +144,15 @@ void Draw_Pic(int x, int y, char* pic)
 	}
 
 	using namespace DirectX;
-	ConstantBufferQuad cbq;
-	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(gl->width, gl->height, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
-	cbq.color[0] = 1.0f;
-	cbq.color[1] = 1.0f;
-	cbq.color[2] = 1.0f;
-	cbq.color[3] = 1.0f;
+	UI_BUFFER cb = {};
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(gl->width, gl->height, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
+	cb.texture_transform = XMMatrixIdentity();
+	cb.color.x = 1.0f;
+	cb.color.y = 1.0f;
+	cb.color.z = 1.0f;
+	cb.color.w = 1.0f;
 
-	ui_renderer->Add(QuadDefinitions{ cbq, UI_TEXTURED, gl->texnum });
+	ui_renderer->Add(QuadDefinitions{ cb, UI_TEXTURED, gl->texnum });
 }
 
 /*
@@ -173,15 +175,15 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic)
 	}
 
 	using namespace DirectX;
-	ConstantBufferQuad cbq;
-	cbq.position_transform *= XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0) * renderer->GetOrthogonal());
-	cbq.texture_transform *= XMMatrixTranspose(XMMatrixScaling(w / 64.0f, h / 64.0f, 0) * XMMatrixTranslation(x / 64.0f, y / 64.0f, 0));
-	cbq.color[0] = 1.0f;
-	cbq.color[1] = 1.0f;
-	cbq.color[2] = 1.0f;
-	cbq.color[3] = 1.0f;
+	UI_BUFFER cb = {};
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0) * renderer->GetOrthogonal());
+	cb.texture_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(w / 64.0f, h / 64.0f, 0) * XMMatrixTranslation(x / 64.0f, y / 64.0f, 0));
+	cb.color.x = 1.0f;
+	cb.color.y = 1.0f;
+	cb.color.z = 1.0f;
+	cb.color.w = 1.0f;
 
-	ui_renderer->Add(QuadDefinitions{ cbq, UI_TEXTURED, image->texnum });
+	ui_renderer->Add(QuadDefinitions{ cb, UI_TEXTURED, image->texnum });
 }
 
 /*
@@ -205,14 +207,15 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 	color.c = d_8to24table[c];
 
 	using namespace DirectX;
-	ConstantBufferQuad cbq;
-	cbq.position_transform *= XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0) * renderer->GetOrthogonal());
-	cbq.color[0] = color.v[0] / 255;
-	cbq.color[1] = color.v[1] / 255;
-	cbq.color[2] = color.v[2] / 255;
-	cbq.color[3] = 1.0f;
+	UI_BUFFER cb = {};
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0) * renderer->GetOrthogonal());
+	cb.texture_transform = XMMatrixIdentity();
+	cb.color.x = color.v[0] / 255;
+	cb.color.y = color.v[1] / 255;
+	cb.color.z = color.v[2] / 255;
+	cb.color.w = 1.0f;
 
-	ui_renderer->Add(QuadDefinitions{ cbq, UI_COLORED, -1 });
+	ui_renderer->Add(QuadDefinitions{ cb, UI_COLORED, -1 });
 }
 
 /*
@@ -224,14 +227,15 @@ Draw_FadeScreen
 void Draw_FadeScreen(void)
 {
 	using namespace DirectX;
-	ConstantBufferQuad cbq;
-	cbq.position_transform *= XMMatrixTranspose(XMMatrixScaling(vid.width, vid.height, 0) * renderer->GetOrthogonal());
-	cbq.color[0] = 0.0f;
-	cbq.color[1] = 0.0f;
-	cbq.color[2] = 0.0f;
-	cbq.color[3] = 0.8f;
+	UI_BUFFER cb = {};
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(vid.width, vid.height, 0) * renderer->GetOrthogonal());
+	cb.texture_transform = XMMatrixIdentity();
+	cb.color.x = 0.0f;
+	cb.color.y = 0.0f;
+	cb.color.z = 0.0f;
+	cb.color.w = 0.8f;
 
-	ui_renderer->Add(QuadDefinitions{ cbq, UI_COLORED, -1 });
+	ui_renderer->Add(QuadDefinitions{ cb, UI_COLORED, -1 });
 }
 
 /*
@@ -294,13 +298,13 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 	}
 
 	using namespace DirectX;
-	ConstantBufferQuad cbq;
-	cbq.position_transform *= XMMatrixTranspose((XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0)) * renderer->GetOrthogonal());
-	cbq.texture_transform *= XMMatrixTranspose(XMMatrixScaling(1.0f, t, 0));
-	cbq.color[0] = 1.0f;
-	cbq.color[1] = 1.0f;
-	cbq.color[2] = 1.0f;
-	cbq.color[3] = 1.0f;
+	UI_BUFFER cb = {};
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose((XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0)) * renderer->GetOrthogonal());
+	cb.texture_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(1.0f, t, 0));
+	cb.color.x = 1.0f;
+	cb.color.y = 1.0f;
+	cb.color.z = 1.0f;
+	cb.color.w = 1.0f;
 
-	ui_renderer->Add(QuadDefinitions{ cbq, UI_TEXTURED, CINEMATIC_PICTURE });
+	ui_renderer->Add(QuadDefinitions{ cb, UI_TEXTURED, CINEMATIC_PICTURE });
 }

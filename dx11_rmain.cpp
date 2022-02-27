@@ -1245,8 +1245,6 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	// can be call after creating context and Vid_NewWindow()
 	ri.Vid_MenuInit();
 
-	//con::Outf(L"Console rabotaet %m4\n", r_world_matrix);
-
 	DX_InitImages();
 	Mod_Init();
 	R_InitParticleTexture();

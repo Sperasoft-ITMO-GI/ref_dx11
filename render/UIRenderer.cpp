@@ -29,7 +29,7 @@ UIRenderer::~UIRenderer() {
 
 void UIRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\UITexture.hlsl", new UIPSProvider(), macro);
-	quad = new Quad(ConstantBufferQuad{});
+	quad = new Quad(UI_BUFFER{});
 }
 
 void UIRenderer::Render() {
@@ -51,7 +51,7 @@ void UIRenderer::Render() {
 			}
 		}		
 
-		renderer->Bind(qd.teture_index, 0);
+		renderer->Bind(qd.teture_index, colorTexture.slot);
 		quad->UpdateCB(qd.cbq);
 		quad->DrawStatic();
 	}

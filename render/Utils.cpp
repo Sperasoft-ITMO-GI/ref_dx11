@@ -33,7 +33,7 @@ ID3DBlob* CompileShader(
 		entrypoint, target, compileFlags, 0, &byteCode, &errors);
 
 	if (errors != nullptr)
-		printf("[DX11][ERROR]:%s", (char*)errors->GetBufferPointer());
+		con::Outf(L"[DX11][ERROR]:%s8", (char*)errors->GetBufferPointer());
 
 	return byteCode;
 };
@@ -110,7 +110,7 @@ DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync) 
 		// Now store the refresh rate of the monitor that matches the width and height of the requested screen.
 		for (UINT i = 0; i < numDisplayModes; ++i)
 		{
-			printf("Widht: %d, Height: %d, hz: %d\n", displayModeList[i].Width, displayModeList[i].Height,
+			con::Outf(L"Widht: %u32, Height: %u32, hz: %u32\n", displayModeList[i].Width, displayModeList[i].Height,
 				(displayModeList[i].RefreshRate.Numerator / displayModeList[i].RefreshRate.Denominator));
 			if (displayModeList[i].Width == screenWidth && displayModeList[i].Height == screenHeight)
 			{

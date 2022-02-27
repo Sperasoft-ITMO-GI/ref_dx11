@@ -2,6 +2,8 @@
 
 #include <WndDxIncludes.h>
 
+#include <external/debug_console.h>
+
 class Window final {
 public:
 	Window(const Window&) = delete;

@@ -75,7 +75,7 @@ bool Window::Initialize(const HINSTANCE inst, const WNDPROC proc) {
 		NULL);
 	
 	if (!window) {
-		printf("[DX11]: CreateWindow Failed");
+		con::Outf(L"[DX11]: CreateWindow Failed");
 		MessageBoxA(0, "CreateWindow Failed.", 0, 0);
 		return false;
 	}
@@ -86,7 +86,7 @@ bool Window::Initialize(const HINSTANCE inst, const WNDPROC proc) {
 	instance = inst;
 	wndproc = proc;
 
-	printf("[DX11]: Window created\n");
+	con::Outf(L"[DX11]: Window created\n");
 
 	return true;
 }

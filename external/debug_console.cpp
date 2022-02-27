@@ -164,8 +164,23 @@ namespace con
 				{
 				case 's':
 				{
-					wcscpy(temp, va_arg(args, wchar_t*));
-					wcscat(result, temp);
+					switch (fmt[i + 2])
+					{
+					case '8':
+					{
+						char* charstr = va_arg(args, char*);
+						mbstowcs(temp, charstr, _CVTBUFSIZE);
+						wcscat(result, temp);
+						i = i + 1;
+					} break;
+					case '1':
+					{
+						wcscpy(temp, va_arg(args, wchar_t*));
+						wcscat(result, temp);
+						i = i + 2;
+					} break;
+					invalid_default
+					}
 				} break;
 				case 'i':
 				{

@@ -219,6 +219,7 @@
     <ClInclude Include="render\VertexShader.h" />
     <ClInclude Include="render\Window.h" />
     <ClInclude Include="render\WndDxIncludes.h" />
+    <ClInclude Include="shaders\shader_defines.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\game\q_shared.c" />

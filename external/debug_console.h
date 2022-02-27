@@ -13,7 +13,8 @@
 /*
 	formatted keys
 
-	%s - string (wchar_t*)
+	%s8  - string (char)
+	%s16 - string (wchar_t)
 
 	%i32 - int (i32)
 	%i64 - long long (i64)

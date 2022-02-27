@@ -5,4 +5,4 @@ set shaders_dir=%ref_dx11_dir%shaders\
 IF NOT EXIST %ref_dx11_dir% mkdir %ref_dx11_dir%
 IF NOT EXIST %shaders_dir% mkdir %shaders_dir%
 
-xcopy /I/Y/E/Q *.hlsl %shaders_dir%
+xcopy /I/Y/E/Q *.* %shaders_dir%
