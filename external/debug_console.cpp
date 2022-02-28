@@ -2,6 +2,9 @@
 
 namespace con
 {
+	const int RESULT_MAX_LENGTH = 20000;
+	const int TEMP_MAX_LENGTH = 10000;
+
 	HANDLE hConsole = NULL;
 
 	void InitConsole()
@@ -149,10 +152,10 @@ namespace con
 		va_list args;
 		va_start(args, fmt);
 
-		wchar_t result[2056];
-		wchar_t temp[1024];
-		memset(result, NULL, 2056 * sizeof(wchar_t));
-		memset(temp, NULL, 1024 * sizeof(wchar_t));
+		wchar_t result[RESULT_MAX_LENGTH];
+		wchar_t temp[TEMP_MAX_LENGTH];
+		memset(result, NULL, RESULT_MAX_LENGTH * sizeof(wchar_t));
+		memset(temp, NULL, TEMP_MAX_LENGTH * sizeof(wchar_t));
 
 		int i = 0;
 		int length = wcslen(fmt);
@@ -169,7 +172,7 @@ namespace con
 					case '8':
 					{
 						char* charstr = va_arg(args, char*);
-						mbstowcs(temp, charstr, 1024);
+						mbstowcs(temp, charstr, TEMP_MAX_LENGTH);
 						wcscat(result, temp);
 						i = i + 1;
 					} break;

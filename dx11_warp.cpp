@@ -560,7 +560,8 @@ void R_DrawSkyBox(void)
 			/*cb.mod = XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
 				* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
 				* renderer->GetModelView() * renderer->GetPerspective();*/
-			cb.mod = XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90)) * XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2]);
+			cb.mod = XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90)) 
+				* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2]);
 		}
 		else
 		{
@@ -569,7 +570,8 @@ void R_DrawSkyBox(void)
 				* XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
 				* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
 				* renderer->GetModelView() * renderer->GetPerspective();*/
-			cb.mod = XMMatrixRotationAxis({ skyaxis[0], skyaxis[1], skyaxis[2] }, XMConvertToRadians(r_newrefdef.time * skyrotate)) * XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90)) * XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2]);
+			cb.mod = XMMatrixRotationAxis({ skyaxis[0], skyaxis[1], skyaxis[2] }, XMConvertToRadians(r_newrefdef.time * skyrotate))
+				* XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90)) * XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2]);
 		}
 
 		sky_renderer->Add(cb);

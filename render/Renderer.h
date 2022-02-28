@@ -68,6 +68,10 @@ private:
 
 	ID3D11ShaderResourceView* sky_box_view;
 
+	//DirectX::XMMATRIX orthogonal;
+	//DirectX::XMMATRIX perspective;
+	//DirectX::XMMATRIX model_view;
+
 private:
 	static Renderer* renderer;
 
@@ -88,8 +92,8 @@ public:
 
 public:
 	void SetWindowMode(const int posX, const int posY, const int w, const int h, const bool fullscreen);
-	void SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far);
-	void SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx);
+	//void SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far);
+	//void SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx);
 
 	void AddTexturetoSRV(char* name, int width, int height, int bits, unsigned char* data, int texNum, bool mipmap);
 	void UpdateTextureInSRV(int width, int height, int xOffset, int yOffset, int bits, unsigned char* data, int texNum);
@@ -103,11 +107,11 @@ public:
 
 	void Test(char* name, int width, int height, int bits, unsigned char* data, int type);
 
-	void InitMatrix(int widht, int height);
+	//void InitMatrix(int widht, int height);
 
-	DirectX::XMMATRIX GetOrthogonal();
-	DirectX::XMMATRIX GetPerspective();
-	DirectX::XMMATRIX GetModelView();
+	//DirectX::XMMATRIX GetOrthogonal();
+	//DirectX::XMMATRIX GetPerspective();
+	//DirectX::XMMATRIX GetModelView();
 
 	void Clear() {
 		context->ClearRenderTargetView(render_target_view, DirectX::Colors::Black);

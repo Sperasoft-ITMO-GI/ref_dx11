@@ -19,7 +19,7 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
-	float4x4 proj = mul(camera.perspective, camera.view);
+	float4x4 proj = mul(mul(camera.perspective, camera.view), model.mod);
     OUT.pos = mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
     OUT.texCoord = IN.texCoord;
 	OUT.lightmapCoord = IN.lightmapCoord;

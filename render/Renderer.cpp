@@ -186,7 +186,7 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 
 		context->PSSetSamplers(0, 1, &sampler);
 
-		InitMatrix(width, height);
+		//InitMatrix(width, height);
 
 		is_initialized = true;
 		return true;
@@ -198,14 +198,14 @@ void Renderer::SetWindowMode(const int posX, const int posY, const int w, const 
 	window->SetMode(posX, posY, w, h, fullscreen);
 }
 
-void Renderer::SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far) {
-	using namespace DirectX;
-	//perspective = DirectX::XMMatrixPerspectiveFovRH(XMConvertToRadians(fov), aspect_ratio, z_near, z_far);
-}
-
-void Renderer::SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx) {
-	//model_view = model_view_mx;
-}
+//void Renderer::SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far) {
+//	using namespace DirectX;
+//	perspective = DirectX::XMMatrixPerspectiveFovRH(XMConvertToRadians(fov), aspect_ratio, z_near, z_far);
+//}
+//
+//void Renderer::SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx) {
+//	model_view = model_view_mx;
+//}
 
 void Renderer::AddTexturetoSRV(char* name, int width, int height, int bits, unsigned char* data, int texNum, bool mipmap)
 {
@@ -471,7 +471,7 @@ void Renderer::Bind(int texture_index, int textureSlot) {
 
 void Renderer::BindSkyBox()
 {
-	context->PSSetShaderResources(colorTexture.slot, 1, &sky_box_view);
+	context->PSSetShaderResources(skyboxTexture.slot, 1, &sky_box_view);
 }
 
 ID3D11Device* Renderer::GetDevice() {
@@ -494,26 +494,26 @@ std::tuple<float, float> Renderer::GetWindowParameters() {
 	return { static_cast<float>(window->GetWidth()), static_cast<float>(window->GetHeight()) };
 }
 
-void Renderer::InitMatrix(int width, int height)
-{
-	const float PI_32 = 3.14159265358979323846f;
-	//orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1000.0f);
-}
-
-DirectX::XMMATRIX Renderer::GetOrthogonal()
-{
-	return DirectX::XMMatrixIdentity();
-}
-
-DirectX::XMMATRIX Renderer::GetPerspective()
-{
-	return DirectX::XMMatrixIdentity();
-}
-
-DirectX::XMMATRIX Renderer::GetModelView()
-{
-	return DirectX::XMMatrixIdentity();
-}
+//void Renderer::InitMatrix(int width, int height)
+//{
+//	const float PI_32 = 3.14159265358979323846f;
+//	orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1000.0f);
+//}
+//
+//DirectX::XMMATRIX Renderer::GetOrthogonal()
+//{
+//	return orthogonal;
+//}
+//
+//DirectX::XMMATRIX Renderer::GetPerspective()
+//{
+//	return perspective;
+//}
+//
+//DirectX::XMMATRIX Renderer::GetModelView()
+//{
+//	return model_view;
+//}
 
 Renderer::~Renderer()
 {

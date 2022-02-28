@@ -115,6 +115,7 @@ void DrawGLPoly(glpoly_t* p, int texNum, int defines)
 	SmartTriangulation(&indexes, p->numverts, 0);
 
 	MODEL cb;
+	cb.mod = DirectX::XMMatrixIdentity();
 	cb.color.x = colorBuf[0];
 	cb.color.y = colorBuf[1];
 	cb.color.z = colorBuf[2];
@@ -196,7 +197,7 @@ void R_DrawAlphaSurfaces(void)
 	r_alpha_surfaces = NULL;
 }
 
-static void GL_RenderLightmappedPoly(msurface_t* surf)
+static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 {
 	int		i, nv = surf->polys->numverts;
 	int		map;
@@ -238,15 +239,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 			R_BuildLightMap(surf, (byte*)(void*)temp, smax * 4);
 			R_SetCacheState(surf);
 
-			//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + surf->lightmaptexturenum);
-
 			lmtex = surf->lightmaptexturenum;
-
-			/*qglTexSubImage2D(GL_TEXTURE_2D, 0,
-				surf->light_s, surf->light_t,
-				smax, tmax,
-				GL_LIGHTMAP_FORMAT,
-				GL_UNSIGNED_BYTE, temp);*/
 
 			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 				(unsigned char*)temp, dx11_state.lightmap_textures + surf->lightmaptexturenum);
@@ -254,27 +247,12 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 		}
 		else
 		{
-			// TODO: Here is a bug with dynamic lightmap update
-
 			smax = (surf->extents[0] >> 4) + 1;
 			tmax = (surf->extents[1] >> 4) + 1;
 
 			R_BuildLightMap(surf, (byte*)(void*)temp, smax * 4);
 
-			//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + 0);
-
 			lmtex = 0;
-
-			/*qglTexSubImage2D(GL_TEXTURE_2D, 0,
-				surf->light_s, surf->light_t,
-				smax, tmax,
-				GL_LIGHTMAP_FORMAT,
-				GL_UNSIGNED_BYTE, temp);*/
-
-			/*renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
-				(unsigned char*)temp, dx11_state.lightmap_textures + 0);*/
-
-
 
 			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 				(unsigned char*)temp, dx11_state.lightmap_textures + 0);
@@ -323,16 +301,15 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				SmartTriangulation(&indexes, nv, 0);
 
-				MODEL cb;
-				cb.color.x = colorBuf[0];
-				cb.color.y = colorBuf[1];
-				cb.color.z = colorBuf[2];
-				cb.color.w = colorBuf[3];
+				cb->color.x = colorBuf[0];
+				cb->color.y = colorBuf[1];
+				cb->color.z = colorBuf[2];
+				cb->color.w = colorBuf[3];
 
 				// BSP_LIGHTMAPPEDPOLY
 
 				BSPDefinitions bspd{
-					vect, indexes, cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, *cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
 				bsp_renderer->Add(bspd);
@@ -377,14 +354,13 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				SmartTriangulation(&indexes, nv, 0);
 
-				MODEL cb;
-				cb.color.x = colorBuf[0];
-				cb.color.y = colorBuf[1];
-				cb.color.z = colorBuf[2];
-				cb.color.w = colorBuf[3];
+				cb->color.x = colorBuf[0];
+				cb->color.y = colorBuf[1];
+				cb->color.z = colorBuf[2];
+				cb->color.w = colorBuf[3];
 
 				BSPDefinitions bspd{
-					vect, indexes, cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, *cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
 				bsp_renderer->Add(bspd);
@@ -444,14 +420,13 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				SmartTriangulation(&indexes, nv, 0);
 
-				MODEL cb;
-				cb.color.x = colorBuf[0];
-				cb.color.y = colorBuf[1];
-				cb.color.z = colorBuf[2];
-				cb.color.w = colorBuf[3];
+				cb->color.x = colorBuf[0];
+				cb->color.y = colorBuf[1];
+				cb->color.z = colorBuf[2];
+				cb->color.w = colorBuf[3];
 
 				BSPDefinitions bspd{
-					vect, indexes, cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, *cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
 				bsp_renderer->Add(bspd);
@@ -491,14 +466,13 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				SmartTriangulation(&indexes, nv, 0);
 
-				MODEL cb;
-				cb.color.x = colorBuf[0];
-				cb.color.y = colorBuf[1];
-				cb.color.z = colorBuf[2];
-				cb.color.w = colorBuf[3];
+				cb->color.x = colorBuf[0];
+				cb->color.y = colorBuf[1];
+				cb->color.z = colorBuf[2];
+				cb->color.w = colorBuf[3];
 
 				BSPDefinitions bspd{
-					vect, indexes, cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, *cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
 				bsp_renderer->Add(bspd);
@@ -518,7 +492,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 R_DrawInlineBModel
 =================
 */
-void R_DrawInlineBModel(void)
+void R_DrawInlineBModel(MODEL* cb)
 {
 	int			i, k;
 	cplane_t* pplane;
@@ -569,7 +543,11 @@ void R_DrawInlineBModel(void)
 			}
 			else if (multiTexture && !(psurf->flags & SURF_DRAWTURB))
 			{
-				GL_RenderLightmappedPoly(psurf);
+				GL_RenderLightmappedPoly(psurf, cb);
+			}
+			else
+			{
+				//R_RenderBrushPoly(psurf);
 			}
 		}
 	}
@@ -637,11 +615,15 @@ void R_DrawBrushModel(entity_t* e)
 	}
 
 	//qglPushMatrix();
-	auto saveMatrix = renderer->GetModelView();
+	//auto saveMatrix = renderer->GetModelView();
+
+	MODEL cb;
+	cb.mod = DirectX::XMMatrixIdentity();
 
 	e->angles[0] = -e->angles[0];	// stupid quake bug
 	e->angles[2] = -e->angles[2];	// stupid quake bug
-	renderer->SetModelViewMatrix(R_RotateForEntity(e) * renderer->GetModelView());
+	//renderer->SetModelViewMatrix(R_RotateForEntity(e) * renderer->GetModelView());
+	cb.mod = R_RotateForEntity(e);
 	e->angles[0] = -e->angles[0];	// stupid quake bug
 	e->angles[2] = -e->angles[2];	// stupid quake bug
 
@@ -651,11 +633,11 @@ void R_DrawBrushModel(entity_t* e)
 	//GL_SelectTexture(GL_TEXTURE1_SGIS);
 	//GL_TexEnv(GL_MODULATE);
 
-	R_DrawInlineBModel();
+	R_DrawInlineBModel(&cb);
 	//GL_EnableMultitexture(False);
 
 	//qglPopMatrix();
-	renderer->SetModelViewMatrix(saveMatrix);
+	//renderer->SetModelViewMatrix(saveMatrix);
 }
 
 /*
@@ -772,7 +754,9 @@ void R_RecursiveWorldNode(mnode_t* node)
 		{
 			if (multiTexture && !(surf->flags & SURF_DRAWTURB))
 			{
-				GL_RenderLightmappedPoly(surf);
+				MODEL cb;
+				cb.mod = DirectX::XMMatrixIdentity();
+				GL_RenderLightmappedPoly(surf, &cb);
 			}
 			else
 			{

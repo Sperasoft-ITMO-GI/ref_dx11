@@ -731,6 +731,7 @@ void R_SetupDX(void)
 
 	cam.orthogonal = DirectX::XMMatrixTranspose(XMMatrixOrthographicOffCenterLH(0.0f, vid.width, vid.height, 0.0f, 0.0f, 1000.0f));
 	cam.perspective = XMMatrixPerspectiveFovRH(XMConvertToRadians(r_newrefdef.fov_y), screenaspect, 4.0f, 4096.0f);
+	//renderer->SetPerspectiveMatrix(r_newrefdef.fov_y, screenaspect, 4.0f, 4096.0f);
 
 	cam.weaponProj = XMMatrixIdentity() * XMMatrixScaling(-1.0f, 1.0f, 1.0f) * XMMatrixPerspectiveFovRH(XMConvertToRadians(r_newrefdef.fov_y), screenaspect, 4, 4096);
 
@@ -756,6 +757,8 @@ void R_SetupDX(void)
 
 	cam.view *= XMMatrixRotationZ(XMConvertToRadians(90.0f));
 	cam.view *= XMMatrixRotationX(XMConvertToRadians(-90.0f));
+
+	//renderer->SetModelViewMatrix(cam.view);
 
 	// Обновляем буфер
 	cbCamera.Update(cam);
@@ -1179,6 +1182,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 	// Init ortho matrix
 	cam.orthogonal = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.0f, vid.width, vid.height, 0.0f, 0.0f, 1000.0f));
+	//renderer->InitMatrix(vid.width, vid.height);
 	// Не должен создавать если уже есть
 	cbCamera.Create(cam);
 	cbCamera.Bind<CAMERA>(camera.slot);

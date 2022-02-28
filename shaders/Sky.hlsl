@@ -17,18 +17,15 @@ VSOut VSMain(VSIn IN)
 {
 	float4x4 proj = mul(mul(camera.perspective, camera.view), model.mod);
 	
-	//float4x4 proj = model.mod;
-	
     VSOut OUT;
     OUT.texCoord = IN.pos;
-    OUT.pos = mul(proj, float4(IN.pos, 0.0f) );
+    OUT.pos = mul(proj, float4(IN.pos, 0.0f));
     OUT.pos.z = OUT.pos.w;
     return OUT;
 }
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    return colorTexture.Sample(Sampler, float3(IN.texCoord.x, IN.texCoord.z, IN.texCoord.y));
-	//return float4(0.0f, 1.0f, 1.0f, 1.0f);
+    return skyboxTexture.Sample(Sampler, float3(IN.texCoord.x, IN.texCoord.z, IN.texCoord.y));
 }
 
