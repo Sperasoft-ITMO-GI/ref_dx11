@@ -4,30 +4,30 @@
 #include <Bindable.h>
 #include <Renderer.h>
 
-struct ConstantBufferQuad {
-	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
-	DirectX::XMMATRIX texture_transform = DirectX::XMMatrixIdentity();
-	float color[4];
-};
+//struct ConstantBufferQuad {
+//	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
+//	DirectX::XMMATRIX texture_transform = DirectX::XMMatrixIdentity();
+//	float color[4];
+//};
 
-struct ConstantBufferPolygon {
-	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
-	float color[4];
-};
+//struct ConstantBufferPolygon {
+//	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
+//	float color[4];
+//};
 
-struct ConstantBufferSkyBox {
-	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
-};
+//struct ConstantBufferSkyBox {
+//	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
+//};
 
-struct ConstantBufferParticles {
-	DirectX::XMMATRIX view = DirectX::XMMatrixIdentity();
-	DirectX::XMMATRIX projection = DirectX::XMMatrixIdentity();
-};
+//struct ConstantBufferParticles {
+//	DirectX::XMMATRIX view = DirectX::XMMatrixIdentity();
+//	DirectX::XMMATRIX projection = DirectX::XMMatrixIdentity();
+//};
 
-struct ConstantBufferEffects {
-	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
-	float color[4];
-};
+//struct ConstantBufferEffects {
+//	DirectX::XMMATRIX position_transform = DirectX::XMMatrixIdentity();
+//	float color[4];
+//};
 
 template<typename T>
 class ConstantBuffer {
@@ -93,11 +93,11 @@ public:
 	}
 
 	template<typename T>
-	void Bind() {
+	void Bind(UINT slot) {
 		Renderer* renderer = Renderer::GetInstance();
-		renderer->GetContext()->VSSetConstantBuffers(0u, 1u, &buffer);
-		renderer->GetContext()->GSSetConstantBuffers(0u, 1u, &buffer);
-		renderer->GetContext()->PSSetConstantBuffers(0u, 1u, &buffer);
+		renderer->GetContext()->VSSetConstantBuffers(slot, 1u, &buffer);
+		renderer->GetContext()->GSSetConstantBuffers(slot, 1u, &buffer);
+		renderer->GetContext()->PSSetConstantBuffers(slot, 1u, &buffer);
 	}
 
 	ID3D11Buffer* GetBuffer() {

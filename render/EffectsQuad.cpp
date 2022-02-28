@@ -7,7 +7,7 @@ EffectsQuad::EffectsQuad() : constant_buffer()
 {
 }
 
-EffectsQuad::EffectsQuad(ConstantBufferEffects& cbe)
+EffectsQuad::EffectsQuad(MODEL& cbe)
 	: constant_buffer(cbe) {
 }
 
@@ -19,17 +19,17 @@ void EffectsQuad::DrawStatic() {
 
 	vertex_buffer.Bind();
 	index_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferEffects>();
+	constant_buffer.Bind<MODEL>(1);
 
 	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }
 
-void EffectsQuad::CreateCB(const ConstantBufferEffects& cbe)
+void EffectsQuad::CreateCB(const MODEL& cbe)
 {
 	constant_buffer.Create(cbe);
 }
 
-void EffectsQuad::UpdateCB(ConstantBufferEffects& cbe) {
+void EffectsQuad::UpdateCB(MODEL& cbe) {
 	constant_buffer.Update(cbe);
 }
 

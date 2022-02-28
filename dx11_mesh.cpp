@@ -86,7 +86,7 @@ interpolates between two frames and origins
 FIXME: batch lerp all vertexes
 =============
 */
-void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp, int texNum, DirectX::XMMATRIX modView, DirectX::XMMATRIX proj)
+void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp, int texNum, DirectX::XMMATRIX modelMat, bool weapon)
 {
 	float 	l;
 	daliasframe_t* frame, * oldframe;
@@ -317,18 +317,29 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp, int texNum, Direct
 		vertffset += numVerts;
 	}
 
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = modView * proj;
-	cbp.color[0] = colorBuf[0];
-	cbp.color[1] = colorBuf[1];
-	cbp.color[2] = colorBuf[2];
-	cbp.color[3] = colorBuf[3];
+	MODEL cb;
+	cb.mod = modelMat;
+	cb.color.x = colorBuf[0];
+	cb.color.y = colorBuf[1];
+	cb.color.z = colorBuf[2];
+	cb.color.w = colorBuf[3];
 
-	ModDefinitions bspd{
-		vect, indexes, cbp, MOD_ALPHA, texNum, -1
-	};
+	if (weapon)
+	{
+		ModDefinitions bspd{
+		vect, indexes, cb, MOD_WEAPON, texNum, -1
+		};
 
-	mod_renderer->Add(bspd);
+		mod_renderer->Add(bspd);
+	}
+	else
+	{
+		ModDefinitions bspd{
+		vect, indexes, cb, MOD_ALPHA, texNum, -1
+		};
+
+		mod_renderer->Add(bspd);
+	}
 }
 
 
@@ -744,18 +755,17 @@ void R_DrawAliasModel(entity_t* e)
 		//qglDepthRange(gldepthmin, gldepthmin + 0.3 * (gldepthmax - gldepthmin));
 	}
 
-	DirectX::XMMATRIX proj = renderer->GetPerspective();
+	bool weapon = false;
 
 	if ((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
 	{
-		proj = DirectX::XMMatrixIdentity() * DirectX::XMMatrixScaling(-1.0f, 1.0f, 1.0f)
-			* DirectX::XMMatrixPerspectiveFovRH(DirectX::XMConvertToRadians(r_newrefdef.fov_y), (float)r_newrefdef.width / r_newrefdef.height, 4, 4096);
+		weapon = true;
 	}
 
 	//qglPushMatrix();
-
+	
 	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
-	DirectX::XMMATRIX modView = R_RotateForEntity(e) * renderer->GetModelView();
+	DirectX::XMMATRIX mod = R_RotateForEntity(e);
 	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
 
 	// select skin
@@ -808,7 +818,7 @@ void R_DrawAliasModel(entity_t* e)
 	if (!r_lerpmodels->value)
 		currententity->backlerp = 0;
 
-	GL_DrawAliasFrameLerp(paliashdr, currententity->backlerp, skin->texnum, modView, proj);
+	GL_DrawAliasFrameLerp(paliashdr, currententity->backlerp, skin->texnum, mod, weapon);
 
 	//GL_TexEnv(GL_REPLACE);
 	//qglShadeModel(GL_FLAT);

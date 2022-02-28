@@ -4,13 +4,23 @@ static D3D_SHADER_MACRO alpMac[] = {
 	"ALPHA", "1", NULL, NULL
 };
 
+static D3D_SHADER_MACRO weaponMac[] = {
+	"WEAPON", "1", NULL, NULL
+};
+
 static ShaderOptions defOpt{
 	alpMac,
 	PS_SHADER_ENTRY | VS_SHADER_ENTRY
 };
 
+static ShaderOptions weaponOpt{
+	weaponMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
 static std::unordered_map<int, ShaderOptions> macro{
-	{MOD_ALPHA, defOpt}
+	{MOD_ALPHA, defOpt},
+	{MOD_WEAPON, weaponOpt}
 };
 
 ModRenderer::~ModRenderer()
@@ -28,9 +38,8 @@ void ModRenderer::Init() {
 
 void ModRenderer::InitCB() {
 	Renderer* renderer = Renderer::GetInstance();
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	p->CreateCB(cbp);
+	MODEL cb;
+	p->CreateCB(cb);
 }
 
 void ModRenderer::Render() {
@@ -46,16 +55,19 @@ void ModRenderer::Render() {
 				SetPipelineState(factory->GetState(MOD_ALPHA));
 				currentState = MOD_ALPHA;
 			}
-		}		
 
-		//TriangulationTriangleStripToListClockwise(&poly.ind, poly.vert.size());
+			if (poly.flags & MOD_WEAPON) {
+				SetPipelineState(factory->GetState(MOD_WEAPON));
+				currentState = MOD_WEAPON;
+			}
+		}
 
-		renderer->Bind(poly.texture_index, 0);
-		renderer->Bind(poly.lightmap_index, 1);
+		renderer->Bind(poly.texture_index, colorTexture.slot);
+		renderer->Bind(poly.lightmap_index, lightmapTexture.slot);
 
 		p->UpdateDynamicVB(poly.vert);
 		p->UpdateDynamicIB(poly.ind);
-		p->UpdateCB(poly.cbp);
+		p->UpdateCB(poly.cb);
 		p->DrawIndexed();
 	}
 
@@ -90,7 +102,8 @@ void ModRenderer::Add(const ModDefinitions& polygon) {
 void ModRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int defines) {
 	States* states = States::GetInstance();
 
-	if (defines & MOD_ALPHA)
+	// Они разные только внутри шейдера
+	if ((defines & MOD_ALPHA) || (defines & MOD_WEAPON))
 	{
 		state->bs = states->blend_states.at(BlendState::ALPHABS);
 		state->rs = states->rasterization_states.at(RasterizationState::CULL_BACK);

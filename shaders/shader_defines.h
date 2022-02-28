@@ -44,6 +44,15 @@ struct SAMPLER_HANDLE
 #define SAMPLER(slot, name) const TEXTURE_HANDLE name(slot);
 #endif
 
+struct CAMERA
+{
+	float4x4 perspective;
+	float4x4 orthogonal;
+	float4x4 view;
+	float4x4 weaponProj;
+};
+
+// TEMPORABLE
 struct UI_BUFFER
 {
 	float4x4 position_transform;
@@ -51,6 +60,15 @@ struct UI_BUFFER
 	float4 color;
 };
 
-STRUCTURE(0, UI_BUFFER, ui_buffer)
+struct MODEL
+{
+	float4x4 mod;
+	float4 color;
+};
+
+STRUCTURE(0, CAMERA, camera)
+STRUCTURE(1, UI_BUFFER, ui_buffer)
+STRUCTURE(1, MODEL, model)
 TEXTURE_2D(0, float4, colorTexture)
+TEXTURE_2D(1, float4, lightmapTexture)
 SAMPLER(0, Sampler)

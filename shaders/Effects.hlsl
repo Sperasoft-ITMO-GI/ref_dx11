@@ -1,11 +1,6 @@
-Texture2D effect : register(t0);
-sampler Sampler : register(s0);
+#define HLSL
 
-cbuffer Cbuf
-{
-    matrix position_transform;
-    float4 color;
-};
+#include "shader_defines.h"
 
 struct VSOut
 {
@@ -21,8 +16,10 @@ struct VSIn
 
 VSOut VSMain(VSIn IN)
 {
+	float4x4 proj = mul(transpose(camera.orthogonal), model.mod);
+	
     VSOut OUT;
-    OUT.pos = mul(position_transform, float4(IN.pos, 1.0f));
+    OUT.pos = mul(proj, float4(IN.pos, 1.0f));
     OUT.texCoord = IN.texCoord;
     return OUT;
 }
@@ -32,11 +29,11 @@ float4 PSMain(VSOut IN) : SV_Target
     float4 result;
     
 #ifdef DEFAULT
-    result = color;
+    result = model.color;
 #endif
     
 #ifdef SCENE
-    result = effect.Sample(Sampler, IN.texCoord);
+    result = colorTexture.Sample(Sampler, IN.texCoord);
 #endif
     
     return result;

@@ -4,15 +4,15 @@ BeamPoly::BeamPoly() : constant_buffer()
 {
 }
 
-BeamPoly::BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cbp)
+BeamPoly::BeamPoly(ConstantBuffer<MODEL>& cbp)
 	: constant_buffer(cbp) {
 }
 
-BeamPoly::BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vb, IndexBuffer& ib)
+BeamPoly::BeamPoly(ConstantBuffer<MODEL>& cbp, VertexBuffer& vb, IndexBuffer& ib)
 	: constant_buffer(cbp), vertex_buffer(vb), index_buffer(ib) {
 }
 
-BeamPoly::BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vb) 
+BeamPoly::BeamPoly(ConstantBuffer<MODEL>& cbp, VertexBuffer& vb)
 	: constant_buffer(cbp), vertex_buffer(vb) {
 }
 
@@ -25,7 +25,7 @@ void BeamPoly::Draw()
 	Renderer* renderer = Renderer::GetInstance();
 
 	vertex_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferPolygon>();
+	constant_buffer.Bind<MODEL>(1);
 
 	renderer->GetContext()->Draw(vertex_buffer.GetCount(), 0u);
 }
@@ -36,12 +36,12 @@ void BeamPoly::DrawIndexed()
 
 	vertex_buffer.Bind();
 	index_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferPolygon>();
+	constant_buffer.Bind<MODEL>(1);
 
 	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }
 
-void BeamPoly::CreateCB(const ConstantBufferPolygon& cbp)
+void BeamPoly::CreateCB(const MODEL& cbp)
 {
 	constant_buffer.Create(cbp);
 }
@@ -56,7 +56,7 @@ void BeamPoly::CreateDynamicIB(UINT size)
 	index_buffer.CreateDynamic(size);
 }
 
-void BeamPoly::UpdateCB(const ConstantBufferPolygon& cbp)
+void BeamPoly::UpdateCB(const MODEL& cbp)
 {
 	constant_buffer.Update(cbp);
 }

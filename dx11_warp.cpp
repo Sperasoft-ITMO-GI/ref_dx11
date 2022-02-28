@@ -233,15 +233,14 @@ void EmitWaterPolys(msurface_t* fa)
 
 		SmartTriangulation(&indexes, p->numverts, 0);
 
-		ConstantBufferPolygon cbp;
-		cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-		cbp.color[0] = colorBuf[0];
-		cbp.color[1] = colorBuf[1];
-		cbp.color[2] = colorBuf[2];
-		cbp.color[3] = colorBuf[3];
+		MODEL cb;
+		cb.color.x = colorBuf[0];
+		cb.color.y = colorBuf[1];
+		cb.color.z = colorBuf[2];
+		cb.color.w = colorBuf[3];
 
 		BSPDefinitions bspd{
-			vect, indexes, cbp, BSP_WATER, fa->texinfo->image->texnum, -1
+			vect, indexes, cb, BSP_WATER, fa->texinfo->image->texnum, -1
 		};
 
 		bsp_renderer->Add(bspd);
@@ -554,24 +553,26 @@ void R_DrawSkyBox(void)
 	{
 		using namespace DirectX;
 
-		ConstantBufferSkyBox cbsb;
+		MODEL cb;
 
 		if ((skyaxis[0] == 0) && (skyaxis[0] == 0) && (skyaxis[0] == 0))
 		{
-			cbsb.position_transform = XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
+			/*cb.mod = XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
 				* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
-				* renderer->GetModelView() * renderer->GetPerspective();
+				* renderer->GetModelView() * renderer->GetPerspective();*/
+			cb.mod = XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90)) * XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2]);
 		}
 		else
 		{
 			printf("POWERNULOS NEBO!!!!\n");
-			cbsb.position_transform = XMMatrixRotationAxis({ skyaxis[0], skyaxis[1], skyaxis[2] }, XMConvertToRadians(r_newrefdef.time * skyrotate))
+			/*cb.mod = XMMatrixRotationAxis({ skyaxis[0], skyaxis[1], skyaxis[2] }, XMConvertToRadians(r_newrefdef.time * skyrotate))
 				* XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
 				* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
-				* renderer->GetModelView() * renderer->GetPerspective();
+				* renderer->GetModelView() * renderer->GetPerspective();*/
+			cb.mod = XMMatrixRotationAxis({ skyaxis[0], skyaxis[1], skyaxis[2] }, XMConvertToRadians(r_newrefdef.time * skyrotate)) * XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90)) * XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2]);
 		}
 
-		sky_renderer->Add(cbsb);
+		sky_renderer->Add(cb);
 	}
 }
 

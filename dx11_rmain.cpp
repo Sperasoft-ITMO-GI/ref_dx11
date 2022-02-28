@@ -69,6 +69,9 @@ cvar_t* vid_fullscreen;
 cvar_t* vid_gamma;
 cvar_t* vid_ref;
 
+CAMERA cam = {};
+ConstantBuffer<CAMERA> cbCamera;
+
 dx11config_t dx11_config;
 dx11state_t  dx11_state;
 
@@ -232,12 +235,11 @@ void R_DrawSpriteModel(entity_t* e)
 
 	//qglBegin(GL_QUADS);
 
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	cbp.color[0] = colorBuf[0];
-	cbp.color[1] = colorBuf[1];
-	cbp.color[2] = colorBuf[2];
-	cbp.color[3] = colorBuf[3];
+	MODEL cb;
+	cb.color.x = colorBuf[0];
+	cb.color.y = colorBuf[1];
+	cb.color.z = colorBuf[2];
+	cb.color.w = colorBuf[3];
 
 	std::vector<BSPVertex> vect;
 
@@ -276,7 +278,7 @@ void R_DrawSpriteModel(entity_t* e)
 	indexes.push_back(2);
 
 	BSPDefinitions bspd{
-		vect, indexes, cbp, BSP_ALPHA, currentmodel->skins[e->frame]->texnum, -1
+		vect, indexes, cb, BSP_ALPHA, currentmodel->skins[e->frame]->texnum, -1
 	};
 
 	bsp_renderer->Add(bspd);
@@ -534,8 +536,6 @@ void R_DrawParticles(void)
 		//qglBegin(GL_POINTS);
 		ParticlesVertex part_vert;
 		ParticlesDefinitions part_defs;
-		part_defs.cbp.view = renderer->GetModelView();
-		part_defs.cbp.projection = renderer->GetPerspective();
 		part_defs.flags = PARTICLES_DEFAULT;
 		for (i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++)
 		{
@@ -574,49 +574,21 @@ void R_PolyBlend(void)
 {
 	using namespace DirectX;
 
-	//if (true/*!gl_polyblend->value*/)
-	//	return;
 	if (!v_blend[3]) {
 		effects_renderer->is_render = false;
 		return;
 	}
 
-	//qglDisable(GL_ALPHA_TEST);
-	//qglEnable(GL_BLEND);
-	//qglDisable(GL_DEPTH_TEST);
-	//qglDisable(GL_TEXTURE_2D);
+	MODEL cb;
+	cb.color.x = v_blend[0];
+	cb.color.y = v_blend[1];
+	cb.color.z = v_blend[2];
+	cb.color.w = v_blend[3];
 
-	//qglLoadIdentity();
+	cb.mod = XMMatrixScaling(vid.width, vid.height, 100);
 
-	// FIXME: get rid of these
-	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
-	//qglRotatef(90, 0, 0, 1);	    // put Z going up
-
-	//qglColor4fv(v_blend);
-
-	//qglBegin(GL_QUADS);
-
-	//qglVertex3f(10, 100, 100);
-	//qglVertex3f(10, -100, 100);
-	//qglVertex3f(10, -100, -100);
-	//qglVertex3f(10, 100, -100);
-	//qglEnd();
-	ConstantBufferEffects cbe;
-	for (int i = 0; i < 4; ++i) {
-		cbe.color[i] = v_blend[i];
-	}
-
-	// Z-axis is null in vertex quad
-	cbe.position_transform = XMMatrixScaling(vid.width, vid.height, 100) * renderer->GetOrthogonal();
-
-	effects_renderer->Add(cbe);
+	effects_renderer->Add(cb);
 	effects_renderer->is_render = true;
-
-	//qglDisable(GL_BLEND);
-	//qglEnable(GL_TEXTURE_2D);
-	//qglEnable(GL_ALPHA_TEST);
-
-	//qglColor4f(1, 1, 1, 1);
 }
 
 //=======================================================================
@@ -735,12 +707,10 @@ R_SetupGL
 */
 void R_SetupDX(void)
 {
-	float	screenaspect;
-	//float	yfov;
-	int		x, x2, y2, y, w, h;
+	using namespace DirectX;
 
-	// Тут каждый раз устанавливается новый вьюпорт
-	// Не ясно, нужно ли это делать
+	float	screenaspect;
+	int		x, x2, y2, y, w, h;
 
 	//
 	// set up viewport
@@ -753,25 +723,16 @@ void R_SetupDX(void)
 	w = x2 - x;
 	h = y - y2;
 
-	//qglViewport(x, y2, w, h);
-
 	////
 	//// set up projection matrix
 	////
-	
-	screenaspect = (float)r_newrefdef.width / r_newrefdef.height;
-	renderer->SetPerspectiveMatrix(r_newrefdef.fov_y, screenaspect, 4.0f, 4096.0f);
 
-	//qglMatrixMode(GL_PROJECTION);
-	//qglLoadIdentity();
-	//MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
+	screenaspect = (float)vid.width / (float)vid.height;
 
-	//qglCullFace(GL_FRONT);
+	cam.orthogonal = DirectX::XMMatrixTranspose(XMMatrixOrthographicOffCenterLH(0.0f, vid.width, vid.height, 0.0f, 0.0f, 1000.0f));
+	cam.perspective = XMMatrixPerspectiveFovRH(XMConvertToRadians(r_newrefdef.fov_y), screenaspect, 4.0f, 4096.0f);
 
-	// Тут считаем матрицу моделвью
-
-	//qglMatrixMode(GL_MODELVIEW);
-	//qglLoadIdentity();
+	cam.weaponProj = XMMatrixIdentity() * XMMatrixScaling(-1.0f, 1.0f, 1.0f) * XMMatrixPerspectiveFovRH(XMConvertToRadians(r_newrefdef.fov_y), screenaspect, 4, 4096);
 
 	// id's system:
 	//	- X axis = Left/Right
@@ -786,31 +747,20 @@ void R_SetupDX(void)
 	// vieworg - postition
 	// viewangles - point view
 
-	using namespace DirectX;
+	cam.view = XMMatrixIdentity();
+	cam.view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
 
-	XMMATRIX model_view = XMMatrixIdentity();
-	/*model_view *= XMMatrixRotationX(XMConvertToRadians(-90.0f));
-	model_view *= XMMatrixRotationZ(XMConvertToRadians(90.0f));
+	cam.view *= XMMatrixRotationZ(XMConvertToRadians(-r_newrefdef.viewangles[1]));
+	cam.view *= XMMatrixRotationY(XMConvertToRadians(-r_newrefdef.viewangles[0]));
+	cam.view *= XMMatrixRotationX(XMConvertToRadians(-r_newrefdef.viewangles[2]));
 
-	model_view *= XMMatrixRotationX(XMConvertToRadians(-r_newrefdef.viewangles[2]));
-	model_view *= XMMatrixRotationY(XMConvertToRadians(-r_newrefdef.viewangles[0]));
-	model_view *= XMMatrixRotationZ(XMConvertToRadians(-r_newrefdef.viewangles[1]));
+	cam.view *= XMMatrixRotationZ(XMConvertToRadians(90.0f));
+	cam.view *= XMMatrixRotationX(XMConvertToRadians(-90.0f));
 
-	model_view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);*/
+	// Обновляем буфер
+	cbCamera.Update(cam);
+	cbCamera.Bind<CAMERA>(camera.slot);
 
-
-	model_view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
-
-	model_view *= XMMatrixRotationZ(XMConvertToRadians(-r_newrefdef.viewangles[1]));
-	model_view *= XMMatrixRotationY(XMConvertToRadians(-r_newrefdef.viewangles[0]));
-	model_view *= XMMatrixRotationX(XMConvertToRadians(-r_newrefdef.viewangles[2]));
-
-	model_view *= XMMatrixRotationZ(XMConvertToRadians(90.0f));
-	model_view *= XMMatrixRotationX(XMConvertToRadians(-90.0f));
-
-	//model_view = XMMatrixTranspose(model_view);
-
-	renderer->SetModelViewMatrix(model_view);
 	bsp_renderer->InitCB();
 	sky_renderer->InitCB();
 	beam_renderer->InitCB();
@@ -818,38 +768,15 @@ void R_SetupDX(void)
 	particles_renderer->InitCB();
 	effects_renderer->InitCB();
 
-
-	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
-	//qglRotatef(90, 0, 0, 1);	    // put Z going up
-	//qglRotatef(-r_newrefdef.viewangles[2], 1, 0, 0);
-	//qglRotatef(-r_newrefdef.viewangles[0], 0, 1, 0);
-	//qglRotatef(-r_newrefdef.viewangles[1], 0, 0, 1);
-	//qglTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
-
 	// Записываем моделвью матрицу в ворлд матрицу
-	// Может быть нужно траспанировать
 
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			r_world_matrix[(i * 4) + j] = model_view.r[i].m128_f32[j];
+			r_world_matrix[(i * 4) + j] = cam.view.r[i].m128_f32[j];
 		}
 	}
-
-	//qglGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
-
-	////
-	//// set drawing parms
-	////
-	//if (gl_cull->value)
-	//	qglEnable(GL_CULL_FACE);
-	//else
-	//	qglDisable(GL_CULL_FACE);
-
-	//qglDisable(GL_BLEND);
-	//qglDisable(GL_ALPHA_TEST);
-	//qglEnable(GL_DEPTH_TEST);
 }
 
 /*
@@ -1250,6 +1177,12 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	R_InitParticleTexture();
 	Draw_InitLocal();
 
+	// Init ortho matrix
+	cam.orthogonal = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.0f, vid.width, vid.height, 0.0f, 0.0f, 1000.0f));
+	// Не должен создавать если уже есть
+	cbCamera.Create(cam);
+	cbCamera.Bind<CAMERA>(camera.slot);
+
 	return True;
 }
 
@@ -1453,46 +1386,17 @@ void R_DrawBeam(entity_t* e)
 	g *= 1 / 255.0F;
 	b *= 1 / 255.0F;
 
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	cbp.color[0] = r;
-	cbp.color[1] = g;
-	cbp.color[2] = b;
-	cbp.color[3] = e->alpha;
+	MODEL cb;
+	cb.color.x = r;
+	cb.color.y = g;
+	cb.color.z = b;
+	cb.color.w = e->alpha;
 
 	BeamDefinitions beam_defs{
-		verts, indexes, cbp, BEAM_DEFAULT
+		verts, indexes, cb, BEAM_DEFAULT
 	};
 
 	beam_renderer->Add(beam_defs);
-
-	/*qglDisable(GL_TEXTURE_2D);
-	qglEnable(GL_BLEND);
-	qglDepthMask(GL_FALSE);
-
-	r = (d_8to24table[e->skinnum & 0xFF]) & 0xFF;
-	g = (d_8to24table[e->skinnum & 0xFF] >> 8) & 0xFF;
-	b = (d_8to24table[e->skinnum & 0xFF] >> 16) & 0xFF;
-
-	r *= 1 / 255.0F;
-	g *= 1 / 255.0F;
-	b *= 1 / 255.0F;
-
-	qglColor4f(r, g, b, e->alpha);
-
-	qglBegin(GL_TRIANGLE_STRIP);
-	for (i = 0; i < NUM_BEAM_SEGS; i++)
-	{
-		qglVertex3fv(start_points[i]);
-		qglVertex3fv(end_points[i]);
-		qglVertex3fv(start_points[(i + 1) % NUM_BEAM_SEGS]);
-		qglVertex3fv(end_points[(i + 1) % NUM_BEAM_SEGS]);
-	}
-	qglEnd();
-
-	qglEnable(GL_TEXTURE_2D);
-	qglDisable(GL_BLEND);
-	qglDepthMask(GL_TRUE);*/
 }
 
 //===================================================================

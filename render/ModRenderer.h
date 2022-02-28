@@ -12,11 +12,12 @@
 
 // There should be defines
 #define MOD_ALPHA				0x001
+#define MOD_WEAPON				0x002
 
 struct ModDefinitions {
 	std::vector<ModVertex> vert;
 	std::vector<uint16_t> ind;
-	ConstantBufferPolygon cbp;
+	MODEL cb;
 	int flags;
 	int texture_index;
 	int lightmap_index;

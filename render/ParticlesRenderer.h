@@ -15,7 +15,7 @@
 struct ParticlesDefinitions {
 	std::vector<ParticlesVertex> vert;
 	std::vector<uint16_t> ind;
-	ConstantBufferParticles cbp;
+	MODEL cbp;
 	int flags;
 	int texture_index;
 };

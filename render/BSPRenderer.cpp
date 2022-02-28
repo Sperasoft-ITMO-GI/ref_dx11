@@ -43,14 +43,13 @@ void BSPRenderer::Init() {
 	factory = new PipelineFactory(L"ref_dx11\\shaders\\BSP.hlsl", new ModelPSProvider, macro);
 	p = new BSPPoly();
 	p->CreateDynamicVB(64);
-	p->CreateDynamicIB(1024);
+	p->CreateDynamicIB(256);
 }
 
 void BSPRenderer::InitCB() {
 	Renderer* renderer = Renderer::GetInstance();
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	p->CreateCB(cbp);
+	MODEL cb;
+	p->CreateCB(cb);
 }
 
 void BSPRenderer::Render() {
@@ -78,12 +77,12 @@ void BSPRenderer::Render() {
 			}
 		}
 
-		renderer->Bind(poly.texture_index, 0);
-		renderer->Bind(poly.lightmap_index, 1);
+		renderer->Bind(poly.texture_index, colorTexture.slot);
+		renderer->Bind(poly.lightmap_index, lightmapTexture.slot);
 
 		p->UpdateDynamicVB(poly.vert);
 		p->UpdateDynamicIB(poly.ind);
-		p->UpdateCB(poly.cbp);
+		p->UpdateCB(poly.cb);
 		p->DrawIndexed();
 	}
 

@@ -7,6 +7,11 @@
 #include <Utils.h>
 #include <Window.h>
 
+#include <external/debug_console.h>
+#include <shaders/shader_defines.h>
+
+//#include <ConstantBuffer.hpp>
+
 // for now it will be a singletone with base dx11 structured reailized
 
 //	cs_5_0	DirectCompute 5.0 (compute shader)
@@ -62,10 +67,6 @@ private:
 	ID3D11ShaderResourceView* texture_array_srv[1600];
 
 	ID3D11ShaderResourceView* sky_box_view;
-
-	DirectX::XMMATRIX orthogonal;
-	DirectX::XMMATRIX perspective;
-	DirectX::XMMATRIX model_view;
 
 private:
 	static Renderer* renderer;

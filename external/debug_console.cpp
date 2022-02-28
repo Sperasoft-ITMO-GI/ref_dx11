@@ -149,10 +149,10 @@ namespace con
 		va_list args;
 		va_start(args, fmt);
 
-		wchar_t result[1024];
-		wchar_t temp[256];
-		memset(result, NULL, 1024 * sizeof(wchar_t));
-		memset(temp, NULL, 256 * sizeof(wchar_t));
+		wchar_t result[2056];
+		wchar_t temp[1024];
+		memset(result, NULL, 2056 * sizeof(wchar_t));
+		memset(temp, NULL, 1024 * sizeof(wchar_t));
 
 		int i = 0;
 		int length = wcslen(fmt);
@@ -169,7 +169,7 @@ namespace con
 					case '8':
 					{
 						char* charstr = va_arg(args, char*);
-						mbstowcs(temp, charstr, _CVTBUFSIZE);
+						mbstowcs(temp, charstr, 1024);
 						wcscat(result, temp);
 						i = i + 1;
 					} break;

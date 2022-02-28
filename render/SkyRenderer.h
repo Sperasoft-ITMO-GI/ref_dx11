@@ -22,7 +22,7 @@ public:
 
 	void InitCB();
 
-	void Add(ConstantBufferSkyBox& cbsb);
+	void Add(MODEL& cbsb);
 
 	void InitNewFactory(const wchar_t* path);
 

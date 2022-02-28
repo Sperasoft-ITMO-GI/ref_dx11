@@ -7,7 +7,7 @@ SkyCube::SkyCube() : constant_buffer()
 {
 }
 
-SkyCube::SkyCube(ConstantBufferSkyBox& cbq)
+SkyCube::SkyCube(MODEL& cbq)
 	: constant_buffer(cbq) {
 }
 
@@ -19,16 +19,16 @@ void SkyCube::DrawStatic() {
 
 	vertex_buffer.Bind();
 	index_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferQuad>();
+	constant_buffer.Bind<MODEL>(1);
 
 	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }
 
-void SkyCube::CreateCB(const ConstantBufferSkyBox& cbq)
+void SkyCube::CreateCB(const MODEL& cbq)
 {
 	constant_buffer.Create(cbq);
 }
 
-void SkyCube::UpdateCB(ConstantBufferSkyBox& cbq) {
+void SkyCube::UpdateCB(MODEL& cbq) {
 	constant_buffer.Update(cbq);
 }

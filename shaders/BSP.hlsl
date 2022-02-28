@@ -1,12 +1,6 @@
-Texture2D diffuseText : register(t0);
-Texture2D lightMapText : register(t1);
-sampler Sampler : register(s0);
+#define HLSL
 
-cbuffer Cbuf
-{
-    matrix position_transform;
-	float4 color;
-};
+#include "shader_defines.h"
 
 struct VSOut
 {
@@ -25,7 +19,8 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
-    OUT.pos = mul(position_transform, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
+	float4x4 proj = mul(camera.perspective, camera.view);
+    OUT.pos = mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
     OUT.texCoord = IN.texCoord;
 	OUT.lightmapCoord = IN.lightmapCoord;
     return OUT;
@@ -33,17 +28,17 @@ VSOut VSMain(VSIn IN)
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    float4 texColor = diffuseText.Sample(Sampler, IN.texCoord);
+    float4 texColor = colorTexture.Sample(Sampler, IN.texCoord);
 	
 	float luma = dot(texColor.rgb, float3(0.3f, 0.5f, 0.2f));
 	float mask = saturate(luma * 4 - 3);
 	float3 glow = texColor.rgb * mask;
 
 #ifdef LIGHTMAPPEDPOLY
-	texColor *= lightMapText.Sample(Sampler, IN.lightmapCoord);
+	texColor *= lightmapTexture.Sample(Sampler, IN.lightmapCoord);
 #endif
 	
-	float4 result = texColor * color + float4(glow, 0.0f);
+	float4 result = texColor * model.color + float4(glow, 0.0f);
 
     return result;
 }

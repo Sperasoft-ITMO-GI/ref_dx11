@@ -86,17 +86,11 @@ void EffectsRenderer::Render() {
 void EffectsRenderer::InitCB()
 {
 	Renderer* renderer = Renderer::GetInstance();
-	ConstantBufferEffects cbe;
-
-	cbe.position_transform = 
-		 DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(90))
-		* DirectX::XMMatrixTranslation(10, 100, 100)
-		* renderer->GetModelView()
-		* renderer->GetPerspective();
-	eq->CreateCB(cbe);
+	MODEL cb;
+	eq->CreateCB(cb);
 }
 
-void EffectsRenderer::Add(ConstantBufferEffects& cbe)
+void EffectsRenderer::Add(MODEL& cbe)
 {
 	eq->UpdateCB(cbe);
 }

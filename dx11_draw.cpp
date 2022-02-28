@@ -48,7 +48,7 @@ void Draw_Char(int x, int y, int num)
 
 	using namespace DirectX;
 	UI_BUFFER cb = {};
-	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(8, 8, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(8, 8, 0) * XMMatrixTranslation(x, y, 0));
 	cb.texture_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(size, size, 0) * XMMatrixTranslation(fcol, frow, 0));
 	cb.color.x = 1.0f;
 	cb.color.y = 1.0f;
@@ -116,7 +116,7 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic)
 
 	using namespace DirectX;
 	UI_BUFFER cb = {};
-	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(w, h, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(w, h, 0) * XMMatrixTranslation(x, y, 0));
 	cb.texture_transform = XMMatrixIdentity();
 	cb.color.x = 1.0f;
 	cb.color.y = 1.0f;
@@ -145,7 +145,8 @@ void Draw_Pic(int x, int y, char* pic)
 
 	using namespace DirectX;
 	UI_BUFFER cb = {};
-	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(gl->width, gl->height, 0) * XMMatrixTranslation(x, y, 0) * renderer->GetOrthogonal());
+
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(gl->width, gl->height, 0) * XMMatrixTranslation(x, y, 0));
 	cb.texture_transform = XMMatrixIdentity();
 	cb.color.x = 1.0f;
 	cb.color.y = 1.0f;
@@ -176,7 +177,7 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic)
 
 	using namespace DirectX;
 	UI_BUFFER cb = {};
-	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0) * renderer->GetOrthogonal());
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0));
 	cb.texture_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(w / 64.0f, h / 64.0f, 0) * XMMatrixTranslation(x / 64.0f, y / 64.0f, 0));
 	cb.color.x = 1.0f;
 	cb.color.y = 1.0f;
@@ -208,7 +209,7 @@ void Draw_Fill(int x, int y, int w, int h, int c)
 
 	using namespace DirectX;
 	UI_BUFFER cb = {};
-	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0) * renderer->GetOrthogonal());
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0));
 	cb.texture_transform = XMMatrixIdentity();
 	cb.color.x = color.v[0] / 255;
 	cb.color.y = color.v[1] / 255;
@@ -228,7 +229,7 @@ void Draw_FadeScreen(void)
 {
 	using namespace DirectX;
 	UI_BUFFER cb = {};
-	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(vid.width, vid.height, 0) * renderer->GetOrthogonal());
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(vid.width, vid.height, 0));
 	cb.texture_transform = XMMatrixIdentity();
 	cb.color.x = 0.0f;
 	cb.color.y = 0.0f;
@@ -299,8 +300,9 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 
 	using namespace DirectX;
 	UI_BUFFER cb = {};
-	cb.position_transform = XMMatrixIdentity() * XMMatrixTranspose((XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0)) * renderer->GetOrthogonal());
-	cb.texture_transform = XMMatrixIdentity() * XMMatrixTranspose(XMMatrixScaling(1.0f, t, 0));
+
+	cb.position_transform = XMMatrixIdentity() * XMMatrixTranslation(x, y, 0) * XMMatrixScaling(w, h, 0);
+	cb.texture_transform = XMMatrixIdentity() * XMMatrixScaling(1.0f, t, 0);
 	cb.color.x = 1.0f;
 	cb.color.y = 1.0f;
 	cb.color.z = 1.0f;

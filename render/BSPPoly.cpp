@@ -4,15 +4,15 @@ BSPPoly::BSPPoly() : constant_buffer()
 {
 }
 
-BSPPoly::BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cbp)
+BSPPoly::BSPPoly(ConstantBuffer<MODEL>& cbp)
 	: constant_buffer(cbp) {
 }
 
-BSPPoly::BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vertex_buffer, IndexBuffer& ib)
+BSPPoly::BSPPoly(ConstantBuffer<MODEL>& cbp, VertexBuffer& vertex_buffer, IndexBuffer& ib)
 	: constant_buffer(cbp) {
 }
 
-BSPPoly::BSPPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vb) 
+BSPPoly::BSPPoly(ConstantBuffer<MODEL>& cbp, VertexBuffer& vb)
 	: constant_buffer(cbp), vertex_buffer(vb) {
 }
 
@@ -24,7 +24,7 @@ void BSPPoly::Draw() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	vertex_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferPolygon>();
+	constant_buffer.Bind<MODEL>(1);
 
 	renderer->GetContext()->Draw(vertex_buffer.GetCount(), 0u);
 }
@@ -34,12 +34,12 @@ void BSPPoly::DrawIndexed() {
 
 	vertex_buffer.Bind();
 	index_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferPolygon>();
+	constant_buffer.Bind<MODEL>(1);
 
 	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }
 
-void BSPPoly::CreateCB(const ConstantBufferPolygon& cbp) {
+void BSPPoly::CreateCB(const MODEL& cbp) {
 	constant_buffer.Create(cbp);
 }
 
@@ -53,7 +53,7 @@ void BSPPoly::CreateDynamicIB(UINT size)
 	index_buffer.CreateDynamic(size);
 }
 
-void BSPPoly::UpdateCB(const ConstantBufferPolygon& cbp)
+void BSPPoly::UpdateCB(const MODEL& cbp)
 {
 	constant_buffer.Update(cbp);
 }

@@ -17,7 +17,7 @@
 struct BSPDefinitions {
 	std::vector<BSPVertex> vert;
 	std::vector<uint16_t> ind;
-	ConstantBufferPolygon cbp;
+	MODEL cb;
 	int flags;
 	int texture_index;
 	int lightmap_index;

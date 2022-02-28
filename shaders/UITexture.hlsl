@@ -17,7 +17,8 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
-    OUT.pos = mul(float4(IN.pos.x, IN.pos.y, 0.0f, 1.0f), ui_buffer.position_transform);
+	float4x4 proj = mul(ui_buffer.position_transform, camera.orthogonal);
+    OUT.pos = mul(float4(IN.pos.x, IN.pos.y, 0.0f, 1.0f), proj);
     OUT.texCoord = mul(float4(IN.texCoord.x, IN.texCoord.y, 0.0f, 1.0f), ui_buffer.texture_transform).xy;
     return OUT;
 }

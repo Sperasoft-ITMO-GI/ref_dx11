@@ -16,7 +16,7 @@
 struct BeamDefinitions {
 	std::vector<BeamVertex> vert;
 	std::vector<uint16_t> ind;
-	ConstantBufferPolygon cbp;
+	MODEL cb;
 	int flags;
 };
 

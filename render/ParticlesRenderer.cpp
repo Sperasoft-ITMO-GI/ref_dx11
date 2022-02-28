@@ -28,10 +28,8 @@ void ParticlesRenderer::Init() {
 
 void ParticlesRenderer::InitCB() {
 	Renderer* renderer = Renderer::GetInstance();
-	ConstantBufferParticles cbp;
-	cbp.view = renderer->GetModelView();
-	cbp.projection = renderer->GetPerspective();
-	p->CreateCB(cbp);
+	MODEL cb;
+	p->CreateCB(cb);
 }
 
 void ParticlesRenderer::Render() {

@@ -4,15 +4,15 @@ ModPoly::ModPoly()
 	: constant_buffer() {
 }
 
-ModPoly::ModPoly(ConstantBuffer<ConstantBufferPolygon>& cbp)
+ModPoly::ModPoly(ConstantBuffer<MODEL>& cbp)
 	: constant_buffer(cbp) {
 }
 
-ModPoly::ModPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vb) 
+ModPoly::ModPoly(ConstantBuffer<MODEL>& cbp, VertexBuffer& vb)
 	: constant_buffer(cbp), vertex_buffer(vb) {
 }
 
-ModPoly::ModPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vb, IndexBuffer& ib)
+ModPoly::ModPoly(ConstantBuffer<MODEL>& cbp, VertexBuffer& vb, IndexBuffer& ib)
 	: constant_buffer(cbp), vertex_buffer(vb), index_buffer(ib) {
 }
 
@@ -23,7 +23,7 @@ void ModPoly::Draw() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	vertex_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferPolygon>();
+	constant_buffer.Bind<MODEL>(1);
 
 	renderer->GetContext()->Draw(vertex_buffer.GetCount(), 0u);
 }
@@ -33,12 +33,12 @@ void ModPoly::DrawIndexed() {
 
 	vertex_buffer.Bind();
 	index_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferPolygon>();
+	constant_buffer.Bind<MODEL>(1);
 
 	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }
 
-void ModPoly::CreateCB(const ConstantBufferPolygon& cbp) {
+void ModPoly::CreateCB(const MODEL& cbp) {
 	constant_buffer.Create(cbp);
 }
 
@@ -52,7 +52,7 @@ void ModPoly::CreateDynamicIB(UINT size)
 	index_buffer.CreateDynamic(size);
 }
 
-void ModPoly::UpdateCB(const ConstantBufferPolygon& cbp)
+void ModPoly::UpdateCB(const MODEL& cbp)
 {
 	constant_buffer.Update(cbp);
 }

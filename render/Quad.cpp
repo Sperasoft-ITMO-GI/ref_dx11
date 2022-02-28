@@ -19,7 +19,7 @@ void Quad::DrawStatic() {
 
 	vertex_buffer.Bind();
 	index_buffer.Bind();
-	constant_buffer.Bind<UI_BUFFER>();
+	constant_buffer.Bind<UI_BUFFER>(ui_buffer.slot);
 
 	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }

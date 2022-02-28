@@ -4,15 +4,15 @@ ParticlesPoly::ParticlesPoly() : constant_buffer()
 {
 }
 
-ParticlesPoly::ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cbp)
+ParticlesPoly::ParticlesPoly(ConstantBuffer<MODEL>& cbp)
 	: constant_buffer(cbp) {
 }
 
-ParticlesPoly::ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cbp, VertexBuffer& vb) 
+ParticlesPoly::ParticlesPoly(ConstantBuffer<MODEL>& cbp, VertexBuffer& vb)
 	: constant_buffer(cbp), vertex_buffer(vb) {
 }
 
-ParticlesPoly::ParticlesPoly(ConstantBuffer<ConstantBufferParticles>& cbp, VertexBuffer& vb, IndexBuffer& ib)
+ParticlesPoly::ParticlesPoly(ConstantBuffer<MODEL>& cbp, VertexBuffer& vb, IndexBuffer& ib)
 	: constant_buffer(cbp), vertex_buffer(vb), index_buffer(ib) {
 }
 
@@ -24,7 +24,7 @@ void ParticlesPoly::Draw() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	vertex_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferParticles>();
+	constant_buffer.Bind<MODEL>(1);
 
 	renderer->GetContext()->Draw(vertex_buffer.GetCount(), 0u);
 }
@@ -34,12 +34,12 @@ void ParticlesPoly::DrawIndexed() {
 
 	vertex_buffer.Bind();
 	index_buffer.Bind();
-	constant_buffer.Bind<ConstantBufferParticles>();
+	constant_buffer.Bind<MODEL>(1);
 
 	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
 }
 
-void ParticlesPoly::CreateCB(const ConstantBufferParticles& cbp) {
+void ParticlesPoly::CreateCB(const MODEL& cbp) {
 	constant_buffer.Create(cbp);
 }
 
@@ -53,7 +53,7 @@ void ParticlesPoly::CreateDynamicIB(UINT size)
 	index_buffer.CreateDynamic(size);
 }
 
-void ParticlesPoly::UpdateCB(const ConstantBufferParticles& cbp)
+void ParticlesPoly::UpdateCB(const MODEL& cbp)
 {
 	constant_buffer.Update(cbp);
 }

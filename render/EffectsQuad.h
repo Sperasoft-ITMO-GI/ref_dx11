@@ -11,20 +11,20 @@
 class EffectsQuad {
 public:
 	EffectsQuad();
-	EffectsQuad(ConstantBufferEffects& cbe);
+	EffectsQuad(MODEL& cbe);
 
 	~EffectsQuad();
 
 	void DrawStatic();
 
-	void CreateCB(const ConstantBufferEffects& cbe);
-	void UpdateCB(ConstantBufferEffects& cbe);
+	void CreateCB(const MODEL& cbe);
+	void UpdateCB(MODEL& cbe);
 
 public:
 	static VertexBuffer vertex_buffer;
 	static IndexBuffer  index_buffer;
 
 private:
-	ConstantBuffer<ConstantBufferEffects> constant_buffer;
+	ConstantBuffer<MODEL> constant_buffer;
 };
 

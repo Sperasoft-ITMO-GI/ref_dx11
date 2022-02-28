@@ -1,8 +1,6 @@
-cbuffer Cbuf
-{
-    matrix view;
-    matrix projection;
-};
+#define HLSL
+
+#include "shader_defines.h"
 
 struct VSIn
 {
@@ -25,7 +23,7 @@ struct GeoOut
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
-    OUT.pos = mul(view, float4(IN.pos, 1.0f));
+    OUT.pos = mul(camera.view, float4(IN.pos, 1.0f));
     OUT.color = normalize(IN.color);
     return OUT;
 }
@@ -35,7 +33,7 @@ GeoOut CreateQuadVertex(VSOut data, float2 offset)
     GeoOut o = (GeoOut) 0;
     float4 vert = data.pos;
     vert.xy += offset;
-    o.pos = mul(projection, vert);
+    o.pos = mul(camera.perspective, vert);
     o.color = data.color;
     return o;
 }

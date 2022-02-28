@@ -1,10 +1,6 @@
-TextureCube tex: register(t0);
-sampler Sampler : register(s0);
+#define HLSL
 
-cbuffer Cbuf
-{
-    matrix position_transform;
-};
+#include "shader_defines.h"
 
 struct VSOut
 {
@@ -19,16 +15,20 @@ struct VSIn
 
 VSOut VSMain(VSIn IN)
 {
+	float4x4 proj = mul(mul(camera.perspective, camera.view), model.mod);
+	
+	//float4x4 proj = model.mod;
+	
     VSOut OUT;
     OUT.texCoord = IN.pos;
-    OUT.pos = mul(position_transform, float4(IN.pos, 0.0f) );
+    OUT.pos = mul(proj, float4(IN.pos, 0.0f) );
     OUT.pos.z = OUT.pos.w;
     return OUT;
 }
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-
-    return tex.Sample(Sampler, float3(IN.texCoord.x, IN.texCoord.z, IN.texCoord.y));
+    return colorTexture.Sample(Sampler, float3(IN.texCoord.x, IN.texCoord.z, IN.texCoord.y));
+	//return float4(0.0f, 1.0f, 1.0f, 1.0f);
 }
 

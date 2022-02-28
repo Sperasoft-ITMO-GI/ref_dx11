@@ -27,9 +27,8 @@ void BeamRenderer::Init() {
 
 void BeamRenderer::InitCB() {
 	Renderer* renderer = Renderer::GetInstance();
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	p->CreateCB(cbp);
+	MODEL cb;
+	p->CreateCB(cb);
 }
 
 void BeamRenderer::Render() {
@@ -47,7 +46,7 @@ void BeamRenderer::Render() {
 		}
 
 		p->UpdateDynamicVB(poly.vert);
-		p->UpdateCB(poly.cbp);
+		p->UpdateCB(poly.cb);
 		p->Draw();
 	}
 

@@ -23,7 +23,7 @@ public:
 
 	void InitCB();
 
-	void Add(ConstantBufferEffects& cbe);
+	void Add(MODEL& cbe);
 
 	void InitNewFactory(const wchar_t* path);
 

@@ -22,11 +22,7 @@ Renderer::Renderer()
 	  is_4xmsaa_enable(false),
       is_initialized(false),
       sampler(nullptr), 
-	  sky_box_view(nullptr),
-	  model_view(DirectX::XMMatrixIdentity()),
-      orthogonal(DirectX::XMMatrixIdentity()), 
-      perspective(DirectX::XMMatrixIdentity()){
-}
+	  sky_box_view(nullptr){}
 
 Renderer* Renderer::GetInstance() {
 	if (renderer == nullptr) {
@@ -204,11 +200,11 @@ void Renderer::SetWindowMode(const int posX, const int posY, const int w, const 
 
 void Renderer::SetPerspectiveMatrix(const float fov, const float aspect_ratio, const float z_near, const float z_far) {
 	using namespace DirectX;
-	perspective = DirectX::XMMatrixPerspectiveFovRH(XMConvertToRadians(fov), aspect_ratio, z_near, z_far);
+	//perspective = DirectX::XMMatrixPerspectiveFovRH(XMConvertToRadians(fov), aspect_ratio, z_near, z_far);
 }
 
 void Renderer::SetModelViewMatrix(const DirectX::XMMATRIX& model_view_mx) {
-	model_view = model_view_mx;
+	//model_view = model_view_mx;
 }
 
 void Renderer::AddTexturetoSRV(char* name, int width, int height, int bits, unsigned char* data, int texNum, bool mipmap)
@@ -475,7 +471,7 @@ void Renderer::Bind(int texture_index, int textureSlot) {
 
 void Renderer::BindSkyBox()
 {
-	context->PSSetShaderResources(0, 1, &sky_box_view);
+	context->PSSetShaderResources(colorTexture.slot, 1, &sky_box_view);
 }
 
 ID3D11Device* Renderer::GetDevice() {
@@ -501,22 +497,22 @@ std::tuple<float, float> Renderer::GetWindowParameters() {
 void Renderer::InitMatrix(int width, int height)
 {
 	const float PI_32 = 3.14159265358979323846f;
-	orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1000.0f);
+	//orthogonal = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1000.0f);
 }
 
 DirectX::XMMATRIX Renderer::GetOrthogonal()
 {
-	return orthogonal;
+	return DirectX::XMMatrixIdentity();
 }
 
 DirectX::XMMATRIX Renderer::GetPerspective()
 {
-	return perspective;
+	return DirectX::XMMatrixIdentity();
 }
 
 DirectX::XMMATRIX Renderer::GetModelView()
 {
-	return model_view;
+	return DirectX::XMMatrixIdentity();
 }
 
 Renderer::~Renderer()

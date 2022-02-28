@@ -114,15 +114,14 @@ void DrawGLPoly(glpoly_t* p, int texNum, int defines)
 
 	SmartTriangulation(&indexes, p->numverts, 0);
 
-	ConstantBufferPolygon cbp;
-	cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	cbp.color[0] = colorBuf[0];
-	cbp.color[1] = colorBuf[1];
-	cbp.color[2] = colorBuf[2];
-	cbp.color[3] = colorBuf[3];
+	MODEL cb;
+	cb.color.x = colorBuf[0];
+	cb.color.y = colorBuf[1];
+	cb.color.z = colorBuf[2];
+	cb.color.w = colorBuf[3];
 
 	BSPDefinitions bspd{
-		vect, indexes, cbp, defines, texNum, -1
+		vect, indexes, cb, defines, texNum, -1
 	};
 
 	bsp_renderer->Add(bspd);
@@ -324,17 +323,16 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				SmartTriangulation(&indexes, nv, 0);
 
-				ConstantBufferPolygon cbp;
-				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-				cbp.color[0] = colorBuf[0];
-				cbp.color[1] = colorBuf[1];
-				cbp.color[2] = colorBuf[2];
-				cbp.color[3] = colorBuf[3];
+				MODEL cb;
+				cb.color.x = colorBuf[0];
+				cb.color.y = colorBuf[1];
+				cb.color.z = colorBuf[2];
+				cb.color.w = colorBuf[3];
 
 				// BSP_LIGHTMAPPEDPOLY
 
 				BSPDefinitions bspd{
-					vect, indexes, cbp, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
 				bsp_renderer->Add(bspd);
@@ -379,15 +377,14 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				SmartTriangulation(&indexes, nv, 0);
 
-				ConstantBufferPolygon cbp;
-				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-				cbp.color[0] = colorBuf[0];
-				cbp.color[1] = colorBuf[1];
-				cbp.color[2] = colorBuf[2];
-				cbp.color[3] = colorBuf[3];
+				MODEL cb;
+				cb.color.x = colorBuf[0];
+				cb.color.y = colorBuf[1];
+				cb.color.z = colorBuf[2];
+				cb.color.w = colorBuf[3];
 
 				BSPDefinitions bspd{
-					vect, indexes, cbp, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
 				bsp_renderer->Add(bspd);
@@ -447,15 +444,14 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				SmartTriangulation(&indexes, nv, 0);
 
-				ConstantBufferPolygon cbp;
-				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-				cbp.color[0] = colorBuf[0];
-				cbp.color[1] = colorBuf[1];
-				cbp.color[2] = colorBuf[2];
-				cbp.color[3] = colorBuf[3];
+				MODEL cb;
+				cb.color.x = colorBuf[0];
+				cb.color.y = colorBuf[1];
+				cb.color.z = colorBuf[2];
+				cb.color.w = colorBuf[3];
 
 				BSPDefinitions bspd{
-					vect, indexes, cbp, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
 				bsp_renderer->Add(bspd);
@@ -495,15 +491,14 @@ static void GL_RenderLightmappedPoly(msurface_t* surf)
 
 				SmartTriangulation(&indexes, nv, 0);
 
-				ConstantBufferPolygon cbp;
-				cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-				cbp.color[0] = colorBuf[0];
-				cbp.color[1] = colorBuf[1];
-				cbp.color[2] = colorBuf[2];
-				cbp.color[3] = colorBuf[3];
+				MODEL cb;
+				cb.color.x = colorBuf[0];
+				cb.color.y = colorBuf[1];
+				cb.color.z = colorBuf[2];
+				cb.color.w = colorBuf[3];
 
 				BSPDefinitions bspd{
-					vect, indexes, cbp, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
 				bsp_renderer->Add(bspd);

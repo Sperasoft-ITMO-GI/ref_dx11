@@ -10,20 +10,20 @@
 class BeamPoly {
 public:
 	BeamPoly();
-	BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cbp);
-	BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vb);
-	BeamPoly(ConstantBuffer<ConstantBufferPolygon>& cbp, VertexBuffer& vb, IndexBuffer& ib);
+	BeamPoly(ConstantBuffer<MODEL>& cbp);
+	BeamPoly(ConstantBuffer<MODEL>& cbp, VertexBuffer& vb);
+	BeamPoly(ConstantBuffer<MODEL>& cbp, VertexBuffer& vb, IndexBuffer& ib);
 
 	~BeamPoly();
 
 	void Draw();
 	void DrawIndexed();
 
-	void CreateCB(const ConstantBufferPolygon& cbp);
+	void CreateCB(const MODEL& cbp);
 	void CreateDynamicVB(UINT size);
 	void CreateDynamicIB(UINT size);
 
-	void UpdateCB(const ConstantBufferPolygon& cbp);
+	void UpdateCB(const MODEL& cbp);
 	void UpdateDynamicVB(std::vector<BeamVertex> vertexes);
 	void UpdateDynamicIB(std::vector<uint16_t> indexes);
 
@@ -32,5 +32,5 @@ public:
 	IndexBuffer index_buffer;
 
 private:
-	ConstantBuffer<ConstantBufferPolygon> constant_buffer;
+	ConstantBuffer<MODEL> constant_buffer;
 };
