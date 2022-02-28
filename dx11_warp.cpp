@@ -234,6 +234,7 @@ void EmitWaterPolys(msurface_t* fa)
 		SmartTriangulation(&indexes, p->numverts, 0);
 
 		MODEL cb;
+		cb.mod = DirectX::XMMatrixIdentity();
 		cb.color.x = colorBuf[0];
 		cb.color.y = colorBuf[1];
 		cb.color.z = colorBuf[2];
