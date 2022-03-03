@@ -945,7 +945,7 @@ image_t* DX_LoadPic(char* name, byte* pic, int width, int height, imagetype_t ty
 	// find a free image_t
 	for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
 	{
-		if (image == NULL)
+		if (image->registration_sequence == 0)
 			break;
 	}
 	if (i == numdxtextures)
