@@ -128,6 +128,397 @@ void DrawGLPoly(glpoly_t* p, int texNum, int defines)
 	bsp_renderer->Add(bspd);
 }
 
+//============
+//PGM
+/*
+================
+DrawGLFlowingPoly -- version of DrawGLPoly that handles scrolling texture
+================
+*/
+void DrawGLFlowingPoly(msurface_t* fa, int texNum, int defines)
+{
+	int		i;
+	float* v;
+	glpoly_t* p;
+	float	scroll;
+
+	p = fa->polys;
+
+	scroll = -64 * ((r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0));
+	if (scroll == 0.0)
+		scroll = -64.0;
+
+	//qglBegin(GL_POLYGON);
+	printf("DrawGLFlowingPoly found!!!\n");
+
+	BSPVertex vert = {};
+	std::vector<BSPVertex> vect;
+
+	v = p->verts[0];
+	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE)
+	{
+		//qglTexCoord2f((v[3] + scroll), v[4]);
+		//qglVertex3fv(v);
+
+		vert.position.x = v[0];
+		vert.position.y = v[1];
+		vert.position.z = v[2];
+		vert.texture_coord.x = v[3] + scroll;
+		vert.texture_coord.y = v[4];
+
+		vect.push_back(vert);
+	}
+
+	std::vector<uint16_t> indexes;
+
+	SmartTriangulation(&indexes, p->numverts, 0);
+
+	MODEL cb;
+	cb.mod = DirectX::XMMatrixIdentity();
+	cb.color.x = colorBuf[0];
+	cb.color.y = colorBuf[1];
+	cb.color.z = colorBuf[2];
+	cb.color.w = colorBuf[3];
+
+	BSPDefinitions bspd{
+		vect, indexes, cb, BSP_ALPHA, texNum, -1
+	};
+
+	bsp_renderer->Add(bspd);
+
+	//qglEnd();
+}
+//PGM
+//============
+
+
+/*
+** DrawGLPolyChain
+*/
+void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset, int texNum)
+{
+	MODEL cb;
+	cb.mod = DirectX::XMMatrixIdentity();
+	cb.color.x = colorBuf[0];
+	cb.color.y = colorBuf[1];
+	cb.color.z = colorBuf[2];
+	cb.color.w = colorBuf[3];
+
+	if (soffset == 0 && toffset == 0)
+	{
+		for (; p != 0; p = p->chain)
+		{
+			float* v;
+			int j;
+
+			//qglBegin(GL_POLYGON);
+
+			BSPVertex vert = {};
+			std::vector<BSPVertex> vect;
+
+			v = p->verts[0];
+			for (j = 0; j < p->numverts; j++, v += VERTEXSIZE)
+			{
+				//qglTexCoord2f(v[5], v[6]);
+				//qglVertex3fv(v);
+
+				vert.position.x = v[0];
+				vert.position.y = v[1];
+				vert.position.z = v[2];
+				vert.texture_coord.x = v[5];
+				vert.texture_coord.y = v[6];
+
+				vect.push_back(vert);
+			}
+
+			std::vector<uint16_t> indexes;
+
+			SmartTriangulation(&indexes, p->numverts, 0);
+
+			BSPDefinitions bspd{
+				vect, indexes, cb, BSP_ALPHA, texNum, -1
+			};
+
+			bsp_renderer->Add(bspd);
+
+			//qglEnd();
+		}
+	}
+	else
+	{
+		for (; p != 0; p = p->chain)
+		{
+			float* v;
+			int j;
+
+			//qglBegin(GL_POLYGON);
+
+			BSPVertex vert = {};
+			std::vector<BSPVertex> vect;
+
+			v = p->verts[0];
+			for (j = 0; j < p->numverts; j++, v += VERTEXSIZE)
+			{
+				//qglTexCoord2f(v[5] - soffset, v[6] - toffset);
+				//qglVertex3fv(v);
+
+				vert.position.x = v[0];
+				vert.position.y = v[1];
+				vert.position.z = v[2];
+				vert.texture_coord.x = v[5] - soffset;
+				vert.texture_coord.y = v[6] - toffset;
+
+				vect.push_back(vert);
+			}
+
+			std::vector<uint16_t> indexes;
+
+			SmartTriangulation(&indexes, p->numverts, 0);
+
+			BSPDefinitions bspd{
+				vect, indexes, cb, BSP_ALPHA, texNum, -1
+			};
+
+			bsp_renderer->Add(bspd);
+
+			//qglEnd();
+		}
+	}
+}
+
+/*
+** R_BlendLightMaps
+**
+** This routine takes all the given light mapped surfaces in the world and
+** blends them into the framebuffer.
+*/
+void R_BlendLightmaps(void)
+{
+	int			i;
+	msurface_t* surf, * newdrawsurf = 0;
+
+	// don't bother if we're set to fullbright
+	if (r_fullbright->value)
+		return;
+	if (!r_worldmodel->lightdata)
+		return;
+
+	if (currentmodel == r_worldmodel)
+		c_visible_lightmaps = 0;
+
+	/*
+	** render static lightmaps first
+	*/
+	for (i = 1; i < MAX_LIGHTMAPS; i++)
+	{
+		if (gl_lms.lightmap_surfaces[i])
+		{
+			if (currentmodel == r_worldmodel)
+				c_visible_lightmaps++;
+			//GL_Bind(dx11_state.lightmap_textures + i);
+
+			for (surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain)
+			{
+				if (surf->polys)
+					DrawGLPolyChain(surf->polys, 0, 0, dx11_state.lightmap_textures + i);
+			}
+		}
+	}
+
+	/*
+	** render dynamic lightmaps
+	*/
+	if (true/*gl_dynamic->value*/)
+	{
+		LM_InitBlock();
+
+		//GL_Bind(dx11_state.lightmap_textures + 0);
+
+		if (currentmodel == r_worldmodel)
+			c_visible_lightmaps++;
+
+		newdrawsurf = gl_lms.lightmap_surfaces[0];
+
+		for (surf = gl_lms.lightmap_surfaces[0]; surf != 0; surf = surf->lightmapchain)
+		{
+			int		smax, tmax;
+			byte* base;
+
+			smax = (surf->extents[0] >> 4) + 1;
+			tmax = (surf->extents[1] >> 4) + 1;
+
+			if (LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
+			{
+				base = gl_lms.lightmap_buffer;
+				base += (surf->dlight_t * BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
+
+				R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
+			}
+			else
+			{
+				msurface_t* drawsurf;
+
+				// upload what we have so far
+				LM_UploadBlock(True);
+
+				// draw all surfaces that use this lightmap
+				for (drawsurf = newdrawsurf; drawsurf != surf; drawsurf = drawsurf->lightmapchain)
+				{
+					if (drawsurf->polys)
+						DrawGLPolyChain(drawsurf->polys,
+							(drawsurf->light_s - drawsurf->dlight_s) * (1.0 / 128.0),
+							(drawsurf->light_t - drawsurf->dlight_t) * (1.0 / 128.0),
+							dx11_state.lightmap_textures + 0);
+				}
+
+				newdrawsurf = drawsurf;
+
+				// clear the block
+				LM_InitBlock();
+
+				// try uploading the block now
+				if (!LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
+				{
+					ri.Sys_Error(ERR_FATAL, "Consecutive calls to LM_AllocBlock(%d,%d) failed (dynamic)\n", smax, tmax);
+				}
+
+				base = gl_lms.lightmap_buffer;
+				base += (surf->dlight_t * BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
+
+				R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
+			}
+		}
+
+		/*
+		** draw remainder of dynamic lightmaps that haven't been uploaded yet
+		*/
+		if (newdrawsurf)
+			LM_UploadBlock(True);
+
+		for (surf = newdrawsurf; surf != 0; surf = surf->lightmapchain)
+		{
+			if (surf->polys)
+				DrawGLPolyChain(surf->polys,
+					(surf->light_s - surf->dlight_s) * (1.0 / 128.0),
+					(surf->light_t - surf->dlight_t) * (1.0 / 128.0),
+					dx11_state.lightmap_textures + 0);
+		}
+	}
+
+	/*
+	** restore state
+	*/
+	//qglDisable(GL_BLEND);
+	//qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//qglDepthMask(1);
+}
+
+/*
+================
+R_RenderBrushPoly
+================
+*/
+void R_RenderBrushPoly(msurface_t* fa)
+{
+	int		 maps = 0;
+	image_t* image;
+	qboolean is_dynamic = False;
+
+	c_brush_polys++;
+
+	image = R_TextureAnimation(fa->texinfo);
+
+	if (fa->flags & SURF_DRAWTURB)
+	{
+		//GL_Bind(image->texnum);
+
+		// warp texture, no lightmaps
+		//qglColor4f(dx11_state.inverse_intensity, dx11_state.inverse_intensity, dx11_state.inverse_intensity, 1.0F);
+		colorBuf[0] = dx11_state.inverse_intensity;
+		colorBuf[1] = dx11_state.inverse_intensity;
+		colorBuf[2] = dx11_state.inverse_intensity;
+		colorBuf[3] = 1.0f;
+		EmitWaterPolys(fa);
+
+		return;
+	}
+	else
+	{
+		//GL_Bind(image->texnum);
+
+		//GL_TexEnv(GL_REPLACE);
+	}
+
+	//======
+	//PGM
+	if (fa->texinfo->flags & SURF_FLOWING)
+		DrawGLFlowingPoly(fa, image->texnum, BSP_ALPHA);
+	else
+		DrawGLPoly(fa->polys, image->texnum, BSP_ALPHA);
+	//PGM
+	//======
+
+	/*
+	** check for lightmap modification
+	*/
+	for (maps = 0; maps < MAXLIGHTMAPS && fa->styles[maps] != 255; maps++)
+	{
+		if (r_newrefdef.lightstyles[fa->styles[maps]].white != fa->cached_light[maps])
+			goto dynamic;
+	}
+
+	// dynamic this frame or dynamic previously
+	if ((fa->dlightframe == r_framecount))
+	{
+	dynamic:
+		if (/*gl_dynamic->value*/true)
+		{
+			if (!(fa->texinfo->flags & (SURF_SKY | SURF_TRANS33 | SURF_TRANS66 | SURF_WARP)))
+			{
+				is_dynamic = True;
+			}
+		}
+	}
+
+	if (is_dynamic)
+	{
+		if ((fa->styles[maps] >= 32 || fa->styles[maps] == 0) && (fa->dlightframe != r_framecount))
+		{
+			unsigned	temp[34 * 34];
+			int			smax, tmax;
+
+			smax = (fa->extents[0] >> 4) + 1;
+			tmax = (fa->extents[1] >> 4) + 1;
+
+			R_BuildLightMap(fa, (byte*)(void*)temp, smax * 4);
+			R_SetCacheState(fa);
+
+			/*GL_Bind(dx11_state.lightmap_textures + fa->lightmaptexturenum);
+			qglTexSubImage2D(GL_TEXTURE_2D, 0,
+				fa->light_s, fa->light_t,
+				smax, tmax,
+				GL_LIGHTMAP_FORMAT,
+				GL_UNSIGNED_BYTE, temp);*/
+
+			renderer->UpdateTextureInSRV(smax, tmax, fa->light_s, fa->light_t, 32,
+				(unsigned char*)temp, dx11_state.lightmap_textures + fa->lightmaptexturenum);
+
+			fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
+			gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
+		}
+		else
+		{
+			fa->lightmapchain = gl_lms.lightmap_surfaces[0];
+			gl_lms.lightmap_surfaces[0] = fa;
+		}
+	}
+	else
+	{
+		fa->lightmapchain = gl_lms.lightmap_surfaces[fa->lightmaptexturenum];
+		gl_lms.lightmap_surfaces[fa->lightmaptexturenum] = fa;
+	}
+}
+
 /*
 ================
 R_DrawAlphaSurfaces
@@ -488,6 +879,72 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 }
 
 /*
+================
+DrawTextureChains
+================
+*/
+void DrawTextureChains(void)
+{
+	int		i;
+	msurface_t* s;
+	image_t* image;
+
+	c_visible_textures = 0;
+
+	if (!multiTexture)
+	{
+		for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
+		{
+			if (!image->registration_sequence)
+				continue;
+			s = image->texturechain;
+			if (!s)
+				continue;
+			c_visible_textures++;
+
+			for (; s; s = s->texturechain)
+				R_RenderBrushPoly(s);
+
+			image->texturechain = NULL;
+		}
+	}
+	else
+	{
+		for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
+		{
+			if (!image->registration_sequence)
+				continue;
+			if (!image->texturechain)
+				continue;
+			c_visible_textures++;
+
+			for (s = image->texturechain; s; s = s->texturechain)
+			{
+				if (!(s->flags & SURF_DRAWTURB))
+					R_RenderBrushPoly(s);
+			}
+		}
+
+		for (i = 0, image = dxtextures; i < numdxtextures; i++, image++)
+		{
+			if (!image->registration_sequence)
+				continue;
+			s = image->texturechain;
+			if (!s)
+				continue;
+
+			for (; s; s = s->texturechain)
+			{
+				if (s->flags & SURF_DRAWTURB)
+					R_RenderBrushPoly(s);
+			}
+
+			image->texturechain = NULL;
+		}
+	}
+}
+
+/*
 =================
 R_DrawInlineBModel
 =================
@@ -817,6 +1274,14 @@ void R_DrawWorld(void)
 	{
 		R_RecursiveWorldNode(r_worldmodel->nodes);
 	}
+
+	/*
+	** theoretically nothing should happen in the next two functions
+	** if multitexture is enabled
+	*/
+	// Happen, this is happen!
+	DrawTextureChains();
+	R_BlendLightmaps();
 
 	R_DrawSkyBox();
 }
