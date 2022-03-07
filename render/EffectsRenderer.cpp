@@ -33,7 +33,7 @@ void EffectsRenderer::Init() {
 	eq = new EffectsQuad();
 
 	Renderer* renderer = Renderer::GetInstance();
-	auto window_params = renderer->GetWindowParameters();
+	/*auto window_params = renderer->GetWindowParameters();
 
 	D3D11_TEXTURE2D_DESC texture_desc;
 	ZeroMemory(&texture_desc, sizeof(D3D11_TEXTURE2D_DESC));
@@ -65,22 +65,36 @@ void EffectsRenderer::Init() {
 	shader_resource_view_desc.Texture2D.MostDetailedMip = 0;
 	shader_resource_view_desc.Texture2D.MipLevels = 1;
 
-	DXCHECK(renderer->GetDevice()->CreateShaderResourceView(texture, &shader_resource_view_desc, &resource_view));
+	DXCHECK(renderer->GetDevice()->CreateShaderResourceView(texture, &shader_resource_view_desc, &resource_view));*/
 }
 
 void EffectsRenderer::Render() {
 	Renderer* renderer = Renderer::GetInstance();
-	renderer->GetContext()->OMSetRenderTargets(1, &render_target, nullptr);
 
+	// disable depth test
+	renderer->GetContext()->OMSetRenderTargets(2, renderer->render_target_view, nullptr);
 
 	SetPipelineState(factory->GetState(EFFECTS_DEFAULT));
 	eq->DrawStatic();
 
+	//renderer->GetContext()->OMSetRenderTargets(1, &(renderer->render_target_view[0]), nullptr);
+
+	// unbind rtv[1]
+	ID3D11RenderTargetView* rTargets[2] = { renderer->render_target_view[0], nullptr };
+	renderer->GetContext()->OMSetRenderTargets(2, rTargets, nullptr);
+
 	SetPipelineState(factory->GetState(EFFECTS_SCENE));
-	ID3D11RenderTargetView* tv = renderer->GetRenderTargetView();
-	renderer->GetContext()->OMSetRenderTargets(1, &tv, renderer->GetDepthStencilView());
-	renderer->GetContext()->PSSetShaderResources(0, 1, &resource_view);
+	//ID3D11RenderTargetView* tv = renderer->GetRenderTargetView(0);
+	//renderer->GetContext()->OMSetRenderTargets(1, &tv, renderer->GetDepthStencilView());
+	renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1, &(renderer->resource_view_rtv_1));
 	eq->DrawStatic();
+
+	// unbind srv
+	ID3D11ShaderResourceView* nullSRV = { nullptr };
+	renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1, &nullSRV);
+
+	// enable depth test, bind all rtv's
+	renderer->GetContext()->OMSetRenderTargets(2, renderer->render_target_view, renderer->GetDepthStencilView());
 }
 
 void EffectsRenderer::InitCB()

@@ -2,8 +2,8 @@
 
 namespace con
 {
-	const int RESULT_MAX_LENGTH = 20000;
-	const int TEMP_MAX_LENGTH = 10000;
+	const int RESULT_MAX_LENGTH = 2048;
+	const int TEMP_MAX_LENGTH = 1024;
 
 	HANDLE hConsole = NULL;
 
@@ -143,6 +143,11 @@ namespace con
 	void WCHARToDouble(double* value, wchar_t* src)
 	{
 		*value = _wtof(src);
+	}
+
+	void Out(char* str)
+	{
+		WriteConsoleA(hConsole, str, strlen(str), NULL, NULL);
 	}
 
 	void Outf(const wchar_t* fmt, ...)

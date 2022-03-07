@@ -98,6 +98,8 @@ namespace con
 
 	void WCHARToDouble(double* value, wchar_t* src);
 
+	void Out(char* str);
+
 	void Outf(const wchar_t* fmt, ...);
 
 }

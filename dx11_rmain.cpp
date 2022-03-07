@@ -140,6 +140,15 @@ void CompileShaders()
 		particles_renderer->ClearTempFactory();
 	else
 		particles_renderer->BindNewFactory();
+
+	// Effects_Renderer
+	effects_renderer->InitNewFactory(L"ref_dx11\\shaders\\Effects.hlsl");
+	if (!effects_renderer->CompileWithDefines(EFFECTS_DEFAULT))
+		effects_renderer->ClearTempFactory();
+	else if (!effects_renderer->CompileWithDefines(EFFECTS_SCENE))
+		effects_renderer->ClearTempFactory();
+	else
+		effects_renderer->BindNewFactory();
 }
 
 
@@ -576,7 +585,7 @@ void R_PolyBlend(void)
 
 	if (!v_blend[3]) {
 		effects_renderer->is_render = false;
-		return;
+		//return;
 	}
 
 	MODEL cb;
@@ -585,6 +594,7 @@ void R_PolyBlend(void)
 	cb.color.z = v_blend[2];
 	cb.color.w = v_blend[3];
 
+	// z - 100
 	cb.mod = XMMatrixScaling(vid.width, vid.height, 100);
 
 	effects_renderer->Add(cb);
@@ -1306,7 +1316,7 @@ void DX11_EndFrame(void)
 	particles_renderer->Render();
 	END_EVENT();
 
-	if (effects_renderer->is_render) {
+	if (true /*effects_renderer->is_render*/) {
 		BEGIN_EVENT(L"Effects renderer");
 		effects_renderer->Render();
 		END_EVENT();

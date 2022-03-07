@@ -21,12 +21,11 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
 	#ifdef WEAPON
-	float4x4 proj = mul(mul(camera.weaponProj, camera.view), model.mod);
+	// if changes it to cam.perspective nothing changes
+	float4x4 proj = mul(mul(camera.perspective, camera.view), model.mod);
 	#else
 	float4x4 proj = mul(mul(camera.perspective, camera.view), model.mod);
 	#endif
-	
-	//float4x4 proj = mul(mul(model.mod, camera.view), camera.perspective);
 	
     VSOut OUT;
     OUT.pos = mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));

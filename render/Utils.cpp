@@ -33,7 +33,10 @@ ID3DBlob* CompileShader(
 		entrypoint, target, compileFlags, 0, &byteCode, &errors);
 
 	if (errors != nullptr)
-		con::Outf(L"[DX11][ERROR]:%s8", (char*)errors->GetBufferPointer());
+	{
+		con::Outf(L"[DX11][ERROR]:", (char*)errors->GetBufferPointer());
+		con::Out((char*)errors->GetBufferPointer());
+	}
 
 	return byteCode;
 };

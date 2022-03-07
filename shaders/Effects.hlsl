@@ -24,18 +24,22 @@ VSOut VSMain(VSIn IN)
     return OUT;
 }
 
-float4 PSMain(VSOut IN) : SV_Target
+#ifdef DEFAULT
+float4 PSMain(VSOut IN) : SV_Target1
 {
     float4 result;
-    
-#ifdef DEFAULT
     result = model.color;
+	return result;
+}
 #endif
     
 #ifdef SCENE
+float4 PSMain(VSOut IN) : SV_Target0
+{
+    float4 result;
     result = colorTexture.Sample(Sampler, IN.texCoord);
-#endif
-    
-    return result;
+	//result.w = 0.5f;
+	return result;
 }
+#endif
 

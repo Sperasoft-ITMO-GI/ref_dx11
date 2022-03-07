@@ -47,7 +47,6 @@ private:
 	IDXGISwapChain* swap_chain;
 	ID3D11DepthStencilView* depth_stencil_view;
 	ID3D11DepthStencilState* depth_stencil_state;
-	ID3D11RenderTargetView* render_target_view;
 
 	D3D11_VIEWPORT viewport;
 
@@ -79,6 +78,16 @@ public:
 	Renderer(const Renderer&) = delete;
 	Renderer(Renderer&&) = delete;
 	Renderer& operator=(const Renderer&) = delete;
+
+	// не знаю куда это запихать, наверное будет лучше сделать 8 RTV
+	// и на каждый из них по этой штуке, тогда можно будет через функцию
+	// брать любую из них по номеру
+	static constexpr int renderTargets = 2;
+	ID3D11RenderTargetView* render_target_view[renderTargets];
+
+	// resources for RTV[1]
+	ID3D11Texture2D* texture_rtv_1;
+	ID3D11ShaderResourceView* resource_view_rtv_1;
 
 	~Renderer();
 
@@ -113,22 +122,17 @@ public:
 	//DirectX::XMMATRIX GetPerspective();
 	//DirectX::XMMATRIX GetModelView();
 
-	void Clear() {
-		context->ClearRenderTargetView(render_target_view, DirectX::Colors::Black);
-		context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH, 1.0f, 0u);
-	}
+	void Clear();
 
-	void Swap() {
-		swap_chain->Present(1, 0);
-	}
+	void Swap();
 
-	void SetDepthBuffer() {
+	/*void SetDepthBuffer() {
 		context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
 	}
 
 	void UnSetDepthBuffer() {
 		context->OMSetRenderTargets(1, &render_target_view, nullptr);
-	}
+	}*/
 
 	void Bind(int texture_index, int textureSlot);
 	void BindSkyBox();
@@ -136,7 +140,7 @@ public:
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetContext();
 	IDXGISwapChain* GetSwapChain();
-	ID3D11RenderTargetView* GetRenderTargetView();
+	ID3D11RenderTargetView* GetRenderTargetView(unsigned int num);
 	std::tuple<float, float> GetWindowParameters();
 	UINT GetMSAAQuality() {
 		return msaa_quality;

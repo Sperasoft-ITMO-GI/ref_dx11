@@ -44,9 +44,9 @@ private:
 	PipelineFactory* factory_temp;
 	EffectsQuad* eq;
 
-	ID3D11Texture2D* texture;
-	ID3D11RenderTargetView* render_target;
-	ID3D11ShaderResourceView* resource_view;
+	//ID3D11Texture2D* texture;
+	//ID3D11RenderTargetView* render_target;
+	//ID3D11ShaderResourceView* resource_view;
 
 	int currentState;
 
