@@ -112,7 +112,17 @@ void EffectsRenderer::Add(MODEL& cbe)
 void EffectsRenderer::EffectsPSProvider::PatchPipelineState(PipelineState* state, int defines) {
 	States* states = States::GetInstance();
 
-	state->bs = states->blend_states.at(BlendState::ALPHABS);
+	if (defines & EFFECTS_DEFAULT)
+	{
+		state->bs = states->blend_states.at(BlendState::EFFECTBS);
+	}
+
+	if (defines & EFFECTS_SCENE)
+	{
+		state->bs = states->blend_states.at(BlendState::ALPHABS);
+	}
+
+	//state->bs = states->blend_states.at(BlendState::ALPHABS);
 	state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
 	state->dss = states->depth_stencil_states.at(DepthStencilState::LESS);
 	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::EFFECTS_QUAD));

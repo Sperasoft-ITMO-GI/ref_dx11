@@ -94,7 +94,7 @@ PSOut PSMain(VSOut IN)
 
     float4 mainColor = texColor * model.color;// + float4(glow, 0.0f);
 	result.color = mainColor;
-	result.mask = float4(glow, 0.0f);
+	result.mask = float4(glow, 1.0f);
     
     return result;
 }
