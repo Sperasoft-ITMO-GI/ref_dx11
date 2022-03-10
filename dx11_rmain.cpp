@@ -590,7 +590,6 @@ void R_PolyBlend(void)
 	}
 
 	MODEL cb;
-	cb.color = {};
 	if (effects_renderer->is_render) {
 		cb.color.x = v_blend[0];
 		cb.color.y = v_blend[1];

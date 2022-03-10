@@ -30,7 +30,7 @@ VSOut VSMain(VSIn IN)
 struct PSOut
 {
 	float4 color : SV_Target0;
-	float4 mask  : SV_Target1;
+	float4  mask  : SV_Target1;
 };
 
 PSOut PSMain(VSOut IN)
@@ -47,7 +47,7 @@ PSOut PSMain(VSOut IN)
 	texColor *= lightmapTexture.Sample(Sampler, IN.lightmapCoord);
 #endif
 
-    float4 mainColor = texColor * model.color;// + float4(glow, 0.0f);
+    float4 mainColor = texColor * model.color;;
 	result.color = mainColor;
 	result.mask = float4(glow, 1.0f);
     
