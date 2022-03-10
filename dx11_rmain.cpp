@@ -585,20 +585,23 @@ void R_PolyBlend(void)
 
 	if (!v_blend[3]) {
 		effects_renderer->is_render = false;
-		//return;
+	} else {
+		effects_renderer->is_render = true;
 	}
 
 	MODEL cb;
-	cb.color.x = v_blend[0];
-	cb.color.y = v_blend[1];
-	cb.color.z = v_blend[2];
-	cb.color.w = v_blend[3];
+	cb.color = {};
+	if (effects_renderer->is_render) {
+		cb.color.x = v_blend[0];
+		cb.color.y = v_blend[1];
+		cb.color.z = v_blend[2];
+		cb.color.w = v_blend[3];
+	}
 
 	// z - 100
 	cb.mod = XMMatrixScaling(vid.width, vid.height, 100);
 
 	effects_renderer->Add(cb);
-	effects_renderer->is_render = true;
 }
 
 //=======================================================================
@@ -1316,11 +1319,9 @@ void DX11_EndFrame(void)
 	particles_renderer->Render();
 	END_EVENT();
 
-	if (true /*effects_renderer->is_render*/) {
-		BEGIN_EVENT(L"Effects renderer");
-		effects_renderer->Render();
-		END_EVENT();
-	}
+	BEGIN_EVENT(L"Effects renderer");
+	effects_renderer->Render();
+	END_EVENT();
 
 	BEGIN_EVENT(L"UI renderer");
 	ui_renderer->Render();

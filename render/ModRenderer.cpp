@@ -37,13 +37,18 @@ void ModRenderer::Init() {
 }
 
 void ModRenderer::InitCB() {
-	Renderer* renderer = Renderer::GetInstance();
 	MODEL cb;
 	p->CreateCB(cb);
 }
 
 void ModRenderer::Render() {
 	Renderer* renderer = Renderer::GetInstance();
+
+	renderer->GetContext()->OMSetRenderTargets(
+		1u,
+		&renderer->render_target_views[1], 
+		renderer->GetDepthStencilView()
+	);
 
 	currentState = 0;
 

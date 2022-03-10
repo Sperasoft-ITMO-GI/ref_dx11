@@ -32,6 +32,13 @@ void BeamRenderer::InitCB() {
 }
 
 void BeamRenderer::Render() {
+	Renderer* renderer = Renderer::GetInstance();
+
+	renderer->GetContext()->OMSetRenderTargets(
+		1u,
+		&renderer->render_target_views[1],
+		renderer->GetDepthStencilView()
+	);
 
 	currentState = 0;
 

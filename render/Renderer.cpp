@@ -113,45 +113,66 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		// Creating main Render target view
 		ID3D11Texture2D* back_buffer;
 		DXCHECK(swap_chain->GetBuffer(0u, __uuidof(ID3D11Texture2D), (void**)&back_buffer));
-		DXCHECK(device->CreateRenderTargetView(back_buffer, 0, &(render_target_view[0])));
+		DXCHECK(device->CreateRenderTargetView(back_buffer, 0, &render_target_views[EffectsRTV::BACKBUFFER]));
 
 		back_buffer->Release();
 
-		// Creating RTV[1] ============================
+		D3D11_TEXTURE2D_DESC texture_desc;
+		ZeroMemory(&texture_desc, sizeof(D3D11_TEXTURE2D_DESC));
+		texture_desc.Width = width;
+		texture_desc.Height = height;
+		texture_desc.MipLevels = 1;
+		texture_desc.ArraySize = 1;
+		texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		texture_desc.SampleDesc.Count = 1;
+		texture_desc.Usage = D3D11_USAGE_DEFAULT;
+		texture_desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		texture_desc.CPUAccessFlags = 0;
+		texture_desc.MiscFlags = 0;
 
-		D3D11_TEXTURE2D_DESC texture_desc_rtv_1;
-		ZeroMemory(&texture_desc_rtv_1, sizeof(D3D11_TEXTURE2D_DESC));
-		texture_desc_rtv_1.Width = width;
-		texture_desc_rtv_1.Height = height;
-		texture_desc_rtv_1.MipLevels = 1;
-		texture_desc_rtv_1.ArraySize = 1;
-		texture_desc_rtv_1.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		texture_desc_rtv_1.SampleDesc.Count = 1;
-		texture_desc_rtv_1.Usage = D3D11_USAGE_DEFAULT;
-		texture_desc_rtv_1.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-		texture_desc_rtv_1.CPUAccessFlags = 0;
-		texture_desc_rtv_1.MiscFlags = 0;
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::SCENE_SRV]));
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::BLOOM_SRV]));
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::EFFECT_SRV]));
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::FXAA_SRV]));
 
-		DXCHECK(device->CreateTexture2D(&texture_desc_rtv_1, nullptr, &texture_rtv_1));
+		D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc;
+		ZeroMemory(&render_target_view_desc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+		render_target_view_desc.Format = texture_desc.Format;
+		render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		render_target_view_desc.Texture2D.MipSlice = 0;
 
-		D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc_rtv_1;
-		ZeroMemory(&render_target_view_desc_rtv_1, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
-		render_target_view_desc_rtv_1.Format = texture_desc_rtv_1.Format;
-		render_target_view_desc_rtv_1.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-		render_target_view_desc_rtv_1.Texture2D.MipSlice = 0;
+		DXCHECK(device->CreateRenderTargetView(render_textures[0], &render_target_view_desc, &render_target_views[EffectsRTV::SCENE]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[1], &render_target_view_desc, &render_target_views[EffectsRTV::BLOOM]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[2], &render_target_view_desc, &render_target_views[EffectsRTV::EFFECT]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[3], &render_target_view_desc, &render_target_views[EffectsRTV::FXAA]));
 
-		DXCHECK(device->CreateRenderTargetView(texture_rtv_1, &render_target_view_desc_rtv_1, &(render_target_view[1])));
+		D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc;
+		ZeroMemory(&shader_resource_view_desc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+		shader_resource_view_desc.Format = texture_desc.Format;
+		shader_resource_view_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		shader_resource_view_desc.Texture2D.MostDetailedMip = 0;
+		shader_resource_view_desc.Texture2D.MipLevels = 1;
 
-		D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc_rtv_1;
-		ZeroMemory(&shader_resource_view_desc_rtv_1, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-		shader_resource_view_desc_rtv_1.Format = texture_desc_rtv_1.Format;
-		shader_resource_view_desc_rtv_1.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		shader_resource_view_desc_rtv_1.Texture2D.MostDetailedMip = 0;
-		shader_resource_view_desc_rtv_1.Texture2D.MipLevels = 1;
-
-		DXCHECK(device->CreateShaderResourceView(texture_rtv_1, &shader_resource_view_desc_rtv_1, &resource_view_rtv_1));
-
-		// end of creating RTV[1] ============================
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::SCENE_SRV], 
+			&shader_resource_view_desc, 
+			&shader_resource_views [EffectsSRV::SCENE_SRV])
+		);
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::BLOOM_SRV],
+			&shader_resource_view_desc, 
+			&shader_resource_views[EffectsSRV::BLOOM_SRV])
+		);
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::EFFECT_SRV],
+			&shader_resource_view_desc,
+			&shader_resource_views[EffectsSRV::EFFECT_SRV])
+		);
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::FXAA_SRV], 
+			&shader_resource_view_desc, 
+			&shader_resource_views[EffectsSRV::FXAA_SRV])
+		);
 
 		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
 		ZeroMemory(&depth_stencil_desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
@@ -190,7 +211,7 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		buffer->Release();
 
 		// TODO: replace this to begin frame
-		context->OMSetRenderTargets(renderTargets, render_target_view, depth_stencil_view);
+		//context->OMSetRenderTargets(renderTargets, render_target_view, depth_stencil_view);
 		context->OMSetDepthStencilState(depth_stencil_state, 1);
 
 		viewport.TopLeftX = 0.0f;
@@ -524,8 +545,8 @@ IDXGISwapChain* Renderer::GetSwapChain() {
 }
 
 ID3D11RenderTargetView* Renderer::GetRenderTargetView(unsigned int num) {
-	if (num < renderTargets)
-		return render_target_view[num];
+	if (num < render_targets_count)
+		return render_target_views[num];
 	else
 		return nullptr;
 }
@@ -536,8 +557,8 @@ std::tuple<float, float> Renderer::GetWindowParameters() {
 
 void Renderer::Clear() {
 
-	for (int i = 0; i < renderTargets; i++) {
-		context->ClearRenderTargetView(render_target_view[i], DirectX::Colors::Black);
+	for (int i = 0; i < render_targets_count; i++) {
+		context->ClearRenderTargetView(render_target_views[i], DirectX::Colors::Black);
 	}
 
 	context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH, 1.0f, 0u);
@@ -579,8 +600,8 @@ Renderer::~Renderer()
 	}
 	sampler->Release();
 
-	for (int i = 0; i < renderTargets; i++) {
-		render_target_view[i]->Release();
+	for (int i = 0; i < render_targets_count; i++) {
+		render_target_views[i]->Release();
 	}
 
 	depth_stencil_state->Release();

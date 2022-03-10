@@ -55,6 +55,17 @@ void BSPRenderer::InitCB() {
 void BSPRenderer::Render() {
 	Renderer* renderer = Renderer::GetInstance();
 
+	ID3D11RenderTargetView* render_targets[] = {
+		renderer->render_target_views[1],
+		renderer->render_target_views[2]
+	};
+
+	renderer->GetContext()->OMSetRenderTargets(
+		2u,
+		render_targets,
+		renderer->GetDepthStencilView()
+	);
+
 	currentState = 0;
 
 	for (auto& poly : bsp_defs) {

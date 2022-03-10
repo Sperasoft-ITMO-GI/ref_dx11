@@ -27,6 +27,8 @@ public:
 
 	void Init();
 
+	void InitCB();
+
 	void Render();
 
 	void Add(const QuadDefinitions& qd);

@@ -34,6 +34,21 @@ struct ShaderOptions
 	int entrys;
 };
 
+enum EffectsRTV : uint8_t {
+	BACKBUFFER = 0,
+	SCENE = 1,
+	BLOOM = 2,
+	EFFECT = 3,
+	FXAA = 4
+};
+
+enum EffectsSRV : uint8_t {
+	SCENE_SRV = 0,
+	BLOOM_SRV = 1,
+	EFFECT_SRV = 2,
+	FXAA_SRV = 3
+};
+
 class Renderer {
 
 private:
@@ -79,15 +94,17 @@ public:
 	Renderer(Renderer&&) = delete;
 	Renderer& operator=(const Renderer&) = delete;
 
-	// не знаю куда это запихать, наверное будет лучше сделать 8 RTV
-	// и на каждый из них по этой штуке, тогда можно будет через функцию
-	// брать любую из них по номеру
-	static constexpr int renderTargets = 2;
-	ID3D11RenderTargetView* render_target_view[renderTargets];
+	// 0 - backbuffer
+	// 1 - scene
+	// 2 - bloom 
+	// 3 - damage effect
+	// 4 - fxaa
 
-	// resources for RTV[1]
-	ID3D11Texture2D* texture_rtv_1;
-	ID3D11ShaderResourceView* resource_view_rtv_1;
+	static constexpr int render_targets_count = 5;
+	ID3D11Texture2D* render_textures[render_targets_count - 1];
+	ID3D11RenderTargetView* render_target_views[render_targets_count];
+	ID3D11ShaderResourceView* shader_resource_views[render_targets_count - 1];
+	bool is_game_started = false;
 
 	~Renderer();
 

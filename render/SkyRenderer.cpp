@@ -28,6 +28,13 @@ void SkyRenderer::Render() {
 		SetPipelineState(factory->GetState(SKY_DEFAULT));
 
 		Renderer* renderer = Renderer::GetInstance();
+
+		renderer->GetContext()->OMSetRenderTargets(
+			1u,
+			&renderer->render_target_views[1],
+			renderer->GetDepthStencilView()
+		);
+
 		renderer->BindSkyBox();
 
 		sp->DrawStatic();

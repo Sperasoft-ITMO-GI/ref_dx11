@@ -11,6 +11,7 @@
 
 #define EFFECTS_DEFAULT  0x001
 #define EFFECTS_SCENE    0x002
+#define EFFECTS_BLOOM    0x004
 
 class EffectsRenderer {
 public:
