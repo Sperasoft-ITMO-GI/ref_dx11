@@ -27,7 +27,8 @@ public:
 		{ALPHABS, MakeAlphaBS()},
 		{SURFLIGHTMAPBS, MakeSurfLightMapBS()},
 		{NOBS, MakeNoBS()},
-		{EFFECTBS, MakeEffectBS()}
+		{EFFECTBS, MakeEffectBS()},
+		{SCREEN, MakeScreenBS()}
 	};
 	const std::unordered_map<RasterizationState, ID3D11RasterizerState*> rasterization_states{
 		{CULL_NONE,  MakeCullNoneRS()},

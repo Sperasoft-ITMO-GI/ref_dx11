@@ -9,9 +9,11 @@
 #include <IStateProvider.h>
 #include <EffectsQuad.h>
 
-#define EFFECTS_DEFAULT  0x001
-#define EFFECTS_SCENE    0x002
-#define EFFECTS_BLOOM    0x004
+#define EFFECTS_DEFAULT       0x001
+#define EFFECTS_SCENE         0x002
+#define EFFECTS_BLOOM         0x004
+#define EFFECTS_BLOOM_MASK    0x008
+#define EFFECTS_FXAA          0x016
 
 class EffectsRenderer {
 public:

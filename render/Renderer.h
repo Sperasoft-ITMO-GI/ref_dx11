@@ -38,15 +38,17 @@ enum EffectsRTV : uint8_t {
 	BACKBUFFER = 0,
 	SCENE = 1,
 	BLOOM = 2,
-	EFFECT = 3,
-	FXAA = 4
+	BLOOM_MASK = 3,
+	EFFECT = 4,
+	FXAA = 5
 };
 
 enum EffectsSRV : uint8_t {
 	SCENE_SRV = 0,
 	BLOOM_SRV = 1,
-	EFFECT_SRV = 2,
-	FXAA_SRV = 3
+	BLOOM_MASK_SRV = 2,
+	EFFECT_SRV = 3,
+	FXAA_SRV = 4
 };
 
 class Renderer {
@@ -97,10 +99,11 @@ public:
 	// 0 - backbuffer
 	// 1 - scene
 	// 2 - bloom 
-	// 3 - damage effect
-	// 4 - fxaa
+	// 3 - bloom mask
+	// 4 - damage effect
+	// 5 - fxaa
 
-	static constexpr int render_targets_count = 5;
+	static constexpr int render_targets_count = 6;
 	ID3D11Texture2D* render_textures[render_targets_count - 1];
 	ID3D11RenderTargetView* render_target_views[render_targets_count];
 	ID3D11ShaderResourceView* shader_resource_views[render_targets_count - 1];

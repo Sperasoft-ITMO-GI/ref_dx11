@@ -141,10 +141,14 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		render_target_view_desc.Texture2D.MipSlice = 0;
 
-		DXCHECK(device->CreateRenderTargetView(render_textures[0], &render_target_view_desc, &render_target_views[EffectsRTV::SCENE]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[1], &render_target_view_desc, &render_target_views[EffectsRTV::BLOOM]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[2], &render_target_view_desc, &render_target_views[EffectsRTV::EFFECT]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[3], &render_target_view_desc, &render_target_views[EffectsRTV::FXAA]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::SCENE_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::SCENE]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::BLOOM_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::BLOOM]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::EFFECT_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::EFFECT]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::FXAA_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::FXAA]));
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc;
 		ZeroMemory(&shader_resource_view_desc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
@@ -172,6 +176,18 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 			render_textures[EffectsSRV::FXAA_SRV], 
 			&shader_resource_view_desc, 
 			&shader_resource_views[EffectsSRV::FXAA_SRV])
+		);
+
+		texture_desc.Format = DXGI_FORMAT_R8_UNORM;
+		render_target_view_desc.Format = texture_desc.Format;
+		shader_resource_view_desc.Format = texture_desc.Format;
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::BLOOM_MASK_SRV]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::BLOOM_MASK_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::BLOOM_MASK]));
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::BLOOM_MASK_SRV],
+			&shader_resource_view_desc,
+			&shader_resource_views[EffectsSRV::BLOOM_MASK_SRV])
 		);
 
 		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;

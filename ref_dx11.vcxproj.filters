@@ -220,6 +220,9 @@
     <ClInclude Include="shaders\shader_defines.h">
       <Filter>Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="shaders\Fxaa3_11.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">

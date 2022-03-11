@@ -12,6 +12,14 @@ static D3D_SHADER_MACRO bloomMac[] = {
 	"BLOOM", "1", NULL, NULL
 };
 
+static D3D_SHADER_MACRO bloomMaskMac[] = {
+	"BLOOM_MASK", "1", NULL, NULL
+};
+
+static D3D_SHADER_MACRO fxaaMac[] = {
+	"FXAA", "1", NULL, NULL
+};
+
 static ShaderOptions defOpt{
 	defMac,
 	PS_SHADER_ENTRY | VS_SHADER_ENTRY
@@ -27,10 +35,22 @@ static ShaderOptions bloomOpt{
 	PS_SHADER_ENTRY | VS_SHADER_ENTRY
 };
 
+static ShaderOptions bloomMaskOpt{
+	bloomMaskMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
+static ShaderOptions fxaaOpt{
+	fxaaMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
 static std::unordered_map<int, ShaderOptions> macro{
 	{EFFECTS_DEFAULT, defOpt},
 	{EFFECTS_SCENE, sceneOpt},
 	{EFFECTS_BLOOM, bloomOpt},
+	{EFFECTS_BLOOM_MASK, bloomMaskOpt},
+	{EFFECTS_FXAA, fxaaOpt},
 };
 
 EffectsRenderer::~EffectsRenderer() {
@@ -56,15 +76,27 @@ void EffectsRenderer::Render() {
 		eq->DrawStatic();
 	}
 
+	SetPipelineState(factory->GetState(EFFECTS_BLOOM_MASK));
+	renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BLOOM], nullptr);
+	renderer->GetContext()->PSSetShaderResources(sceneTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::SCENE_SRV]);
+	renderer->GetContext()->PSSetShaderResources(bloomMaskTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_MASK_SRV]);
+	eq->DrawStatic();	
+	
 	SetPipelineState(factory->GetState(EFFECTS_BLOOM));
 	renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BLOOM], nullptr);
 	renderer->GetContext()->PSSetShaderResources(sceneTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::SCENE_SRV]);
 	eq->DrawStatic();
 
+	SetPipelineState(factory->GetState(EFFECTS_FXAA));
+	renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::FXAA], nullptr);
+	renderer->GetContext()->PSSetShaderResources(sceneTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::SCENE_SRV]);
+	eq->DrawStatic();
+
 	SetPipelineState(factory->GetState(EFFECTS_SCENE));
-	renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BACKBUFFER], renderer->GetDepthStencilView());
+	renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BACKBUFFER], nullptr);
 	renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_SRV]);
 	renderer->GetContext()->PSSetShaderResources(effectTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::EFFECT_SRV]);
+	renderer->GetContext()->PSSetShaderResources(fxaaTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::FXAA_SRV]);
 	eq->DrawStatic();
 
 	ID3D11ShaderResourceView* null_SRV[1] = { nullptr };
@@ -86,6 +118,10 @@ void EffectsRenderer::Add(MODEL& cbe)
 
 void EffectsRenderer::EffectsPSProvider::PatchPipelineState(PipelineState* state, int defines) {
 	States* states = States::GetInstance();
+
+	//if (defines & EFFECTS_BLOOM) {
+	//	state->bs = states->blend_states.at(BlendState::SCREEN);
+	//}
 
 	state->bs = states->blend_states.at(BlendState::ALPHABS);
 	state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);

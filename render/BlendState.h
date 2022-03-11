@@ -8,7 +8,8 @@ enum BlendState {
 	ALPHABS,
 	SURFLIGHTMAPBS,
 	NOBS,
-	EFFECTBS
+	EFFECTBS,
+	SCREEN
 };
 
 ID3D11BlendState* MakeUIAlphaBS();
@@ -16,4 +17,5 @@ ID3D11BlendState* MakeAlphaBS();
 ID3D11BlendState* MakeSurfLightMapBS();
 ID3D11BlendState* MakeNoBS();
 ID3D11BlendState* MakeEffectBS();
+ID3D11BlendState* MakeScreenBS();
 
