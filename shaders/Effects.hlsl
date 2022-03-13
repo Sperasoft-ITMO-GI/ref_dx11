@@ -11,10 +11,10 @@
 #endif
 
 #ifdef BLOOM
-static const float PI = 3.14159265f;
-static const float sigma = 20.2f;
-
 #define gauss_constant 0.3989422804014327
+#define PI 3.14159265f
+
+static const float sigma = 5.0f;
 
 float gauss_weight(int sampleDist)
 {
@@ -22,12 +22,35 @@ float gauss_weight(int sampleDist)
 	return (g * exp(-(sampleDist * sampleDist) / (2 * sigma * sigma)));
 }
 
+float4 gauss(in float2 input, in float2 tex_scale, int radius)
+{
+	float4 color = 0;
+
+	float w,h;
+	bloomTexture.GetDimensions(w,h);
+
+	for (int i = 1; i <= radius; i++)
+	{
+		float weight = gauss_weight(i);
+
+		// compute tap tc
+		float2 tc1 = input;
+		float2 tc2 = input;
+		tc1 += (i / float2(w,h)) * tex_scale;
+		tc2 -= (i / float2(w,h)) * tex_scale;
+
+		color += (bloomTexture.Sample(Sampler, tc1)  + bloomTexture.Sample(Sampler, tc2)) * weight;
+	}
+	color += bloomTexture.Sample(Sampler, input) * gauss_weight(0);
+	return color;
+}
+
 #endif
 
 struct VSOut
 {
     float4 pos : SV_Position;
-    float2 texCoord : TEXCOORD0;
+    float2 texCoord : TEXCOORD;
 };
 
 struct VSIn
@@ -56,38 +79,20 @@ float4 PSMain(VSOut IN) : SV_Target
 #endif
     
 #ifdef BLOOM_MASK
-    float threshold = 0.7f;
-    float lum = bloomMaskTexture.Sample(Sampler, IN.texCoord);
-	if (lum > threshold)
-		return sceneTexture.Sample(Sampler, IN.texCoord) * lum;
-	else
-		return 0;
+    float threshold = 0.5f;
+    float mask = bloomTexture.Sample(Sampler, IN.texCoord).r;
+	if (mask > threshold) {
+		float4 glow = sceneTexture.Sample(Sampler, IN.texCoord) * mask;
+        result = glow;
+	}
+    else
+		result = 0;
 #endif
 
 #ifdef BLOOM
-    uint width, height;
-    sceneTexture.GetDimensions(width, height);
-    float2 texelSize = float2(1.0f/width, 1.0f/height);
-
-    uint radius = 50;
-    
-    result = sceneTexture.Sample(Sampler, IN.texCoord) * gauss_weight(0);
-    for (uint i = 1; i <= radius; ++i)
-    {
-        result += sceneTexture.Sample(Sampler, IN.texCoord + float2(texelSize.x * i / width, 0.0f)) * gauss_weight(i);
-        result += sceneTexture.Sample(Sampler, IN.texCoord - float2(texelSize.x * i / width, 0.0f)) * gauss_weight(i);
-    }    
-    
-    for (i = 1; i <= radius; ++i)
-    {
-        result += sceneTexture.Sample(Sampler, IN.texCoord + float2(0.0f, texelSize.y * i / height)) * gauss_weight(i);
-        result += sceneTexture.Sample(Sampler, IN.texCoord - float2(0.0f, texelSize.y * i / height)) * gauss_weight(i);
-    }
-    
-
-    float intensity = 1.0f;
-    result *= intensity;
-    return result;
+    int radius = 9;
+    result = gauss(IN.texCoord, float2(1, 0), radius);
+    //result += gauss(IN.texCoord, float2(0, 1), radius);
 #endif
     
 #ifdef FXAA
@@ -117,7 +122,7 @@ float4 PSMain(VSOut IN) : SV_Target
     FxaaFloat fxaaConsoleEdgeThresholdMin =    0.04f;
     FxaaFloat4 fxaaConsole360ConstDir = unused;
 
-    result = FxaaPixelShader(
+    result = float4(FxaaPixelShader(
         pos,
         fxaaConsolePosPos,
         tex,
@@ -135,14 +140,15 @@ float4 PSMain(VSOut IN) : SV_Target
         fxaaConsoleEdgeThreshold,
         fxaaConsoleEdgeThresholdMin,
         fxaaConsole360ConstDir
-    );
+    ).rgb, 1.0f);
 
 #endif
     
 #ifdef SCENE
-    result = bloomTexture.Sample(Sampler, IN.texCoord)
-           + fxaaTexture.Sample(Sampler, IN.texCoord)
-           + effectTexture.Sample(Sampler, IN.texCoord);
+    result = sceneTexture.Sample(Sampler, IN.texCoord);
+            //bloomTexture.Sample(Sampler, IN.texCoord);
+           //+ fxaaTexture.Sample(Sampler, IN.texCoord)
+           //+ effectTexture.Sample(Sampler, IN.texCoord);
 #endif
     
     return result;

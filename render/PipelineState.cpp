@@ -12,7 +12,7 @@ void SetPipelineState(PipelineState* state) {
 	state->ps->Bind();
 	
 	// Кажется, что они не всегда такие
-	float blend_factor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float blend_factor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	UINT sample_mask = 0xffffffff;
 	context->OMSetBlendState(state->bs, blend_factor, sample_mask);
 	context->RSSetState(state->rs);

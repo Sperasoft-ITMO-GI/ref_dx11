@@ -131,7 +131,10 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		texture_desc.MiscFlags = 0;
 
 		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::SCENE_SRV]));
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::BLOOM_SRV]));
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::LIGHTMAP_SRV]));
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::MASK_SRV]));
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::BLOOM_1_SRV]));
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::BLOOM_2_SRV]));
 		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::EFFECT_SRV]));
 		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::FXAA_SRV]));
 
@@ -143,8 +146,14 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 
 		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::SCENE_SRV],
 			&render_target_view_desc, &render_target_views[EffectsRTV::SCENE]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::BLOOM_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::BLOOM]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::LIGHTMAP_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::LIGHTMAP]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::MASK_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::MASK]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::BLOOM_1_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::BLOOM_1]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::BLOOM_2_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::BLOOM_2]));
 		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::EFFECT_SRV],
 			&render_target_view_desc, &render_target_views[EffectsRTV::EFFECT]));
 		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::FXAA_SRV],
@@ -163,9 +172,24 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 			&shader_resource_views [EffectsSRV::SCENE_SRV])
 		);
 		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::BLOOM_SRV],
+			render_textures[EffectsSRV::LIGHTMAP_SRV], 
 			&shader_resource_view_desc, 
-			&shader_resource_views[EffectsSRV::BLOOM_SRV])
+			&shader_resource_views [EffectsSRV::LIGHTMAP_SRV])
+		);
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::MASK_SRV], 
+			&shader_resource_view_desc, 
+			&shader_resource_views [EffectsSRV::MASK_SRV])
+		);
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::BLOOM_1_SRV],
+			&shader_resource_view_desc, 
+			&shader_resource_views[EffectsSRV::BLOOM_1_SRV])
+		);
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::BLOOM_2_SRV],
+			&shader_resource_view_desc, 
+			&shader_resource_views[EffectsSRV::BLOOM_2_SRV])
 		);
 		DXCHECK(device->CreateShaderResourceView(
 			render_textures[EffectsSRV::EFFECT_SRV],
@@ -176,18 +200,6 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 			render_textures[EffectsSRV::FXAA_SRV], 
 			&shader_resource_view_desc, 
 			&shader_resource_views[EffectsSRV::FXAA_SRV])
-		);
-
-		texture_desc.Format = DXGI_FORMAT_R8_UNORM;
-		render_target_view_desc.Format = texture_desc.Format;
-		shader_resource_view_desc.Format = texture_desc.Format;
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::BLOOM_MASK_SRV]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::BLOOM_MASK_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::BLOOM_MASK]));
-		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::BLOOM_MASK_SRV],
-			&shader_resource_view_desc,
-			&shader_resource_views[EffectsSRV::BLOOM_MASK_SRV])
 		);
 
 		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
@@ -245,7 +257,7 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
 		sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampler_desc.MaxAnisotropy = 16;
 		sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 		sampler_desc.BorderColor[0] = 1.0f;

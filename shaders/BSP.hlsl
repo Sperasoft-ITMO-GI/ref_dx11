@@ -29,14 +29,15 @@ VSOut VSMain(VSIn IN)
 
 struct PSOut
 {
-	float4 color : SV_Target0;
-	float1  mask  : SV_Target1;
+	float4 color    : SV_Target0;
+    float4 lightmap : SV_Target1;
+	float4 mask     : SV_Target2;
 };
 
 PSOut PSMain(VSOut IN)
 {
 	PSOut result;
-	
+    
     float4 texColor = colorTexture.Sample(Sampler, IN.texCoord);
 	
     float luma = dot(texColor.rgb, float3(0.3, 0.59, 0.11));
@@ -44,12 +45,16 @@ PSOut PSMain(VSOut IN)
 	//float3 glow = texColor.rgb * mask;
 
 #ifdef LIGHTMAPPEDPOLY
-	texColor *= lightmapTexture.Sample(Sampler, IN.lightmapCoord);
+    result.color = texColor * model.color;
+	result.lightmap = lightmapTexture.Sample(Sampler, IN.lightmapCoord) * model.color;
 #endif
 
-    float4 mainColor = texColor * model.color;;
-	result.color = mainColor;
-    result.mask = mask; //float4(glow, 1.0f);
+#ifndef LIGHTMAPPEDPOLY
+    result.color = texColor * model.color;
+    result.lightmap = texColor * model.color;
+#endif
+    
+    result.mask = float4(mask, mask, mask, mask); //float4(glow, 1.0f);
     
     return result;
 }
