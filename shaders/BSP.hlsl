@@ -46,14 +46,14 @@ PSOut PSMain(VSOut IN)
 
 #ifdef LIGHTMAPPEDPOLY
     result.color = lightmapTexture.Sample(Sampler, IN.lightmapCoord) * model.color;
-	//result.lightmap = lightmapTexture.Sample(Sampler, IN.lightmapCoord) * model.color;
+	result.lightmap = lightmapTexture.Sample(Sampler, IN.lightmapCoord) * model.color;
     //result.lightmap.rgb += float3(1, 1, 1)*0.3;
     //result.lightmap.a = 1;
 #endif
 
 #ifndef LIGHTMAPPEDPOLY
     result.color = texColor * model.color;
-    //result.lightmap = texColor * model.color;
+    result.lightmap = texColor * model.color;
 #endif
     
     result.mask = float4(mask, mask, mask, mask); //float4(glow, 0.0f);
