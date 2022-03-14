@@ -1302,6 +1302,10 @@ void DX11_EndFrame(void)
 	bsp_renderer->Render();
 	END_EVENT();
 
+	BEGIN_EVENT(L"Effects renderer");
+	effects_renderer->Render();
+	END_EVENT();
+
 	BEGIN_EVENT(L"Model renderer");
 	mod_renderer->Render();
 	END_EVENT();
@@ -1316,10 +1320,6 @@ void DX11_EndFrame(void)
 
 	BEGIN_EVENT(L"Particles renderer");
 	particles_renderer->Render();
-	END_EVENT();
-
-	BEGIN_EVENT(L"Effects renderer");
-	effects_renderer->Render();
 	END_EVENT();
 
 	BEGIN_EVENT(L"UI renderer");

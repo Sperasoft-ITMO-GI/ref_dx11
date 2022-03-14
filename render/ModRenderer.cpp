@@ -46,7 +46,7 @@ void ModRenderer::Render() {
 
 	renderer->GetContext()->OMSetRenderTargets(
 		1u,
-		&renderer->render_target_views[EffectsRTV::SCENE], 
+		&renderer->render_target_views[EffectsRTV::BACKBUFFER],
 		renderer->GetDepthStencilView()
 	);
 
@@ -110,7 +110,7 @@ void ModRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 	// Они разные только внутри шейдера
 	if ((defines & MOD_ALPHA) || (defines & MOD_WEAPON))
 	{
-		state->bs = states->blend_states.at(BlendState::ALPHABS);
+		state->bs = states->blend_states.at(BlendState::NOBS);
 		state->rs = states->rasterization_states.at(RasterizationState::CULL_BACK);
 		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS);
 		state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::MOD_POLYGON));

@@ -9,11 +9,12 @@
 #include <IStateProvider.h>
 #include <EffectsQuad.h>
 
-#define EFFECTS_DEFAULT       0x001
-#define EFFECTS_SCENE         0x002
-#define EFFECTS_BLOOM         0x004
-#define EFFECTS_BLOOM_MASK    0x008
-#define EFFECTS_FXAA          0x016
+#define EFFECTS_DEFAULT          0x001
+#define EFFECTS_SCENE            0x002
+#define EFFECTS_GLOW             0x004
+#define EFFECTS_HORIZONTAL_BLUR  0x008
+#define EFFECTS_VERTICAL_BLUR    0x016
+#define EFFECTS_FXAA             0x032
 
 class EffectsRenderer {
 public:
@@ -55,4 +56,5 @@ private:
 
 public:
 	bool is_render = false;
+	bool fxaa = false;
 };

@@ -31,7 +31,7 @@ void SkyRenderer::Render() {
 
 		renderer->GetContext()->OMSetRenderTargets(
 			1u,
-			&renderer->render_target_views[EffectsRTV::SCENE],
+			&renderer->render_target_views[EffectsRTV::BACKBUFFER],
 			renderer->GetDepthStencilView()
 		);
 

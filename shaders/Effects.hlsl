@@ -10,7 +10,7 @@
 #include "Fxaa3_11.h"
 #endif
 
-#ifdef BLOOM
+#if defined HORIZONTAL_BLUR | defined VERTICAL_BLUR
 #define gauss_constant 0.3989422804014327
 #define PI 3.14159265f
 
@@ -22,26 +22,22 @@ float gauss_weight(int sampleDist)
 	return (g * exp(-(sampleDist * sampleDist) / (2 * sigma * sigma)));
 }
 
-float4 gauss(in float2 input, in float2 tex_scale, int radius)
+float4 gauss_filter_pass(in float2 texCoord, in float2 direction, int radius)
 {
 	float4 color = 0;
+	float w, h;
+	bloomTexture.GetDimensions(w, h);
 
-	float w,h;
-	bloomTexture.GetDimensions(w,h);
-
-	for (int i = 1; i <= radius; i++)
+    color += bloomTexture.Sample(Sampler, texCoord) * gauss_weight(0);
+	for (int i = -radius; i <= radius; i++)
 	{
 		float weight = gauss_weight(i);
+		float2 texCoordOffset = texCoord;
+		texCoordOffset += (i / float2(w, h)) * direction;
 
-		// compute tap tc
-		float2 tc1 = input;
-		float2 tc2 = input;
-		tc1 += (i / float2(w,h)) * tex_scale;
-		tc2 -= (i / float2(w,h)) * tex_scale;
-
-		color += (bloomTexture.Sample(Sampler, tc1)  + bloomTexture.Sample(Sampler, tc2)) * weight;
+		color += bloomTexture.Sample(Sampler, texCoordOffset) * weight;
 	}
-	color += bloomTexture.Sample(Sampler, input) * gauss_weight(0);
+	
 	return color;
 }
 
@@ -72,27 +68,31 @@ VSOut VSMain(VSIn IN)
 
 float4 PSMain(VSOut IN) : SV_Target
 {
-    float4 result;
+    float4 result = 0;
     
 #ifdef DEFAULT
     result = model.color;
 #endif
     
-#ifdef BLOOM_MASK
+#ifdef GLOW
     float threshold = 0.5f;
     float mask = bloomTexture.Sample(Sampler, IN.texCoord).r;
 	if (mask > threshold) {
-		float4 glow = sceneTexture.Sample(Sampler, IN.texCoord) * mask;
+		float4 glow = colorTexture.Sample(Sampler, IN.texCoord) * mask;
         result = glow;
 	}
     else
 		result = 0;
 #endif
 
-#ifdef BLOOM
-    int radius = 9;
-    result = gauss(IN.texCoord, float2(1, 0), radius);
-    //result += gauss(IN.texCoord, float2(0, 1), radius);
+#ifdef HORIZONTAL_BLUR
+    int radius = 7;
+    result = gauss_filter_pass(IN.texCoord, float2(1, 0), radius);
+#endif
+    
+#ifdef VERTICAL_BLUR
+    int radius = 7;
+    result = gauss_filter_pass(IN.texCoord, float2(0, 1), radius);
 #endif
     
 #ifdef FXAA
@@ -102,12 +102,12 @@ float4 PSMain(VSOut IN) : SV_Target
     FxaaFloat4 fxaaConsolePosPos = unused;
     FxaaTex tex;
     tex.smpl = Sampler;
-    tex.tex  = sceneTexture;
-    FxaaTex fxaaConsole360TexExpBiasNegOne = { Sampler, sceneTexture };
-    FxaaTex fxaaConsole360TexExpBiasNegTwo = { Sampler, sceneTexture };
+    tex.tex  = colorTexture;
+    FxaaTex fxaaConsole360TexExpBiasNegOne = { Sampler, colorTexture };
+    FxaaTex fxaaConsole360TexExpBiasNegTwo = { Sampler, colorTexture };
 
     float w,h;
-    sceneTexture.GetDimensions(w,h);
+    colorTexture.GetDimensions(w,h);
 
     FxaaFloat2 fxaaQualityRcpFrame = float2(1.0/w, 1.0/h);
 
@@ -145,10 +145,13 @@ float4 PSMain(VSOut IN) : SV_Target
 #endif
     
 #ifdef SCENE
-    result = sceneTexture.Sample(Sampler, IN.texCoord);
-            //bloomTexture.Sample(Sampler, IN.texCoord);
-           //+ fxaaTexture.Sample(Sampler, IN.texCoord)
-           //+ effectTexture.Sample(Sampler, IN.texCoord);
+    float4 sceneColor = colorTexture.Sample(Sampler, IN.texCoord);
+    float4 light = float4(lightmapTexture.Sample(Sampler, IN.texCoord).rgb * 1.5f, 1.0f);
+    float intensity = 3.0f;
+    float4 bloom = bloomTexture.Sample(Sampler, IN.texCoord);
+    float4 effect = effectTexture.Sample(Sampler, IN.texCoord);
+    float4 fxaa = fxaaTexture.Sample(Sampler, IN.texCoord);
+    result = sceneColor * light + bloom * intensity + effect + fxaa;
 #endif
     
     return result;
