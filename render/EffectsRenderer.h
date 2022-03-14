@@ -14,7 +14,8 @@
 #define EFFECTS_GLOW             0x004
 #define EFFECTS_HORIZONTAL_BLUR  0x008
 #define EFFECTS_VERTICAL_BLUR    0x016
-#define EFFECTS_FXAA             0x032
+#define EFFECTS_INTENSITY        0x032
+#define EFFECTS_FXAA             0x064
 
 class EffectsRenderer {
 public:

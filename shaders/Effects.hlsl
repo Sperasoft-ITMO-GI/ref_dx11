@@ -14,7 +14,7 @@
 #define gauss_constant 0.3989422804014327
 #define PI 3.14159265f
 
-static const float sigma = 5.0f;
+static const float sigma = 4.7f;
 
 float gauss_weight(int sampleDist)
 {
@@ -75,7 +75,7 @@ float4 PSMain(VSOut IN) : SV_Target
 #endif
     
 #ifdef GLOW
-    float threshold = 0.5f;
+    float threshold = 0.45f;
     float mask = bloomTexture.Sample(Sampler, IN.texCoord).r;
 	if (mask > threshold) {
 		float4 glow = colorTexture.Sample(Sampler, IN.texCoord) * mask;
@@ -86,13 +86,18 @@ float4 PSMain(VSOut IN) : SV_Target
 #endif
 
 #ifdef HORIZONTAL_BLUR
-    int radius = 7;
+    int radius = 9;
     result = gauss_filter_pass(IN.texCoord, float2(1, 0), radius);
 #endif
     
 #ifdef VERTICAL_BLUR
-    int radius = 7;
+    int radius = 9;
     result = gauss_filter_pass(IN.texCoord, float2(0, 1), radius);
+#endif
+    
+#ifdef INTENSITY
+    float intensity = 5.0f;
+    result = bloomTexture.Sample(Sampler, IN.texCoord) * intensity;
 #endif
     
 #ifdef FXAA
@@ -146,7 +151,7 @@ float4 PSMain(VSOut IN) : SV_Target
     
 #ifdef SCENE
     float4 sceneColor = colorTexture.Sample(Sampler, IN.texCoord);
-    float4 light = float4(lightmapTexture.Sample(Sampler, IN.texCoord).rgb * 1.5f, 1.0f);
+    float4 light = float4(lightmapTexture.Sample(Sampler, IN.texCoord).rgb, 1.0f);
     float intensity = 3.0f;
     float4 bloom = bloomTexture.Sample(Sampler, IN.texCoord);
     float4 effect = effectTexture.Sample(Sampler, IN.texCoord);
