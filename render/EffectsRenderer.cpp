@@ -102,7 +102,7 @@ void EffectsRenderer::Render() {
 
 		SetPipelineState(factory->GetState(EFFECTS_GLOW));
 		renderer->GetContext()->OMSetRenderTargets(0u, nullptr, nullptr);
-		renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BLOOM_1], renderer->GetDepthStencilView());
+		renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BLOOM_2], renderer->GetDepthStencilView());
 		renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::SCENE_SRV]);
 		renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::MASK_SRV]);
 		eq->DrawStatic();
@@ -112,15 +112,15 @@ void EffectsRenderer::Render() {
 		for (int i = 0; i < kernel; ++i) {
 
 			SetPipelineState(factory->GetState(EFFECTS_HORIZONTAL_BLUR));
-			renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BLOOM_2], renderer->GetDepthStencilView());
-			renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_1_SRV]);
+			renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BLOOM_1], renderer->GetDepthStencilView());
+			renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_2_SRV]);
 			eq->DrawStatic();
 
 			renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, null_SRV);
 
 			SetPipelineState(factory->GetState(EFFECTS_VERTICAL_BLUR));
-			renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BLOOM_1], renderer->GetDepthStencilView());
-			renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_2_SRV]);
+			renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BLOOM_2], renderer->GetDepthStencilView());
+			renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_1_SRV]);
 			eq->DrawStatic();
 
 			renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, null_SRV);
@@ -134,31 +134,18 @@ void EffectsRenderer::Render() {
 		renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, null_SRV);
 
 		renderer->GetContext()->ClearRenderTargetView(renderer->render_target_views[EffectsRTV::BLOOM_1], DirectX::Colors::Black);
-		SetPipelineState(factory->GetState(EFFECTS_SCENE));
+		SetPipelineState(factory->GetState(EFFECTS_FXAA));
 		renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BLOOM_1], renderer->GetDepthStencilView());
 		renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::SCENE_SRV]);
-		renderer->GetContext()->PSSetShaderResources(lightmapTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::LIGHTMAP_SRV]);
-		renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_2_SRV]);
-		renderer->GetContext()->PSSetShaderResources(effectTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::EFFECT_SRV]);
-		//renderer->GetContext()->PSSetShaderResources(fxaaTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::FXAA_SRV]);
 		eq->DrawStatic();
-	}
-	else {
-		SetPipelineState(factory->GetState(EFFECTS_FXAA));
+
+		
+		SetPipelineState(factory->GetState(EFFECTS_SCENE));
 		renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BACKBUFFER], renderer->GetDepthStencilView());
 		renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_1_SRV]);
+		renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_2_SRV]);
+		renderer->GetContext()->PSSetShaderResources(effectTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::EFFECT_SRV]);
 		eq->DrawStatic();
-
-		renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, null_SRV);
-		renderer->GetContext()->PSSetShaderResources(fxaaTexture.slot, 1u, null_SRV);
-		renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1u, null_SRV);
-		renderer->GetContext()->PSSetShaderResources(lightmapTexture.slot, 1u, null_SRV);
-		renderer->GetContext()->PSSetShaderResources(effectTexture.slot, 1u, null_SRV);
-
-		//SetPipelineState(factory->GetState(EFFECTS_SCENE));
-		//renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::BACKBUFFER], renderer->GetDepthStencilView());
-		//renderer->GetContext()->PSSetShaderResources(fxaaTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::FXAA_SRV]);
-		//eq->DrawStatic();
 	}
 	//ID3D11ShaderResourceView* null_SRV[1] = { nullptr };
 	renderer->GetContext()->PSSetShaderResources(bloomTexture.slot,  1u, null_SRV);
@@ -185,19 +172,19 @@ void EffectsRenderer::EffectsPSProvider::PatchPipelineState(PipelineState* state
 	if (defines & EFFECTS_GLOW) {
 		state->bs = states->blend_states.at(BlendState::NOBS);
 
-		state->dss = states->depth_stencil_states.at(DepthStencilState::NEVER);
+		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS_EQUAL);
 	}
 	if (defines & EFFECTS_HORIZONTAL_BLUR) {
 		state->bs = states->blend_states.at(BlendState::NOBS);
-		state->dss = states->depth_stencil_states.at(DepthStencilState::NEVER);
+		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS_EQUAL);
 	}
 	if (defines & EFFECTS_VERTICAL_BLUR) {
 		state->bs = states->blend_states.at(BlendState::NOBS);
-		state->dss = states->depth_stencil_states.at(DepthStencilState::NEVER);
+		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS_EQUAL);
 	}
 	if (defines & EFFECTS_SCENE) {
-		state->bs = states->blend_states.at(BlendState::NOBS);
-		state->dss = states->depth_stencil_states.at(DepthStencilState::NEVER);
+		state->bs = states->blend_states.at(BlendState::ALPHABS);
+		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS_EQUAL);
 	}
 	if (defines & EFFECTS_DEFAULT) {
 		state->bs = states->blend_states.at(BlendState::ALPHABS);
@@ -205,7 +192,7 @@ void EffectsRenderer::EffectsPSProvider::PatchPipelineState(PipelineState* state
 	}
 	if (defines & EFFECTS_FXAA) {
 		state->bs = states->blend_states.at(BlendState::ALPHABS);
-		state->dss = states->depth_stencil_states.at(DepthStencilState::NEVER);
+		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS_EQUAL);
 	}
 
 	//state->dss = states->depth_stencil_states.at(DepthStencilState::NEVER);

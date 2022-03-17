@@ -101,13 +101,8 @@ public:
 	Renderer& operator=(const Renderer&) = delete;
 
 	// 0 - backbuffer
-	// 1 - scene
-	// 2 - ligthmap scene
-	// 3 - mask
-	// 4 - bloom 1
-	// 5 - bloom 2
-	// 6 - damage effect
-	// 7 - fxaa
+	// 1 - scene 1
+	// 2 - scene 2
 
 	static constexpr int render_targets_count = 8;
 	ID3D11Texture2D* render_textures[render_targets_count - 1];

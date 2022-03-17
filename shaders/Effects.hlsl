@@ -4,7 +4,7 @@
 
 #ifdef FXAA
 #define FXAA_PC 1
-#define FXAA_HLSL_5 1
+#define FXAA_HLSL_4 1
 #define FXAA_QUALITY__PRESET 12
 #define FXAA_GREEN_AS_LUMA 0
 #include "Fxaa3_11.h"
@@ -14,7 +14,7 @@
 #define gauss_constant 0.3989422804014327
 #define PI 3.14159265f
 
-static const float sigma = 4.7f;
+static const float sigma = 2.7f;
 
 float gauss_weight(int sampleDist)
 {
@@ -75,11 +75,12 @@ float4 PSMain(VSOut IN) : SV_Target
 #endif
     
 #ifdef GLOW
-    float threshold = 0.6f;
+    float4 texColor = colorTexture.Sample(Sampler, IN.texCoord);
+    float threshold = 0.45f;
     float mask = bloomTexture.Sample(Sampler, IN.texCoord).r;
 	if (mask > threshold) {
-		float4 glow = colorTexture.Sample(Sampler, IN.texCoord) * mask;
-        result = glow;
+		float3 glow = texColor.rgb * mask;
+        result = float4(glow, 1.0f);
 	}
     else
 		result = 0;
@@ -105,9 +106,7 @@ float4 PSMain(VSOut IN) : SV_Target
 
     FxaaFloat2 pos = IN.texCoord;
     FxaaFloat4 fxaaConsolePosPos = unused;
-    FxaaTex tex;
-    tex.smpl = Sampler;
-    tex.tex  = colorTexture;
+    FxaaTex tex = { Sampler, colorTexture };
     FxaaTex fxaaConsole360TexExpBiasNegOne = { Sampler, colorTexture };
     FxaaTex fxaaConsole360TexExpBiasNegTwo = { Sampler, colorTexture };
 
@@ -119,21 +118,21 @@ float4 PSMain(VSOut IN) : SV_Target
     FxaaFloat4 fxaaConsoleRcpFrameOpt = unused;
     FxaaFloat4 fxaaConsoleRcpFrameOpt2 = unused;
     FxaaFloat4 fxaaConsole360RcpFrameOpt2 = unused;
-    FxaaFloat fxaaQualitySubpix =              1.0f;
-    FxaaFloat fxaaQualityEdgeThreshold =       0.063f;
-    FxaaFloat fxaaQualityEdgeThresholdMin =    0.0312f;
-    FxaaFloat fxaaConsoleEdgeSharpness =       4.0f;
-    FxaaFloat fxaaConsoleEdgeThreshold =       0.25f;
-    FxaaFloat fxaaConsoleEdgeThresholdMin =    0.04f;
+    FxaaFloat fxaaQualitySubpix =              0.75f;
+    FxaaFloat fxaaQualityEdgeThreshold =       0.166f;
+    FxaaFloat fxaaQualityEdgeThresholdMin =    0.0833f;
+    FxaaFloat fxaaConsoleEdgeSharpness =       8.0f;
+    FxaaFloat fxaaConsoleEdgeThreshold =       0.125f;
+    FxaaFloat fxaaConsoleEdgeThresholdMin =    0.05f;
     FxaaFloat4 fxaaConsole360ConstDir = unused;
 
-    result = float4(FxaaPixelShader(
+    return float4(FxaaPixelShader(
         pos,
         fxaaConsolePosPos,
         tex,
         tex,
-        tex,
-        tex,
+        fxaaConsole360TexExpBiasNegOne,
+        fxaaConsole360TexExpBiasNegTwo,
         fxaaQualityRcpFrame,
         fxaaConsoleRcpFrameOpt,
         fxaaConsoleRcpFrameOpt2,
@@ -148,15 +147,13 @@ float4 PSMain(VSOut IN) : SV_Target
     ).rgb, 1.0f);
 
 #endif
-    
+
 #ifdef SCENE
     float4 sceneColor = colorTexture.Sample(Sampler, IN.texCoord);
-    float4 light = float4(lightmapTexture.Sample(Sampler, IN.texCoord).rgb, 1.0f);
-    float intensity = 3.0f;
+    float luma = max(dot(sceneColor.rgb, float3(0.299f, 0.587f, 0.114f)), 0.0001f);
     float4 bloom = bloomTexture.Sample(Sampler, IN.texCoord);
     float4 effect = effectTexture.Sample(Sampler, IN.texCoord);
-    float4 fxaa = fxaaTexture.Sample(Sampler, IN.texCoord);
-    result = sceneColor * light + bloom + effect + fxaa;
+    result = sceneColor + bloom + effect;
 #endif
     
     return result;

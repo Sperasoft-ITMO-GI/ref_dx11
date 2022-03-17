@@ -57,12 +57,11 @@ void BSPRenderer::Render() {
 
 	ID3D11RenderTargetView* render_targets[] = {
 		renderer->render_target_views[EffectsRTV::SCENE],
-		renderer->render_target_views[EffectsRTV::LIGHTMAP],
 		renderer->render_target_views[EffectsRTV::MASK],
 	};
 
 	renderer->GetContext()->OMSetRenderTargets(
-		3u,
+		2u,
 		render_targets,
 		renderer->GetDepthStencilView()
 	);
@@ -144,7 +143,7 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 	}
 
 	state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
-	state->dss = states->depth_stencil_states.at(DepthStencilState::LESS);
+	state->dss = states->depth_stencil_states.at(DepthStencilState::LESS_EQUAL);
 	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BSP_POLYGON));
 	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 }
