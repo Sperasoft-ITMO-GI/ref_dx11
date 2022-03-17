@@ -39,24 +39,19 @@ PSOut PSMain(VSOut IN)
 	PSOut result;
     
     float4 texColor = colorTexture.Sample(Sampler, IN.texCoord);
+    float4 lightmap = 0;
 	
     float luma = dot(texColor.rgb, float3(0.3, 0.59, 0.11));
 	float mask = saturate(luma * 4 - 3);
-	//float3 glow = texColor.rgb * mask;
+	float3 glow = texColor.rgb * mask;
 
 #ifdef LIGHTMAPPEDPOLY
-    result.color = lightmapTexture.Sample(Sampler, IN.lightmapCoord) * model.color;
-	result.lightmap = lightmapTexture.Sample(Sampler, IN.lightmapCoord) * model.color;
-    //result.lightmap.rgb += float3(1, 1, 1)*0.3;
-    //result.lightmap.a = 1;
-#endif
-
-#ifndef LIGHTMAPPEDPOLY
-    result.color = texColor * model.color;
-    result.lightmap = texColor * model.color;
+	lightmap = lightmapTexture.Sample(Sampler, IN.lightmapCoord);
 #endif
     
-    result.mask = float4(mask, mask, mask, mask); //float4(glow, 0.0f);
+    result.color = texColor * model.color;
+    result.lightmap = lightmap * 1.3; // ???
+    result.mask = float4(glow, 1.0f);
     
     return result;
 }

@@ -75,7 +75,7 @@ float4 PSMain(VSOut IN) : SV_Target
 #endif
     
 #ifdef GLOW
-    float threshold = 0.45f;
+    float threshold = 0.6f;
     float mask = bloomTexture.Sample(Sampler, IN.texCoord).r;
 	if (mask > threshold) {
 		float4 glow = colorTexture.Sample(Sampler, IN.texCoord) * mask;
@@ -156,7 +156,7 @@ float4 PSMain(VSOut IN) : SV_Target
     float4 bloom = bloomTexture.Sample(Sampler, IN.texCoord);
     float4 effect = effectTexture.Sample(Sampler, IN.texCoord);
     float4 fxaa = fxaaTexture.Sample(Sampler, IN.texCoord);
-    result = sceneColor * light + bloom * intensity + effect + fxaa;
+    result = sceneColor * light + bloom + effect + fxaa;
 #endif
     
     return result;
