@@ -44,9 +44,14 @@ void ModRenderer::InitCB() {
 void ModRenderer::Render() {
 	Renderer* renderer = Renderer::GetInstance();
 
+	ID3D11RenderTargetView* render_targets[] = {
+		renderer->render_target_views[EffectsRTV::SCENE],
+		renderer->render_target_views[EffectsRTV::MASK],
+	};
+
 	renderer->GetContext()->OMSetRenderTargets(
-		1u,
-		&renderer->render_target_views[EffectsRTV::SCENE],
+		2u,
+		render_targets,
 		renderer->GetDepthStencilView()
 	);
 

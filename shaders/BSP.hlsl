@@ -48,7 +48,6 @@ PSOut PSMain(VSOut IN)
     texColor *= lightmapTexture.Sample(Sampler, IN.lightmapCoord);
 #endif
     
-
     result.color = texColor  * model.color;
     result.mask = float4(glow, 1.0f);
     

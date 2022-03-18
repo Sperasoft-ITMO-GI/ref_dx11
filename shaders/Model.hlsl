@@ -18,6 +18,12 @@ struct VSIn
     float2 lightmapCoord : LmTexCoord;
 };
 
+struct PSOut
+{
+    float4 color : SV_Target0;
+    float4 mask : SV_Target1;
+};
+
 VSOut VSMain(VSIn IN)
 {
 	#ifdef WEAPON
@@ -35,9 +41,16 @@ VSOut VSMain(VSIn IN)
     return OUT;
 }
 
-float4 PSMain(VSOut IN) : SV_Target
+PSOut PSMain(VSOut IN) 
 {
-    float4 result = (colorTexture.Sample(Sampler, IN.texCoord) * IN.col) * model.color;
-
+    PSOut result;
+    
+    float4 texColor = colorTexture.Sample(Sampler, IN.texCoord);
+    float luma = dot(texColor.rgb, float3(0.3, 0.59, 0.11));
+    float mask = saturate(luma * 4 - 3);
+    float3 glow = texColor.rgb * mask;
+    
+    result.color = (colorTexture.Sample(Sampler, IN.texCoord) * IN.col) * model.color;
+    result.mask = 0;
     return result;
 }
