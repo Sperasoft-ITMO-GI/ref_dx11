@@ -30,6 +30,22 @@
 
 #endif
 
+#define DEBUG_MARKERS
+
+#ifdef DEBUG_MARKERS
+
+#define BEGIN_EVENT(X) renderer->BeginEvent(X);
+#define END_EVENT() renderer->EndEvent();
+#define SET_MARKER(X) renderer->SetMarker(X);
+
+#else
+
+#define BEGIN_EVENT(X)
+#define END_EVENT()
+#define SET_MARKER(X) 
+
+#endif
+
 std::wstring ToWide(const std::string& narrow);
 
 ID3DBlob* CompileShader(const wchar_t* filename, const D3D_SHADER_MACRO* defines,

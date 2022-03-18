@@ -52,7 +52,8 @@ enum EffectsSRV : uint8_t {
 	BLOOM_1_SRV = 3,
 	BLOOM_2_SRV = 4,
 	EFFECT_SRV = 5,
-	FXAA_SRV = 6
+	FXAA_SRV = 6,
+	DEPTH_SRV = 7
 };
 
 class Renderer {
@@ -101,13 +102,18 @@ public:
 	Renderer& operator=(const Renderer&) = delete;
 
 	// 0 - backbuffer
-	// 1 - scene 1
-	// 2 - scene 2
+	// 1 - scene
+	// 2 - ligthmap scene
+	// 3 - mask
+	// 4 - bloom 1
+	// 5 - bloom 2
+	// 6 - damage effect
+	// 7 - fxaa
 
 	static constexpr int render_targets_count = 8;
-	ID3D11Texture2D* render_textures[render_targets_count - 1];
+	ID3D11Texture2D* render_textures[render_targets_count];
 	ID3D11RenderTargetView* render_target_views[render_targets_count];
-	ID3D11ShaderResourceView* shader_resource_views[render_targets_count - 1];
+	ID3D11ShaderResourceView* shader_resource_views[render_targets_count];
 	bool is_game_started = false;
 
 	~Renderer();

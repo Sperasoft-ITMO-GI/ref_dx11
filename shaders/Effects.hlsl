@@ -148,6 +148,40 @@ float4 PSMain(VSOut IN) : SV_Target
 
 #endif
 
+#ifdef MOTION_BLUR
+     // Get the depth buffer value at this pixel.    
+    float zOverW = depthTexture.Sample(Sampler, IN.texCoord); 
+    // H is the viewport position at this pixel in the range -1 to 1.    
+    float4 H = float4(IN.texCoord.x * 2 - 1, (1 - IN.texCoord.y) * 2 - 1, zOverW, 1); 
+    // Transform by the view-projection inverse.    
+    float4 D = mul(H, camera.view_projection_inverse); 
+    // Divide by w to get the world position.    
+    float4 worldPos = D / D.w; 
+    
+    // Current viewport position    
+    float4 currentPos = H; 
+    // Use the world position, and transform by the previous view-projection matrix.    
+    float4 previousPos = mul(worldPos, camera.prev_view); 
+    // Convert to nonhomogeneous points [-1,1] by dividing by w. 
+    previousPos /= previousPos.w; 
+    // Use this frame's position and last frame's to compute the pixel velocity.    
+    float2 velocity = ((previousPos - currentPos) / 2.f).xy;
+    
+    // Get the initial color at this pixel.    
+    float4 color = colorTexture.Sample(Sampler, IN.texCoord); 
+    IN.texCoord += velocity; 
+
+    int g_numSamples = 2;
+    for(int i = 1; i < g_numSamples; ++i, IN.texCoord += velocity) 
+    {   // Sample the color buffer along the velocity vector.    
+        float4 currentColor = colorTexture.Sample(Sampler, IN.texCoord);   
+        // Add the current color to our color sum.   
+        color += currentColor; 
+    } 
+    // Average all of the samples to get the final blur color.    
+    result = color ;// g_numSamples * 3; 
+#endif
+    
 #ifdef SCENE
     float4 sceneColor = colorTexture.Sample(Sampler, IN.texCoord);
     float luma = max(dot(sceneColor.rgb, float3(0.299f, 0.587f, 0.114f)), 0.0001f);
@@ -155,6 +189,8 @@ float4 PSMain(VSOut IN) : SV_Target
     float4 effect = effectTexture.Sample(Sampler, IN.texCoord);
     result = sceneColor + bloom + effect;
 #endif
+    
+
     
     return result;
 }

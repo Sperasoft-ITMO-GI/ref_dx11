@@ -207,7 +207,7 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		// Set up the description of the stencil state.
 		depth_stencil_desc.DepthEnable = true;
 		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL; // только для неба такой
+		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL; 
 		DXCHECK(device->CreateDepthStencilState(&depth_stencil_desc, &depth_stencil_state));
 
 		D3D11_TEXTURE2D_DESC depth_stencil_tex;
@@ -216,17 +216,17 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		depth_stencil_tex.Height = window->GetHeight();
 		depth_stencil_tex.MipLevels = 1;
 		depth_stencil_tex.ArraySize = 1;
-		depth_stencil_tex.Format = DXGI_FORMAT_D32_FLOAT;
+		depth_stencil_tex.Format = DXGI_FORMAT_R32_TYPELESS;
 		depth_stencil_tex.SampleDesc.Count = IsMsaaEnable() ? 4 : 1;
 		depth_stencil_tex.SampleDesc.Quality = IsMsaaEnable() ? (GetMSAAQuality() - 1) : 0;
 		depth_stencil_tex.Usage = D3D11_USAGE_DEFAULT;
-		depth_stencil_tex.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		depth_stencil_tex.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 		depth_stencil_tex.CPUAccessFlags = 0;
 		depth_stencil_tex.MiscFlags = 0;
 
-		ID3D11Texture2D* buffer;
+		//ID3D11Texture2D* buffer;
 
-		DXCHECK(device->CreateTexture2D(&depth_stencil_tex, 0, &buffer));
+		DXCHECK(device->CreateTexture2D(&depth_stencil_tex, 0, &render_textures[EffectsSRV::DEPTH_SRV]));
 
 		D3D11_DEPTH_STENCIL_VIEW_DESC depth_stencil_view_desc;
 		ZeroMemory(&depth_stencil_view_desc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
@@ -234,9 +234,20 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		depth_stencil_view_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 		depth_stencil_view_desc.Texture2D.MipSlice = 0u;
 
-		DXCHECK(device->CreateDepthStencilView(buffer, &depth_stencil_view_desc, &depth_stencil_view));
+		DXCHECK(device->CreateDepthStencilView(
+			render_textures[EffectsSRV::DEPTH_SRV], 
+			&depth_stencil_view_desc, 
+			&depth_stencil_view)
+		);
 
-		buffer->Release();
+		shader_resource_view_desc.Format = DXGI_FORMAT_R32_FLOAT;
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::DEPTH_SRV],
+			&shader_resource_view_desc,
+			&shader_resource_views[EffectsSRV::DEPTH_SRV])
+		);
+
+		//buffer->Release();
 
 		// TODO: replace this to begin frame
 		//context->OMSetRenderTargets(renderTargets, render_target_view, depth_stencil_view);
@@ -255,9 +266,9 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		ZeroMemory(&sampler_desc, sizeof(D3D11_SAMPLER_DESC));
 
 		sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
-		sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
+		sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
+		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 		sampler_desc.MaxAnisotropy = 16;
 		sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 		sampler_desc.BorderColor[0] = 1.0f;

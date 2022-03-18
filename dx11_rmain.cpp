@@ -86,6 +86,8 @@ EffectsRenderer* effects_renderer = new EffectsRenderer();
 
 States* States::states = nullptr;
 
+bool is_first = true;
+
 cvar_t* gl_round_down;
 
 
@@ -745,7 +747,7 @@ void R_SetupDX(void)
 	cam.perspective = XMMatrixPerspectiveFovRH(XMConvertToRadians(r_newrefdef.fov_y), screenaspect, 4.0f, 4096.0f);
 	//renderer->SetPerspectiveMatrix(r_newrefdef.fov_y, screenaspect, 4.0f, 4096.0f);
 
-	cam.weaponProj = XMMatrixIdentity() * XMMatrixScaling(-1.0f, 1.0f, 1.0f) * XMMatrixPerspectiveFovRH(XMConvertToRadians(r_newrefdef.fov_y), screenaspect, 4, 4096);
+	//cam.weaponProj = XMMatrixIdentity() * XMMatrixScaling(-1.0f, 1.0f, 1.0f) * XMMatrixPerspectiveFovRH(XMConvertToRadians(r_newrefdef.fov_y), screenaspect, 4, 4096);
 
 	// id's system:
 	//	- X axis = Left/Right
@@ -759,6 +761,12 @@ void R_SetupDX(void)
 
 	// vieworg - postition
 	// viewangles - point view
+	if (is_first) {
+		cam.prev_view = XMMatrixIdentity();
+		is_first = false;
+	} else {
+		cam.prev_view = XMMatrixMultiply(cam.perspective, cam.view);
+	}
 
 	cam.view = XMMatrixIdentity();
 	cam.view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
@@ -771,7 +779,7 @@ void R_SetupDX(void)
 	cam.view *= XMMatrixRotationX(XMConvertToRadians(-90.0f));
 
 	//renderer->SetModelViewMatrix(cam.view);
-
+	cam.view_projection_inverse = XMMatrixInverse(nullptr, XMMatrixMultiply(cam.perspective, cam.view));
 	// Обновляем буфер
 	cbCamera.Update(cam);
 	cbCamera.Bind<CAMERA>(camera.slot);
@@ -1299,6 +1307,7 @@ void R_BeginFrame(float camera_separation)
 void DX11_EndFrame(void)
 {
 	END_EVENT();
+
 	BEGIN_EVENT(L"Model renderer");
 	mod_renderer->Render();
 	END_EVENT();
@@ -1315,15 +1324,12 @@ void DX11_EndFrame(void)
 	particles_renderer->Render();
 	END_EVENT();
 
-	// BEGIN_EVENT(L"BSP renderer");
+	BEGIN_EVENT(L"BSP renderer (No dynamic lightmap)");
 	bsp_renderer->Render();
 	END_EVENT();
 
 	BEGIN_EVENT(L"Effects renderer");
 	effects_renderer->Render();
-	effects_renderer->fxaa = true;
-	effects_renderer->Render();
-	effects_renderer->fxaa = false;
 	END_EVENT();
 
 	BEGIN_EVENT(L"UI renderer");

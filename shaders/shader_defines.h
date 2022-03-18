@@ -62,7 +62,8 @@ struct CAMERA
 	float4x4 perspective;
 	float4x4 orthogonal;
 	float4x4 view;
-	float4x4 weaponProj;
+	float4x4 prev_view;
+	float4x4 view_projection_inverse;
 };
 
 // TEMPORABLE
@@ -87,6 +88,6 @@ TEXTURE_2D(1, float4, lightmapTexture)
 TEXTURE_2D(2, float4, bloomTexture)
 TEXTURE_2D(3, float4, effectTexture)
 TEXTURE_2D(4, float4, fxaaTexture)
-TEXTURE_2D(5, float, maskTexture)
+TEXTURE_2D(5, float, depthTexture)
 TEXTURE_CUBE(0, float4, skyboxTexture)
 SAMPLER(0, Sampler)

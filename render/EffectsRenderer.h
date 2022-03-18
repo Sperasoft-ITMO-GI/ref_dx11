@@ -16,6 +16,7 @@
 #define EFFECTS_VERTICAL_BLUR    0x016
 #define EFFECTS_INTENSITY        0x032
 #define EFFECTS_FXAA             0x064
+#define EFFECTS_MOTION_BLUR      0x128
 
 class EffectsRenderer {
 public:
