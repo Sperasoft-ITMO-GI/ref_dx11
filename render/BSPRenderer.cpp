@@ -57,7 +57,7 @@ void BSPRenderer::Render() {
 
 	ID3D11RenderTargetView* render_targets[] = {
 		renderer->render_target_views[EffectsRTV::SCENE],
-		renderer->render_target_views[EffectsRTV::MASK],
+		renderer->render_target_views[EffectsRTV::MASK]
 	};
 
 	renderer->GetContext()->OMSetRenderTargets(
