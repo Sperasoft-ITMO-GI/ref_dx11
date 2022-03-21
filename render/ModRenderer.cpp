@@ -51,7 +51,7 @@ void ModRenderer::Render() {
 	};
 
 	renderer->GetContext()->OMSetRenderTargets(
-		4u,
+		3u,
 		render_targets,
 		renderer->GetDepthStencilView()
 	);

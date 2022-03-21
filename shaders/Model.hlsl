@@ -22,9 +22,8 @@ struct VSIn
 struct PSOut
 {
     float4 color : SV_Target0;
-    float4 color2 : SV_Target1;
-    float4 mask : SV_Target2;
-    float2 velosity : SV_Target3;
+    float4 mask : SV_Target1;
+    float2 velosity : SV_Target2;
 };
 
 VSOut VSMain(VSIn IN)

@@ -90,6 +90,11 @@ bool is_first = true;
 
 cvar_t* gl_round_down;
 
+std::chrono::time_point<std::chrono::steady_clock> prev_time = std::chrono::steady_clock::now();
+float total_time = 0;
+unsigned int frame_count = 0;
+float fps = 0;
+
 
 void CompileShaders()
 {
@@ -780,6 +785,8 @@ void R_SetupDX(void)
 
 	//renderer->SetModelViewMatrix(cam.view);
 	cam.view_projection_inverse = XMMatrixInverse(nullptr, XMMatrixMultiply(cam.perspective, cam.view));
+
+	cam.fps = fps;
 	// Обновляем буфер
 	cbCamera.Update(cam);
 	cbCamera.Bind<CAMERA>(camera.slot);
@@ -1278,6 +1285,7 @@ void R_SetPalette(const unsigned char* palette)
 R_BeginFrame
 @@@@@@@@@@@@@@@@@@@@@
 */
+
 void R_BeginFrame(float camera_separation)
 {
 	// here we need safe camera_separation
@@ -1337,6 +1345,25 @@ void DX11_EndFrame(void)
 	END_EVENT();
 
 	renderer->Swap();
+
+	auto current_time = std::chrono::steady_clock::now();
+	float delta_time = std::chrono::duration_cast<std::chrono::microseconds>(current_time - prev_time).count() / 1000000.0f;
+	prev_time = current_time;
+
+	total_time += delta_time;
+	frame_count++;
+
+	if (total_time > 1.0f) {
+		fps = frame_count / total_time;
+
+		total_time -= 1.0f;
+
+		WCHAR text[256];
+		swprintf_s(text, TEXT("Quake 2 DX11 | FPS: %f"), fps);
+		SetWindowText(renderer->GetWindow(), text);
+
+		frame_count = 0;
+	}
 }
 
 /*

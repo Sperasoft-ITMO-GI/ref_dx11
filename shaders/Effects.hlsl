@@ -169,7 +169,8 @@ float4 PSMain(VSOut IN) : SV_Target
     // Convert to nonhomogeneous points [-1,1] by dividing by w. 
     previousPos /= previousPos.w; 
     // Use this frame's position and last frame's to compute the pixel velocity.  
-    float strength = 0.3f;
+    float targetFps = 220.0f;
+    float strength = camera.fps / targetFps;
     float2 velocity = ((currentPos - previousPos) / 2.f).xy * strength;
     //velocity.y = -velocity.y;
 
@@ -178,7 +179,7 @@ float4 PSMain(VSOut IN) : SV_Target
     float4 color = colorTexture.Sample(Sampler, IN.texCoord); 
     IN.texCoord += velocity;
 
-    int g_numSamples = 5;
+    int g_numSamples = 10;
     for(int i = 1; i < g_numSamples; ++i, IN.texCoord += velocity) 
     {   // Sample the color buffer along the velocity vector.    
         float4 currentColor = colorTexture.Sample(Sampler, IN.texCoord);   

@@ -65,6 +65,7 @@ struct CAMERA
 	float4x4 view;
 	float4x4 prev_view;
 	float4x4 view_projection_inverse;
+	float fps;
 };
 
 // TEMPORABLE

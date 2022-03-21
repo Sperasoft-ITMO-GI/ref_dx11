@@ -188,4 +188,8 @@ public:
 	ID3D11DepthStencilView* GetDepthStencilView() {
 		return depth_stencil_view;
 	}
+
+	HWND GetWindow() {
+		return window->GetWindow();
+	}
 };
