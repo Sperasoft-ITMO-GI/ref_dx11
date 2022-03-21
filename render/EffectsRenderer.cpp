@@ -118,6 +118,10 @@ void EffectsRenderer::Render() {
 	renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::SCENE_SRV]);
 	renderer->GetContext()->PSSetShaderResources(depthTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::DEPTH_SRV]);
 	eq->DrawStatic();
+
+	renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::SCENE], renderer->GetDepthStencilView());
+	renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_1_SRV]);
+	eq->DrawStatic();
 	END_EVENT();
 
 	BEGIN_EVENT(L"Bloom pass")
@@ -232,8 +236,8 @@ void EffectsRenderer::EffectsPSProvider::PatchPipelineState(PipelineState* state
 		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS_EQUAL);
 	}	
 	if (defines & EFFECTS_MOTION_BLUR) {
-		state->bs = states->blend_states.at(BlendState::ALPHABS);
-		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS_EQUAL);
+		state->bs = states->blend_states.at(BlendState::NOBS);
+		state->dss = states->depth_stencil_states.at(DepthStencilState::NEVER);
 	}
 
 	//state->dss = states->depth_stencil_states.at(DepthStencilState::NEVER);

@@ -42,7 +42,8 @@ enum EffectsRTV : uint8_t {
 	BLOOM_1 = 4,
 	BLOOM_2 = 5,
 	EFFECT = 6,
-	FXAA = 7
+	FXAA = 7, 
+	VELOSITY = 8
 };
 
 enum EffectsSRV : uint8_t {
@@ -53,7 +54,8 @@ enum EffectsSRV : uint8_t {
 	BLOOM_2_SRV = 4,
 	EFFECT_SRV = 5,
 	FXAA_SRV = 6,
-	DEPTH_SRV = 7
+	VELOCITY_SRV = 7,
+	DEPTH_SRV = 8
 };
 
 class Renderer {
@@ -110,7 +112,7 @@ public:
 	// 6 - damage effect
 	// 7 - fxaa
 
-	static constexpr int render_targets_count = 8;
+	static constexpr int render_targets_count = 9;
 	ID3D11Texture2D* render_textures[render_targets_count];
 	ID3D11RenderTargetView* render_target_views[render_targets_count];
 	ID3D11ShaderResourceView* shader_resource_views[render_targets_count];

@@ -5,6 +5,7 @@
 struct VSOut
 {
     float4 pos : SV_Position;
+    float4 prevPos : POSITION;
     float2 texCoord : TEXCOORD0;
     float2 lightmapCoord : LMTEXCOORD;
 };
@@ -20,7 +21,9 @@ VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
 	float4x4 proj = mul(mul(camera.perspective, camera.view), model.mod);
+    float4x4 prevProj = mul(mul(camera.perspective, camera.prev_view), model.mod);
     OUT.pos = mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
+    OUT.prevPos = mul(prevProj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
 	OUT.texCoord = IN.texCoord;
 	OUT.lightmapCoord = IN.lightmapCoord;
     
@@ -31,6 +34,7 @@ struct PSOut
 {
 	float4 color    : SV_Target0;
 	float4 mask     : SV_Target1;
+    float2 velosity : SV_Target2;
 };
 
 PSOut PSMain(VSOut IN)
@@ -48,8 +52,12 @@ PSOut PSMain(VSOut IN)
     texColor *= lightmapTexture.Sample(Sampler, IN.lightmapCoord);
 #endif
     
-    result.color = texColor  * model.color;
+    result.color = (texColor * model.color);
     result.mask = float4(glow, 1.0f);
+    
+    float2 a = (IN.pos.xy / IN.pos.w) * 0.5 + 0.5;
+    float2 b = (IN.prevPos.xy / IN.prevPos.w) * 0.5 + 0.5;
+    result.velosity = a - b;
     
     return result;
 }

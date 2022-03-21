@@ -5,6 +5,7 @@
 
 #define float4x4 DirectX::XMMATRIX
 #define float4 DirectX::XMFLOAT4
+#define float2 DirectX::XMFLOAT2
 
 struct CONST_HANDLE
 {
@@ -89,5 +90,6 @@ TEXTURE_2D(2, float4, bloomTexture)
 TEXTURE_2D(3, float4, effectTexture)
 TEXTURE_2D(4, float4, fxaaTexture)
 TEXTURE_2D(5, float, depthTexture)
+TEXTURE_2D(6, float2, velocityTexture)
 TEXTURE_CUBE(0, float4, skyboxTexture)
 SAMPLER(0, Sampler)

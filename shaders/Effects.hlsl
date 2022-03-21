@@ -28,10 +28,13 @@ float4 gauss_filter_pass(in float2 texCoord, in float2 direction, int radius)
 	float w, h;
 	bloomTexture.GetDimensions(w, h);
 
-    color += bloomTexture.Sample(Sampler, texCoord) * gauss_weight(0);
+    color += bloomTexture.Sample(Sampler, texCoord) * gauss_weight(0); 
+    uint j = 1;
+    uint m = radius;
 	for (int i = -radius; i <= radius; i++)
 	{
-		float weight = gauss_weight((i + radius + 1) % abs(radius));
+		float weight = gauss_weight(j % m);
+        ++j;
 		float2 texCoordOffset = texCoord;
 		texCoordOffset += (i / float2(w, h)) * direction;
 
@@ -98,7 +101,7 @@ float4 PSMain(VSOut IN) : SV_Target
 #endif
     
 #ifdef INTENSITY
-    float intensity = 5.0f;
+    float intensity = 7.0f;
     result = bloomTexture.Sample(Sampler, IN.texCoord) * intensity;
 #endif
     
@@ -165,14 +168,17 @@ float4 PSMain(VSOut IN) : SV_Target
     float4 previousPos = mul(worldPos, camera.prev_view); 
     // Convert to nonhomogeneous points [-1,1] by dividing by w. 
     previousPos /= previousPos.w; 
-    // Use this frame's position and last frame's to compute the pixel velocity.    
-    float2 velocity = ((previousPos - currentPos) / 2.f).xy;
+    // Use this frame's position and last frame's to compute the pixel velocity.  
+    float strength = 0.3f;
+    float2 velocity = ((currentPos - previousPos) / 2.f).xy * strength;
+    //velocity.y = -velocity.y;
+
     
     // Get the initial color at this pixel.    
     float4 color = colorTexture.Sample(Sampler, IN.texCoord); 
-    IN.texCoord += velocity; 
+    IN.texCoord += velocity;
 
-    int g_numSamples = 2;
+    int g_numSamples = 5;
     for(int i = 1; i < g_numSamples; ++i, IN.texCoord += velocity) 
     {   // Sample the color buffer along the velocity vector.    
         float4 currentColor = colorTexture.Sample(Sampler, IN.texCoord);   
@@ -180,7 +186,8 @@ float4 PSMain(VSOut IN) : SV_Target
         color += currentColor; 
     } 
     // Average all of the samples to get the final blur color.    
-    result = color ;// g_numSamples * 3; 
+    result = color / g_numSamples ; 
+    
 #endif
     
 #ifdef SCENE

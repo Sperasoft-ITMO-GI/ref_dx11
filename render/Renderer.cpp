@@ -202,6 +202,19 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 			&shader_resource_views[EffectsSRV::FXAA_SRV])
 		);
 
+
+		texture_desc.Format = DXGI_FORMAT_R16G16_FLOAT;
+		render_target_view_desc.Format = texture_desc.Format;
+		shader_resource_view_desc.Format = texture_desc.Format;
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::VELOCITY_SRV]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::VELOCITY_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::VELOSITY]));
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::VELOCITY_SRV],
+			&shader_resource_view_desc,
+			&shader_resource_views[EffectsSRV::VELOCITY_SRV])
+		);
+
 		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
 		ZeroMemory(&depth_stencil_desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 		// Set up the description of the stencil state.
