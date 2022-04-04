@@ -36,26 +36,33 @@ struct ShaderOptions
 
 enum EffectsRTV : uint8_t {
 	BACKBUFFER = 0,
-	SCENE = 1,
-	LIGHTMAP = 2,
-	MASK = 3,
-	BLOOM_1 = 4,
-	BLOOM_2 = 5,
-	EFFECT = 6,
-	FXAA = 7, 
-	VELOSITY = 8
+	SCENE,
+	SCENE_HIST, 
+	LIGHTMAP,
+	MASK,
+	MOTION_BLUR,
+	BLOOM_1,
+	BLOOM_2,
+	FXAA,
+	EFFECT,
+	VELOSITY,
+	VELOSITY_HIST,
 };
 
 enum EffectsSRV : uint8_t {
 	SCENE_SRV = 0,
-	LIGHTMAP_SRV = 1,
-	MASK_SRV = 2,
-	BLOOM_1_SRV = 3,
-	BLOOM_2_SRV = 4,
-	EFFECT_SRV = 5,
-	FXAA_SRV = 6,
-	VELOCITY_SRV = 7,
-	DEPTH_SRV = 8
+	SCENE_HIST_SRV,
+	LIGHTMAP_SRV,
+	MASK_SRV,
+	MOTION_BLUR_SRV,
+	BLOOM_1_SRV,
+	BLOOM_2_SRV,
+	FXAA_SRV,
+	EFFECT_SRV,
+	VELOCITY_SRV,
+	VELOCITY_HIST_SRV,
+	DEPTH_SRV,
+	DEPTH_HIST_SRV,
 };
 
 class Renderer {
@@ -69,7 +76,7 @@ private:
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
 	IDXGISwapChain* swap_chain;
-	ID3D11DepthStencilView* depth_stencil_view;
+	ID3D11DepthStencilView* depth_stencil_view[2];
 	ID3D11DepthStencilState* depth_stencil_state;
 
 	D3D11_VIEWPORT viewport;
@@ -112,10 +119,14 @@ public:
 	// 6 - damage effect
 	// 7 - fxaa
 
-	static constexpr int render_targets_count = 9;
-	ID3D11Texture2D* render_textures[render_targets_count];
+	int index = 0;
+
+	static constexpr int render_textures_count = 13;
+	static constexpr int render_targets_count = 12;
+	static constexpr int shader_resource_views_count = 13;
+	ID3D11Texture2D* render_textures[render_textures_count];
 	ID3D11RenderTargetView* render_target_views[render_targets_count];
-	ID3D11ShaderResourceView* shader_resource_views[render_targets_count];
+	ID3D11ShaderResourceView* shader_resource_views[shader_resource_views_count];
 	bool is_game_started = false;
 
 	~Renderer();
@@ -185,8 +196,8 @@ public:
 		return sky_data;
 	}
 
-	ID3D11DepthStencilView* GetDepthStencilView() {
-		return depth_stencil_view;
+	ID3D11DepthStencilView* GetDepthStencilView(int index) {
+		return depth_stencil_view[index];
 	}
 
 	HWND GetWindow() {

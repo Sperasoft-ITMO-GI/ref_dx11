@@ -64,6 +64,16 @@ cvar_t* gl_picmip;
 
 
 cvar_t* dx11_mode;
+cvar_t* taa;
+cvar_t* is_directional_light;
+cvar_t* light_color_r;
+cvar_t* light_color_g;
+cvar_t* light_color_b;
+cvar_t* light_color_a;
+cvar_t* light_direction_x;
+cvar_t* light_direction_y;
+cvar_t* light_direction_z;
+cvar_t* light_intensity;
 
 cvar_t* vid_fullscreen;
 cvar_t* vid_gamma;
@@ -71,6 +81,8 @@ cvar_t* vid_ref;
 
 CAMERA cam = {};
 ConstantBuffer<CAMERA> cbCamera;
+DirectionalLight directional_light;
+ConstantBuffer<DirectionalLight> cbDirectionalLight;
 
 dx11config_t dx11_config;
 dx11state_t  dx11_state;
@@ -263,25 +275,25 @@ void R_DrawSpriteModel(entity_t* e)
 	VectorMA(e->origin, -frame->origin_y, up, point);
 	VectorMA(point, -frame->origin_x, right, point);
 	//qglVertex3fv(point);
-	vect.push_back({ {point[0], point[1], point[2]}, {0, 1}, {0, 0} });
+	vect.push_back({ {point[0], point[1], point[2]}, {}, {0, 1}, {0, 0} });
 
 	//qglTexCoord2f(0, 0);
 	VectorMA(e->origin, frame->height - frame->origin_y, up, point);
 	VectorMA(point, -frame->origin_x, right, point);
 	//qglVertex3fv(point);
-	vect.push_back({ {point[0], point[1], point[2]}, {0, 0}, {0, 0} });
+	vect.push_back({ {point[0], point[1], point[2]}, {}, {0, 0}, {0, 0} });
 
 	//qglTexCoord2f(1, 0);
 	VectorMA(e->origin, frame->height - frame->origin_y, up, point);
 	VectorMA(point, frame->width - frame->origin_x, right, point);
 	//qglVertex3fv(point);
-	vect.push_back({ {point[0], point[1], point[2]}, {1, 0}, {0, 0} });
+	vect.push_back({ {point[0], point[1], point[2]}, {}, {1, 0}, {0, 0} });
 
 	//qglTexCoord2f(1, 1);
 	VectorMA(e->origin, -frame->origin_y, up, point);
 	VectorMA(point, frame->width - frame->origin_x, right, point);
 	//qglVertex3fv(point);
-	vect.push_back({ {point[0], point[1], point[2]}, {1, 1}, {0, 0} });
+	vect.push_back({ {point[0], point[1], point[2]}, {},  {1, 1}, {0, 0} });
 
 	std::vector<uint16_t> indexes;
 
@@ -787,9 +799,25 @@ void R_SetupDX(void)
 	cam.view_projection_inverse = XMMatrixInverse(nullptr, XMMatrixMultiply(cam.perspective, cam.view));
 
 	cam.fps = fps;
+	cam.total_frames = frame_count;
+	cam.resolution = XMFLOAT2(vid.width, vid.height);
 	// Обновляем буфер
 	cbCamera.Update(cam);
 	cbCamera.Bind<CAMERA>(camera.slot);
+
+	if (is_directional_light->value) {
+		directional_light.color = { light_color_r->value, light_color_g->value, light_color_b->value, light_color_a->value };
+		directional_light.direction = { light_direction_x->value, light_direction_y->value, light_direction_z->value };
+		directional_light.intensity = light_intensity->value;
+	}
+	else {
+		directional_light.color = { 0, 0, 0, 0 };
+		directional_light.direction = { 0, 0, 0 };
+		directional_light.intensity = 1.0f;
+	}
+	//directional_light.is_light = is_directional_light->value;
+	cbDirectionalLight.Update(directional_light);
+	cbDirectionalLight.Bind<DirectionalLight>(light.slot);
 
 	bsp_renderer->InitCB();
 	sky_renderer->InitCB();
@@ -866,6 +894,7 @@ r_newrefdef must be set before the first call
 */
 void R_RenderView(refdef_t* fd)
 {
+	is_first = false;
 	if (r_norefresh->value)
 		return;
 
@@ -1049,6 +1078,16 @@ void R_Register(void)
 	gl_skymip = ri.Cvar_Get("gl_skymip", "0", 0);
 	// our stuff
 	dx11_mode = ri.Cvar_Get("dx11_mode", "3", CVAR_ARCHIVE);
+	taa = ri.Cvar_Get("taa", "1", 0);
+	is_directional_light = ri.Cvar_Get("dirlight", "0", 0);
+	light_color_r = ri.Cvar_Get("lightcolorr", "0.96862745098", 0);
+	light_color_g = ri.Cvar_Get("lightcolorg", "0.36862745098", 0);
+	light_color_b = ri.Cvar_Get("lightcolorb", "0.14509803921", 0);
+	light_color_a = ri.Cvar_Get("lightcolora", "0.0", 0);
+	light_direction_x = ri.Cvar_Get("lightdirx", "1", 0);
+	light_direction_y = ri.Cvar_Get("lightdiry", "0.5", 0);
+	light_direction_z = ri.Cvar_Get("lightdirz", "0.45", 0);
+	light_intensity = ri.Cvar_Get("lightintensity", "0.5", 0);
 
 	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
@@ -1214,6 +1253,9 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	cbCamera.Create(cam);
 	cbCamera.Bind<CAMERA>(camera.slot);
 
+	cbDirectionalLight.Create(directional_light);
+	cbDirectionalLight.Bind<DirectionalLight>(light.slot);
+
 	return True;
 }
 
@@ -1314,32 +1356,35 @@ void R_BeginFrame(float camera_separation)
 */
 void DX11_EndFrame(void)
 {
-	END_EVENT();
+	if (!is_first) {
+		END_EVENT();
 
-	BEGIN_EVENT(L"Model renderer");
-	mod_renderer->Render();
-	END_EVENT();
+		BEGIN_EVENT(L"Model renderer");
+		mod_renderer->Render();
+		END_EVENT();
 
-	BEGIN_EVENT(L"Beam renderer");
-	beam_renderer->Render();
-	END_EVENT();
+		BEGIN_EVENT(L"Beam renderer");
+		beam_renderer->Render();
+		END_EVENT();
 
-	BEGIN_EVENT(L"Sky renderer");
-	sky_renderer->Render();
-	END_EVENT();
+		BEGIN_EVENT(L"Sky renderer");
+		sky_renderer->Render();
+		END_EVENT();
 
-	BEGIN_EVENT(L"Particles renderer");
-	particles_renderer->Render();
-	END_EVENT();
+		BEGIN_EVENT(L"Particles renderer");
+		particles_renderer->Render();
+		END_EVENT();
 
-	BEGIN_EVENT(L"BSP renderer (No dynamic lightmap)");
-	bsp_renderer->Render();
-	END_EVENT();
+		BEGIN_EVENT(L"BSP renderer (No dynamic lightmap)");
+		bsp_renderer->Render();
+		END_EVENT();
 
-	BEGIN_EVENT(L"Effects renderer");
-	effects_renderer->Render();
-	END_EVENT();
+		BEGIN_EVENT(L"Effects renderer");
+		effects_renderer->fxaa = taa->value;
+		effects_renderer->Render();
+		END_EVENT();
 
+	}
 	BEGIN_EVENT(L"UI renderer");
 	ui_renderer->Render();
 	END_EVENT();

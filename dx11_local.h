@@ -26,6 +26,16 @@ typedef struct
 extern	viddef_t	vid;
 
 extern cvar_t* dx11_mode;
+extern cvar_t* taa;
+extern cvar_t* is_directional_light;
+extern cvar_t* light_color_r;
+extern cvar_t* light_color_g;
+extern cvar_t* light_color_b;
+extern cvar_t* light_color_a;
+extern cvar_t* light_direction_x;
+extern cvar_t* light_direction_y;
+extern cvar_t* light_direction_z;
+extern cvar_t* light_intensity;
 
 extern cvar_t* vid_fullscreen;
 extern cvar_t* vid_gamma;

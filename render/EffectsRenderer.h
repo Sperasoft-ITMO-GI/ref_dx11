@@ -17,6 +17,7 @@
 #define EFFECTS_INTENSITY        0x032
 #define EFFECTS_FXAA             0x064
 #define EFFECTS_MOTION_BLUR      0x128
+#define EFFECTS_TAA              0x256
 
 class EffectsRenderer {
 public:
@@ -39,6 +40,10 @@ public:
 
 	void ClearTempFactory();
 
+	void UnBindRenderTargets();
+	void UnBindShaderResourceViews();
+	void ClearRenderTargetViews();
+
 private:
 	class EffectsPSProvider : public IStateProvider {
 	public:
@@ -55,8 +60,8 @@ private:
 	//ID3D11ShaderResourceView* resource_view;
 
 	int currentState;
-
 public:
 	bool is_render = false;
 	bool fxaa = false;
+	bool is_first = true;
 };

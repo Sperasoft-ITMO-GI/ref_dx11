@@ -38,7 +38,7 @@ void UIRenderer::Render() {
 	renderer->GetContext()->OMSetRenderTargets(
 		1u,
 		&renderer->render_target_views[EffectsRTV::BACKBUFFER],
-		renderer->GetDepthStencilView()
+		renderer->GetDepthStencilView(renderer->index)
 	);
 
 	currentState = 0;

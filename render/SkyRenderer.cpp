@@ -29,11 +29,20 @@ void SkyRenderer::Render() {
 
 		Renderer* renderer = Renderer::GetInstance();
 
-		renderer->GetContext()->OMSetRenderTargets(
-			1u,
-			&renderer->render_target_views[EffectsRTV::SCENE],
-			renderer->GetDepthStencilView()
-		);
+		if (renderer->index == 0) {
+			renderer->GetContext()->OMSetRenderTargets(
+				1u,
+				&renderer->render_target_views[EffectsRTV::SCENE],
+				renderer->GetDepthStencilView(renderer->index)
+			);
+		}
+		else {
+			renderer->GetContext()->OMSetRenderTargets(
+				1u,
+				&renderer->render_target_views[EffectsRTV::SCENE],
+				renderer->GetDepthStencilView(renderer->index)
+			);
+		}
 
 		renderer->BindSkyBox();
 

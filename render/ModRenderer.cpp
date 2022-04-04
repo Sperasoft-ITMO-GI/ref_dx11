@@ -44,18 +44,32 @@ void ModRenderer::InitCB() {
 void ModRenderer::Render() {
 	Renderer* renderer = Renderer::GetInstance();
 
-	ID3D11RenderTargetView* render_targets[] = {
-		renderer->render_target_views[EffectsRTV::SCENE],
-		renderer->render_target_views[EffectsRTV::MASK],
-		renderer->render_target_views[EffectsRTV::VELOSITY],
-	};
+	if (renderer->index == 0) {
+		ID3D11RenderTargetView* render_targets[] = {
+			renderer->render_target_views[EffectsRTV::SCENE],
+			renderer->render_target_views[EffectsRTV::MASK],
+			renderer->render_target_views[EffectsRTV::VELOSITY],
+		};
 
-	renderer->GetContext()->OMSetRenderTargets(
-		3u,
-		render_targets,
-		renderer->GetDepthStencilView()
-	);
+		renderer->GetContext()->OMSetRenderTargets(
+			3u,
+			render_targets,
+			renderer->GetDepthStencilView(renderer->index)
+		);
+	}
+	else {
+		ID3D11RenderTargetView* render_targets[] = {
+			renderer->render_target_views[EffectsRTV::SCENE],
+			renderer->render_target_views[EffectsRTV::MASK],
+			renderer->render_target_views[EffectsRTV::VELOSITY],
+		};
 
+		renderer->GetContext()->OMSetRenderTargets(
+			3u,
+			render_targets,
+			renderer->GetDepthStencilView(renderer->index)
+		);
+	}
 	currentState = 0;
 
 	for (auto& poly : mod_defs) {

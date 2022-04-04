@@ -2,17 +2,45 @@
 
 #include "shader_defines.h"
 
+#define IDENTITY_MATRIX float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+
+float2 CreateHaltonNumber(unsigned int index, int2 base)
+{
+    float f = 1;
+    float2 r = 0;
+    int current = index;
+    do
+    {
+        f = f / base.x;
+        r.x = r.x + f * (current % base.x);
+        current = floor(current / base.x);
+    } while (current);
+    
+    current = index;
+    do
+    {
+        f = f / base.y;
+        r.y = r.y + f * (current % base.y);
+        current = floor(current / base.y);
+    } while (current);
+    
+    return r;
+}
+
 struct VSOut
 {
     float4 pos : SV_Position;
-    float4 prevPos : POSITION;
+    float4 prevPos : POSITION0;
+    float4 newPos  : POSITION1;
     float2 texCoord : TEXCOORD0;
     float2 lightmapCoord : LMTEXCOORD;
+    float3 norm : NORMAL;
 };
 
 struct VSIn
 {
     float3 pos : Position;
+    float3 norm : Normal;
     float2 texCoord : TexCoord;
     float2 lightmapCoord : LmTexCoord;
 };
@@ -20,10 +48,26 @@ struct VSIn
 VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
+
+    OUT.norm = IN.norm;
+    
+    float deltaWidth = 1.0f / camera.resolution.x;
+    float deltaHeight = 1.0f / camera.resolution.y;
+    uint numSamples = 10;
+    uint index = camera.total_frames % numSamples;
+    float2 halton = CreateHaltonNumber(index + 1, float2(2, 3));
+    float2 jitter = float2(halton.x * deltaWidth, halton.y * deltaHeight);
+    
+    float haltonScale = 1.0f;
+    matrix jitterMat = IDENTITY_MATRIX;
+    jitterMat[3][0] += jitter.x * haltonScale;
+    jitterMat[3][1] += jitter.y * haltonScale;
+    
 	float4x4 proj = mul(mul(camera.perspective, camera.view), model.mod);
     float4x4 prevProj = mul(mul(camera.perspective, camera.prev_view), model.mod);
-    OUT.pos = mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
+    OUT.pos = mul(jitterMat, mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f)));
     OUT.prevPos = mul(prevProj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
+    OUT.newPos = mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
 	OUT.texCoord = IN.texCoord;
 	OUT.lightmapCoord = IN.lightmapCoord;
     
@@ -35,7 +79,11 @@ struct PSOut
 	float4 color    : SV_Target0;
 	float4 mask     : SV_Target1;
     float2 velosity : SV_Target2;
+    float4 color1 : SV_Target3;
 };
+
+//static const float4 lightColor = float4(0.96862745098, 0.36862745098, 0.14509803921, 0.0f);
+//static const float3 lightDir =   float3(1, 0.5, 0.45);
 
 PSOut PSMain(VSOut IN)
 {
@@ -48,14 +96,18 @@ PSOut PSMain(VSOut IN)
 	float mask = saturate(luma * 4 - 3);
 	float3 glow = texColor.rgb * mask;
     
+    result.color1 = texColor * model.color;
+    
 #ifdef LIGHTMAPPEDPOLY
     texColor *= lightmapTexture.Sample(Sampler, IN.lightmapCoord);
 #endif
     
     result.color = (texColor * model.color);
+    IN.norm = normalize(-IN.norm);
+    result.color += saturate(dot(light.direction, IN.norm) * light.color) * light.intensity;
     result.mask = float4(glow, 1.0f);
     
-    float2 a = (IN.pos.xy / IN.pos.w) * 0.5 + 0.5;
+    float2 a = (IN.newPos.xy / IN.newPos.w) * 0.5 + 0.5;
     float2 b = (IN.prevPos.xy / IN.prevPos.w) * 0.5 + 0.5;
     result.velosity = a - b;
     

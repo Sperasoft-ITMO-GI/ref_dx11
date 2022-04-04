@@ -130,13 +130,9 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		texture_desc.CPUAccessFlags = 0;
 		texture_desc.MiscFlags = 0;
 
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::SCENE_SRV]));
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::LIGHTMAP_SRV]));
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::MASK_SRV]));
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::BLOOM_1_SRV]));
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::BLOOM_2_SRV]));
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::EFFECT_SRV]));
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::FXAA_SRV]));
+		for (int i = 0; i < render_textures_count - 4; ++i) {
+			DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[i]));
+		}
 
 		D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc;
 		ZeroMemory(&render_target_view_desc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
@@ -144,20 +140,9 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		render_target_view_desc.Texture2D.MipSlice = 0;
 
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::SCENE_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::SCENE]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::LIGHTMAP_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::LIGHTMAP]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::MASK_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::MASK]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::BLOOM_1_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::BLOOM_1]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::BLOOM_2_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::BLOOM_2]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::EFFECT_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::EFFECT]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::FXAA_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::FXAA]));
+		for (int i = 1; i < render_targets_count - 2; ++i) {
+			DXCHECK(device->CreateRenderTargetView(render_textures[i - 1], &render_target_view_desc, &render_target_views[i]));
+		}
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc;
 		ZeroMemory(&shader_resource_view_desc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
@@ -166,42 +151,13 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		shader_resource_view_desc.Texture2D.MostDetailedMip = 0;
 		shader_resource_view_desc.Texture2D.MipLevels = 1;
 
-		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::SCENE_SRV], 
-			&shader_resource_view_desc, 
-			&shader_resource_views [EffectsSRV::SCENE_SRV])
-		);
-		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::LIGHTMAP_SRV], 
-			&shader_resource_view_desc, 
-			&shader_resource_views [EffectsSRV::LIGHTMAP_SRV])
-		);
-		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::MASK_SRV], 
-			&shader_resource_view_desc, 
-			&shader_resource_views [EffectsSRV::MASK_SRV])
-		);
-		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::BLOOM_1_SRV],
-			&shader_resource_view_desc, 
-			&shader_resource_views[EffectsSRV::BLOOM_1_SRV])
-		);
-		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::BLOOM_2_SRV],
-			&shader_resource_view_desc, 
-			&shader_resource_views[EffectsSRV::BLOOM_2_SRV])
-		);
-		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::EFFECT_SRV],
-			&shader_resource_view_desc,
-			&shader_resource_views[EffectsSRV::EFFECT_SRV])
-		);
-		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::FXAA_SRV], 
-			&shader_resource_view_desc, 
-			&shader_resource_views[EffectsSRV::FXAA_SRV])
-		);
-
+		for (int i = 0; i < shader_resource_views_count - 4; ++i) {
+			DXCHECK(device->CreateShaderResourceView(
+				render_textures[i],
+				&shader_resource_view_desc,
+				&shader_resource_views[i])
+			);
+		}
 
 		texture_desc.Format = DXGI_FORMAT_R16G16_FLOAT;
 		render_target_view_desc.Format = texture_desc.Format;
@@ -213,6 +169,14 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 			render_textures[EffectsSRV::VELOCITY_SRV],
 			&shader_resource_view_desc,
 			&shader_resource_views[EffectsSRV::VELOCITY_SRV])
+		);		
+		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[EffectsSRV::VELOCITY_HIST_SRV]));
+		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::VELOCITY_HIST_SRV],
+			&render_target_view_desc, &render_target_views[EffectsRTV::VELOSITY_HIST]));
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::VELOCITY_HIST_SRV],
+			&shader_resource_view_desc,
+			&shader_resource_views[EffectsSRV::VELOCITY_HIST_SRV])
 		);
 
 		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
@@ -240,6 +204,7 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		//ID3D11Texture2D* buffer;
 
 		DXCHECK(device->CreateTexture2D(&depth_stencil_tex, 0, &render_textures[EffectsSRV::DEPTH_SRV]));
+		DXCHECK(device->CreateTexture2D(&depth_stencil_tex, 0, &render_textures[EffectsSRV::DEPTH_HIST_SRV]));
 
 		D3D11_DEPTH_STENCIL_VIEW_DESC depth_stencil_view_desc;
 		ZeroMemory(&depth_stencil_view_desc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
@@ -250,7 +215,12 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		DXCHECK(device->CreateDepthStencilView(
 			render_textures[EffectsSRV::DEPTH_SRV], 
 			&depth_stencil_view_desc, 
-			&depth_stencil_view)
+			&depth_stencil_view[0])
+		);		
+		DXCHECK(device->CreateDepthStencilView(
+			render_textures[EffectsSRV::DEPTH_HIST_SRV], 
+			&depth_stencil_view_desc, 
+			&depth_stencil_view[1])
 		);
 
 		shader_resource_view_desc.Format = DXGI_FORMAT_R32_FLOAT;
@@ -258,6 +228,11 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 			render_textures[EffectsSRV::DEPTH_SRV],
 			&shader_resource_view_desc,
 			&shader_resource_views[EffectsSRV::DEPTH_SRV])
+		);		
+		DXCHECK(device->CreateShaderResourceView(
+			render_textures[EffectsSRV::DEPTH_HIST_SRV],
+			&shader_resource_view_desc,
+			&shader_resource_views[EffectsSRV::DEPTH_HIST_SRV])
 		);
 
 		//buffer->Release();
@@ -609,11 +584,53 @@ std::tuple<float, float> Renderer::GetWindowParameters() {
 
 void Renderer::Clear() {
 
-	for (int i = 0; i < render_targets_count; i++) {
+	/*for (int i = 0; i < render_targets_count; i++) {
 		context->ClearRenderTargetView(render_target_views[i], DirectX::Colors::Black);
+	}*/
+
+	context->ClearRenderTargetView(render_target_views[BACKBUFFER], DirectX::Colors::Black);
+
+	/*
+	BACKBUFFER = 0,
+	SCENE,
+	SCENE_HIST, 
+	LIGHTMAP,
+	MASK,
+	MOTION_BLUR,
+	BLOOM_1,
+	BLOOM_2,
+	FXAA,
+	EFFECT,
+	VELOSITY,
+	*/
+
+	if (index == 1) {
+		context->ClearRenderTargetView(render_target_views[SCENE_HIST], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[LIGHTMAP], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[MASK], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[SCENE], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[BLOOM_1], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[BLOOM_2], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[FXAA], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[EFFECT], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[VELOCITY_SRV], DirectX::Colors::Black);
+		//context->ClearDepthStencilView(depth_stencil_view[1], D3D11_CLEAR_DEPTH, 1.0f, 0u);
+	}
+	else {
+		context->ClearRenderTargetView(render_target_views[SCENE], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[LIGHTMAP], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[MASK], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[MOTION_BLUR], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[BLOOM_1], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[BLOOM_2], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[FXAA], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[EFFECT], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[VELOCITY_SRV], DirectX::Colors::Black);
+		//context->ClearDepthStencilView(depth_stencil_view[0], D3D11_CLEAR_DEPTH, 1.0f, 0u);
 	}
 
-	context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH, 1.0f, 0u);
+	context->ClearDepthStencilView(depth_stencil_view[1], D3D11_CLEAR_DEPTH, 1.0f, 0u);
+	context->ClearDepthStencilView(depth_stencil_view[0], D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
 
 void Renderer::Swap() {
@@ -657,7 +674,8 @@ Renderer::~Renderer()
 	}
 
 	depth_stencil_state->Release();
-	depth_stencil_view->Release();
+	for (int i = 0; i < 2; ++i)
+		depth_stencil_view[i]->Release();
 	swap_chain->Release();
 	context->Release();
 	device->Release();

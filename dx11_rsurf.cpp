@@ -688,6 +688,51 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					vect.push_back(vert);
 				}
 
+				DirectX::XMFLOAT3 p0 = vect[0].position;
+				std::vector<DirectX::XMFLOAT3> norms(nv - 2);
+				for (int i = 0; i < nv - 2; ++i) {
+					DirectX::XMFLOAT3 p1 = vect[i + 1].position;
+					DirectX::XMFLOAT3 p2 = vect[i + 2].position;
+					DirectX::XMFLOAT3 u = { p1.x - p0.x, p1.y - p0.y, p1.z - p0.z };
+					DirectX::XMFLOAT3 vn = { p2.x - p0.x, p2.y - p0.y, p2.z - p0.z };
+
+					DirectX::XMStoreFloat3(
+						&norms[i],
+						DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&u), DirectX::XMLoadFloat3(&vn))
+					);
+				}
+
+				if (nv > 3) {
+					for (int i = 0; i < norms.size(); ++i) {
+						vect[0].normal.x += norms[i].x;
+						vect[0].normal.y += norms[i].y;
+						vect[0].normal.z += norms[i].z;
+					}
+					vect[0].normal.x /= norms.size();
+					vect[0].normal.y /= norms.size();
+					vect[0].normal.z /= norms.size();
+
+					vect[1].normal = norms[1];
+					vect[nv - 1].normal = norms[nv - 3];
+
+					for (int i = 2; i < nv - 1; ++i) {
+						vect[i].normal.x += norms[i - 2].x;
+						vect[i].normal.y += norms[i - 2].y;
+						vect[i].normal.z += norms[i - 2].z;
+						vect[i].normal.x += norms[i - 1].x;
+						vect[i].normal.y += norms[i - 1].y;
+						vect[i].normal.z += norms[i - 1].z;
+						vect[i].normal.x /= 2;
+						vect[i].normal.y /= 2;
+						vect[i].normal.z /= 2;
+					}
+				}
+				else {
+					for (int i = 0; i < 3; ++i) {
+						vect[i].normal = norms[0];
+					}
+				}
+
 				std::vector<uint16_t> indexes;
 
 				SmartTriangulation(&indexes, nv, 0);
@@ -741,6 +786,50 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					vect.push_back(vert);
 				}
 
+				DirectX::XMFLOAT3 p0 = vect[0].position;
+				std::vector<DirectX::XMFLOAT3> norms(nv - 2);
+				for (int i = 0; i < nv - 2; ++i) {
+					DirectX::XMFLOAT3 p1 = vect[i + 1].position;
+					DirectX::XMFLOAT3 p2 = vect[i + 2].position;
+					DirectX::XMFLOAT3 u = { p1.x - p0.x, p1.y - p0.y, p1.z - p0.z };
+					DirectX::XMFLOAT3 vn = { p2.x - p0.x, p2.y - p0.y, p2.z - p0.z };
+
+					DirectX::XMStoreFloat3(
+						&norms[i],
+						DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&u), DirectX::XMLoadFloat3(&vn))
+					);
+				}
+
+				if (nv > 3) {
+					for (int i = 0; i < norms.size(); ++i) {
+						vect[0].normal.x += norms[i].x;
+						vect[0].normal.y += norms[i].y;
+						vect[0].normal.z += norms[i].z;
+					}
+					vect[0].normal.x /= norms.size();
+					vect[0].normal.y /= norms.size();
+					vect[0].normal.z /= norms.size();
+
+					vect[1].normal = norms[1];
+					vect[nv - 1].normal = norms[nv - 3];
+
+					for (int i = 2; i < nv - 1; ++i) {
+						vect[i].normal.x += norms[i - 2].x;
+						vect[i].normal.y += norms[i - 2].y;
+						vect[i].normal.z += norms[i - 2].z;
+						vect[i].normal.x += norms[i - 1].x;
+						vect[i].normal.y += norms[i - 1].y;
+						vect[i].normal.z += norms[i - 1].z;
+						vect[i].normal.x /= 2;
+						vect[i].normal.y /= 2;
+						vect[i].normal.z /= 2;
+					}
+				}
+				else {
+					for (int i = 0; i < 3; ++i) {
+						vect[i].normal = norms[0];
+					}
+				}
 				std::vector<uint16_t> indexes;
 
 				SmartTriangulation(&indexes, nv, 0);
@@ -807,6 +896,51 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					vect.push_back(vert);
 				}
 
+				DirectX::XMFLOAT3 p0 = vect[0].position;
+				std::vector<DirectX::XMFLOAT3> norms(nv - 2);
+				for (int i = 0; i < nv - 2; ++i) {
+					DirectX::XMFLOAT3 p1 = vect[i + 1].position;
+					DirectX::XMFLOAT3 p2 = vect[i + 2].position;
+					DirectX::XMFLOAT3 u = { p1.x - p0.x, p1.y - p0.y, p1.z - p0.z };
+					DirectX::XMFLOAT3 vn = { p2.x - p0.x, p2.y - p0.y, p2.z - p0.z };
+
+					DirectX::XMStoreFloat3(
+						&norms[i],
+						DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&u), DirectX::XMLoadFloat3(&vn))
+					);
+				}
+
+				if (nv > 3) {
+					for (int i = 0; i < norms.size(); ++i) {
+						vect[0].normal.x += norms[i].x;
+						vect[0].normal.y += norms[i].y;
+						vect[0].normal.z += norms[i].z;
+					}
+					vect[0].normal.x /= norms.size();
+					vect[0].normal.y /= norms.size();
+					vect[0].normal.z /= norms.size();
+
+					vect[1].normal = norms[1];
+					vect[nv - 1].normal = norms[nv - 3];
+
+					for (int i = 2; i < nv - 1; ++i) {
+						vect[i].normal.x += norms[i - 2].x;
+						vect[i].normal.y += norms[i - 2].y;
+						vect[i].normal.z += norms[i - 2].z;
+						vect[i].normal.x += norms[i - 1].x;
+						vect[i].normal.y += norms[i - 1].y;
+						vect[i].normal.z += norms[i - 1].z;
+						vect[i].normal.x /= 2;
+						vect[i].normal.y /= 2;
+						vect[i].normal.z /= 2;
+					}
+				}
+				else {
+					for (int i = 0; i < 3; ++i) {
+						vect[i].normal = norms[0];
+					}
+				}
+
 				std::vector<uint16_t> indexes;
 
 				SmartTriangulation(&indexes, nv, 0);
@@ -851,6 +985,51 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					vert.lightmap_texture_coord.y = v[6];
 
 					vect.push_back(vert);
+				}
+
+				DirectX::XMFLOAT3 p0 = vect[0].position;
+				std::vector<DirectX::XMFLOAT3> norms(nv - 2);
+				for (int i = 0; i < nv - 2; ++i) {
+					DirectX::XMFLOAT3 p1 = vect[i + 1].position;
+					DirectX::XMFLOAT3 p2 = vect[i + 2].position;
+					DirectX::XMFLOAT3 u = { p1.x - p0.x, p1.y - p0.y, p1.z - p0.z };
+					DirectX::XMFLOAT3 vn = { p2.x - p0.x, p2.y - p0.y, p2.z - p0.z };
+
+					DirectX::XMStoreFloat3(
+						&norms[i],
+						DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&u), DirectX::XMLoadFloat3(&vn))
+					);
+				}
+
+				if (nv > 3) {
+					for (int i = 0; i < norms.size(); ++i) {
+						vect[0].normal.x += norms[i].x;
+						vect[0].normal.y += norms[i].y;
+						vect[0].normal.z += norms[i].z;
+					}
+					vect[0].normal.x /= norms.size();
+					vect[0].normal.y /= norms.size();
+					vect[0].normal.z /= norms.size();
+
+					vect[1].normal = norms[1];
+					vect[nv - 1].normal = norms[nv - 3];
+
+					for (int i = 2; i < nv - 1; ++i) {
+						vect[i].normal.x += norms[i - 2].x;
+						vect[i].normal.y += norms[i - 2].y;
+						vect[i].normal.z += norms[i - 2].z;
+						vect[i].normal.x += norms[i - 1].x;
+						vect[i].normal.y += norms[i - 1].y;
+						vect[i].normal.z += norms[i - 1].z;
+						vect[i].normal.x /= 2;
+						vect[i].normal.y /= 2;
+						vect[i].normal.z /= 2;
+					}
+				}
+				else {
+					for (int i = 0; i < 3; ++i) {
+						vect[i].normal = norms[0];
+					}
 				}
 
 				std::vector<uint16_t> indexes;
