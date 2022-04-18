@@ -50,6 +50,9 @@
     <Filter Include="Render\Renderers\EffectsRenderer">
       <UniqueIdentifier>{aa8a1c0e-1d0f-4918-9b4e-51d65b53679e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render\Renderers\UtilsRenderer">
+      <UniqueIdentifier>{cdf50b48-1506-41eb-9027-cada5cbace38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ref_dx11.def">
@@ -223,6 +226,18 @@
     <ClInclude Include="shaders\Fxaa3_11.h">
       <Filter>Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="render\UtilsPoly.h">
+      <Filter>Render\Renderers\UtilsRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\UtilsRenderer.h">
+      <Filter>Render\Renderers\UtilsRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\UtilsVertex.h">
+      <Filter>Render\Renderers\UtilsRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ComputeShader.h">
+      <Filter>Render\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\BlendState.cpp">
@@ -348,6 +363,15 @@
     <ClCompile Include="external\debug_console.cpp">
       <Filter>Render\Utilites</Filter>
     </ClCompile>
+    <ClCompile Include="render\UtilsPoly.cpp">
+      <Filter>Render\Renderers\UtilsRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\UtilsRenderer.cpp">
+      <Filter>Render\Renderers\UtilsRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ComputeShader.cpp">
+      <Filter>Render\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\UITexture.hlsl">
@@ -369,6 +393,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="shaders\Effects.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\Utils.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\LightmapCS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

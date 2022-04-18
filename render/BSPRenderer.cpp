@@ -56,29 +56,35 @@ void BSPRenderer::Render() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	if (renderer->index == 0) {
-		ID3D11RenderTargetView* render_targets[4] = {
+		ID3D11RenderTargetView* render_targets[7] = {
 			renderer->render_target_views[EffectsRTV::SCENE],
 			renderer->render_target_views[EffectsRTV::MASK],
 			renderer->render_target_views[EffectsRTV::VELOSITY],
-			renderer->render_target_views[EffectsRTV::LIGHTMAP]
+			renderer->render_target_views[EffectsRTV::LIGHTMAP],
+			renderer->render_target_views[EffectsRTV::SCENE_COLOR],
+			renderer->render_target_views[EffectsRTV::POSITIONS],
+			renderer->render_target_views[EffectsRTV::NORMALS],
 		};
 
 		renderer->GetContext()->OMSetRenderTargets(
-			4u,
+			7u,
 			render_targets,
 			renderer->GetDepthStencilView(renderer->index)
 		);
 	}
 	else {
-		ID3D11RenderTargetView* render_targets[4] = {
+		ID3D11RenderTargetView* render_targets[7] = {
 			renderer->render_target_views[EffectsRTV::SCENE],
 			renderer->render_target_views[EffectsRTV::MASK],
 			renderer->render_target_views[EffectsRTV::VELOSITY],
-			renderer->render_target_views[EffectsRTV::LIGHTMAP]
+			renderer->render_target_views[EffectsRTV::LIGHTMAP],
+			renderer->render_target_views[EffectsRTV::SCENE_COLOR],
+			renderer->render_target_views[EffectsRTV::POSITIONS],
+			renderer->render_target_views[EffectsRTV::NORMALS],
 		};
 
 		renderer->GetContext()->OMSetRenderTargets(
-			4u,
+			7u,
 			render_targets,
 			renderer->GetDepthStencilView(renderer->index)
 		);

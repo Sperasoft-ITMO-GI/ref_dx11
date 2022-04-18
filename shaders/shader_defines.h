@@ -92,10 +92,16 @@ struct DirectionalLight
 	float  intensity;
 };
 
+struct MatrixBuffer
+{
+	float4x4 orthogonal;
+};
+
 STRUCTURE(0, CAMERA, camera)
 STRUCTURE(1, UI_BUFFER, ui_buffer)
 STRUCTURE(1, MODEL, model)
 STRUCTURE(2, DirectionalLight, light)
+STRUCTURE(3, MatrixBuffer, buffer)
 TEXTURE_2D(0, float4, colorTexture)
 TEXTURE_2D(1, float4, lightmapTexture)
 TEXTURE_2D(2, float4, bloomTexture)

@@ -181,6 +181,7 @@
     <ClInclude Include="render\Bindable.h" />
     <ClInclude Include="render\BlendState.h" />
     <ClInclude Include="render\BSPVertex.h" />
+    <ClInclude Include="render\ComputeShader.h" />
     <ClInclude Include="render\ConstantBuffer.hpp" />
     <ClInclude Include="render\DepthStencilState.h" />
     <ClInclude Include="render\EffectsQuad.h" />
@@ -215,6 +216,9 @@
     <ClInclude Include="render\UIRenderer.h" />
     <ClInclude Include="render\UIVertex.h" />
     <ClInclude Include="render\Utils.h" />
+    <ClInclude Include="render\UtilsPoly.h" />
+    <ClInclude Include="render\UtilsRenderer.h" />
+    <ClInclude Include="render\UtilsVertex.h" />
     <ClInclude Include="render\VertexBuffer.h" />
     <ClInclude Include="render\VertexShader.h" />
     <ClInclude Include="render\Window.h" />
@@ -238,6 +242,7 @@
     <ClCompile Include="external\debug_console.cpp" />
     <ClCompile Include="render\BeamRenderer.cpp" />
     <ClCompile Include="render\BlendState.cpp" />
+    <ClCompile Include="render\ComputeShader.cpp" />
     <ClCompile Include="render\DepthStencilState.cpp" />
     <ClCompile Include="render\EffectsQuad.cpp" />
     <ClCompile Include="render\EffectsRenderer.cpp" />
@@ -261,6 +266,8 @@
     <ClCompile Include="render\SkyRenderer.cpp" />
     <ClCompile Include="render\UIRenderer.cpp" />
     <ClCompile Include="render\Utils.cpp" />
+    <ClCompile Include="render\UtilsPoly.cpp" />
+    <ClCompile Include="render\UtilsRenderer.cpp" />
     <ClCompile Include="render\VertexBuffer.cpp" />
     <ClCompile Include="render\VertexShader.cpp" />
     <ClCompile Include="render\Window.cpp" />
@@ -284,6 +291,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="shaders\LightmapCS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="shaders\Model.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -301,6 +314,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="shaders\UITexture.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="shaders\Utils.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

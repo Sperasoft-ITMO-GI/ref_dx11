@@ -12,7 +12,8 @@ enum Layout {
 	BEAM_POLYGON,
 	MOD_POLYGON,
 	PARTICLES_POLYGON,
-	EFFECTS_QUAD
+	EFFECTS_QUAD,
+	UTILS_POLYGON
 };
 
 ID3D11InputLayout* MakeLayout(ID3DBlob* blob, std::vector<D3D11_INPUT_ELEMENT_DESC> desc);

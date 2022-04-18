@@ -132,7 +132,7 @@ DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync) 
 
 void SmartTriangulation(std::vector<uint16_t>* ind, int num, int offset)
 {
-	for (int i = offset; i < (num - 1) + offset; i++)
+	for (int i = offset + 1; i < (num - 1) + offset; i++)
 	{
 		ind->push_back(offset);
 		ind->push_back(i + 1);

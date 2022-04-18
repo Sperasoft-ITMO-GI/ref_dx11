@@ -74,6 +74,11 @@ cvar_t* light_direction_x;
 cvar_t* light_direction_y;
 cvar_t* light_direction_z;
 cvar_t* light_intensity;
+cvar_t* light_sources;
+cvar_t* cs_lm;
+cvar_t* positions;
+cvar_t* normals;
+cvar_t* albedo;
 
 cvar_t* vid_fullscreen;
 cvar_t* vid_gamma;
@@ -83,6 +88,8 @@ CAMERA cam = {};
 ConstantBuffer<CAMERA> cbCamera;
 DirectionalLight directional_light;
 ConstantBuffer<DirectionalLight> cbDirectionalLight;
+MatrixBuffer buffer;
+ConstantBuffer<MatrixBuffer> cbBuffer;
 
 dx11config_t dx11_config;
 dx11state_t  dx11_state;
@@ -95,6 +102,7 @@ BeamRenderer* beam_renderer = new BeamRenderer();
 ModRenderer* mod_renderer = new ModRenderer();
 ParticlesRenderer* particles_renderer = new ParticlesRenderer();
 EffectsRenderer* effects_renderer = new EffectsRenderer();
+UtilsRenderer* utils_renderer = new UtilsRenderer();
 
 States* States::states = nullptr;
 
@@ -107,6 +115,7 @@ float total_time = 0;
 unsigned int frame_count = 0;
 float fps = 0;
 
+ComputeShader* cs = new ComputeShader();
 
 void CompileShaders()
 {
@@ -167,7 +176,13 @@ void CompileShaders()
 	else if (!effects_renderer->CompileWithDefines(EFFECTS_SCENE))
 		effects_renderer->ClearTempFactory();
 	else
-		effects_renderer->BindNewFactory();
+		effects_renderer->BindNewFactory();	
+	
+	utils_renderer->InitNewFactory(L"ref_dx11\\shaders\\Utils.hlsl");
+	if (!utils_renderer->CompileWithDefines(UTILS_STATIC))
+		utils_renderer->ClearTempFactory();
+	else
+		utils_renderer->BindNewFactory();
 }
 
 
@@ -825,6 +840,7 @@ void R_SetupDX(void)
 	mod_renderer->InitCB();
 	particles_renderer->InitCB();
 	effects_renderer->InitCB();
+	utils_renderer->InitCB();
 
 	// Записываем моделвью матрицу в ворлд матрицу
 
@@ -1086,8 +1102,13 @@ void R_Register(void)
 	light_color_a = ri.Cvar_Get("lightcolora", "0.0", 0);
 	light_direction_x = ri.Cvar_Get("lightdirx", "1", 0);
 	light_direction_y = ri.Cvar_Get("lightdiry", "0.5", 0);
-	light_direction_z = ri.Cvar_Get("lightdirz", "0.45", 0);
+	light_direction_z = ri.Cvar_Get("lightdirz", "-0.45", 0);
 	light_intensity = ri.Cvar_Get("lightintensity", "0.5", 0);
+	light_sources = ri.Cvar_Get("lightsources", "0", 0);
+	cs_lm = ri.Cvar_Get("cslm", "0", 0);
+	positions = ri.Cvar_Get("positions", "0", 0);
+	normals   = ri.Cvar_Get("normals", "0", 0);
+	albedo    = ri.Cvar_Get("albedo", "0", 0);
 
 	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
@@ -1183,6 +1204,7 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	mod_renderer->Init();
 	particles_renderer->Init();
 	effects_renderer->Init();
+	utils_renderer->Init();
 
 	Quad::vertex_buffer.Create(
 		std::vector<UIVertex>{
@@ -1255,6 +1277,11 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 	cbDirectionalLight.Create(directional_light);
 	cbDirectionalLight.Bind<DirectionalLight>(light.slot);
+
+	ID3DBlob* blob = CompileShader(L"ref_dx11\\shaders\\LightmapCS.hlsl", NULL, "CSMain", "cs_5_0");
+	if (blob != nullptr)
+		cs->Create(blob);
+	//cs->Bind();
 
 	return True;
 }
@@ -1381,8 +1408,15 @@ void DX11_EndFrame(void)
 
 		BEGIN_EVENT(L"Effects renderer");
 		effects_renderer->fxaa = taa->value;
+		effects_renderer->ChangeFlags(positions->value, normals->value, albedo->value);
 		effects_renderer->Render();
 		END_EVENT();
+
+		if (light_sources->value) {
+			BEGIN_EVENT(L"Light source");
+			utils_renderer->Render();
+			END_EVENT();
+		}
 
 	}
 	BEGIN_EVENT(L"UI renderer");

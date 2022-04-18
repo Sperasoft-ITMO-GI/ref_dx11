@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
+#include <set>
 
 // specific things for Q2_Engine
 #include <../client/ref.h>
@@ -36,6 +37,11 @@ extern cvar_t* light_direction_x;
 extern cvar_t* light_direction_y;
 extern cvar_t* light_direction_z;
 extern cvar_t* light_intensity;
+extern cvar_t* light_sources;
+extern cvar_t* cs_lm;
+extern cvar_t* positions;
+extern cvar_t* normals;
+extern cvar_t* albedo;
 
 extern cvar_t* vid_fullscreen;
 extern cvar_t* vid_gamma;
@@ -59,6 +65,8 @@ extern BeamRenderer*      beam_renderer;
 extern ModRenderer*       mod_renderer;
 extern ParticlesRenderer* particles_renderer;
 extern EffectsRenderer*   effects_renderer;
+extern UtilsRenderer*     utils_renderer;
+extern ComputeShader* cs;
 
 extern bool multiTexture;
 

@@ -8,26 +8,24 @@
 #include <PipelineFactory.h>
 #include <Renderer.h>
 #include <IStateProvider.h>
-#include <BSPPoly.h>
+#include <UtilsPoly.h>
 
 // There should be defines
-#define BSP_ALPHA				0x002
-#define BSP_WATER				0x004
-#define BSP_LIGHTMAPPEDPOLY		0x010
+#define UTILS_STATIC  0x001
+#define UTILS_DYNAMIC 0x002
 
-struct BSPDefinitions {
-	std::vector<BSPVertex> vert;
+
+struct UtilsDefinitions {
+	std::vector<UtilsVertex> vert;
 	std::vector<uint16_t> ind;
 	MODEL cb;
 	int flags;
-	int texture_index;
-	int lightmap_index;
 };
 
-class BSPRenderer {
+class UtilsRenderer {
 public:
 
-	~BSPRenderer();
+	~UtilsRenderer();
 
 	void Init();
 
@@ -35,9 +33,7 @@ public:
 
 	void Render();
 
-	void AddElement(const BSPPoly& polygon);
-
-	void Add(const BSPDefinitions& polygon);
+	void Add(const UtilsDefinitions& polygon);
 
 	void InitNewFactory(const wchar_t* path);
 
@@ -48,7 +44,7 @@ public:
 	void ClearTempFactory();
 
 private:
-	class ModelPSProvider : public IStateProvider {
+	class UtilsPSProvider : public IStateProvider {
 	public:
 		virtual void PatchPipelineState(PipelineState* state, int defines) override;
 	};
@@ -56,9 +52,9 @@ private:
 private:
 	PipelineFactory* factory;
 	PipelineFactory* factory_temp;
-	std::vector<BSPPoly> polygons;
-	BSPPoly* p;
-	std::vector<BSPDefinitions> bsp_defs;
+	UtilsPoly* p;
+	std::vector<UtilsDefinitions> Utils_defs;
+	std::vector<UtilsDefinitions> temp;
 
 	int currentState;
 };

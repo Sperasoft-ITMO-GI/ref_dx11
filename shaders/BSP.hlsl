@@ -35,6 +35,7 @@ struct VSOut
     float2 texCoord : TEXCOORD0;
     float2 lightmapCoord : LMTEXCOORD;
     float3 norm : NORMAL;
+    float2 worldPos : TEXCOORD1;
 };
 
 struct VSIn
@@ -49,8 +50,6 @@ VSOut VSMain(VSIn IN)
 {
     VSOut OUT;
 
-    OUT.norm = IN.norm;
-    
     float deltaWidth = 1.0f / camera.resolution.x;
     float deltaHeight = 1.0f / camera.resolution.y;
     uint numSamples = 10;
@@ -71,15 +70,21 @@ VSOut VSMain(VSIn IN)
 	OUT.texCoord = IN.texCoord;
 	OUT.lightmapCoord = IN.lightmapCoord;
     
+    OUT.norm = mul(camera.perspective, float4(IN.norm.xyz, 0));
+    OUT.worldPos = mul(camera.orthogonal, float4(IN.pos, 1));
+    
     return OUT;
 }
 
 struct PSOut
 {
-	float4 color    : SV_Target0;
-	float4 mask     : SV_Target1;
-    float2 velosity : SV_Target2;
-    float4 color1 : SV_Target3;
+	float4 color       : SV_Target0;
+	float4 mask        : SV_Target1;
+    float2 velosity    : SV_Target2;
+    float4 lightmap    : SV_Target3;
+    float4 albedo      : SV_Target4;
+    float2 positions   : SV_Target5;
+    float4 normals     : SV_Target6;
 };
 
 //static const float4 lightColor = float4(0.96862745098, 0.36862745098, 0.14509803921, 0.0f);
@@ -96,14 +101,19 @@ PSOut PSMain(VSOut IN)
 	float mask = saturate(luma * 4 - 3);
 	float3 glow = texColor.rgb * mask;
     
-    result.color1 = texColor * model.color;
+    result.albedo = texColor * model.color;
     
 #ifdef LIGHTMAPPEDPOLY
-    texColor *= lightmapTexture.Sample(Sampler, IN.lightmapCoord);
+    lightmap = lightmapTexture.Sample(Sampler, IN.lightmapCoord);
+    result.lightmap = lightmap;
+    texColor *= lightmap;
 #endif
     
     result.color = (texColor * model.color);
-    IN.norm = normalize(-IN.norm);
+    result.positions = float2(frac(IN.worldPos.xy / 64));
+
+    result.normals = float4(IN.norm, 0);
+    
     result.color += saturate(dot(light.direction, IN.norm) * light.color) * light.intensity;
     result.mask = float4(glow, 1.0f);
     

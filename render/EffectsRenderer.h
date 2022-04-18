@@ -44,6 +44,8 @@ public:
 	void UnBindShaderResourceViews();
 	void ClearRenderTargetViews();
 
+	void ChangeFlags(float pos, float norm, float alb);
+
 private:
 	class EffectsPSProvider : public IStateProvider {
 	public:
@@ -64,4 +66,8 @@ public:
 	bool is_render = false;
 	bool fxaa = false;
 	bool is_first = true;
+
+	bool positions = false;
+	bool normals = false;
+	bool albedo = false;
 };

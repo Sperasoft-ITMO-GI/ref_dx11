@@ -49,10 +49,13 @@ void ModRenderer::Render() {
 			renderer->render_target_views[EffectsRTV::SCENE],
 			renderer->render_target_views[EffectsRTV::MASK],
 			renderer->render_target_views[EffectsRTV::VELOSITY],
+			renderer->render_target_views[EffectsRTV::POSITIONS],
+			renderer->render_target_views[EffectsRTV::NORMALS],
+			renderer->render_target_views[EffectsRTV::SCENE_COLOR],
 		};
 
 		renderer->GetContext()->OMSetRenderTargets(
-			3u,
+			6u,
 			render_targets,
 			renderer->GetDepthStencilView(renderer->index)
 		);
@@ -62,10 +65,13 @@ void ModRenderer::Render() {
 			renderer->render_target_views[EffectsRTV::SCENE],
 			renderer->render_target_views[EffectsRTV::MASK],
 			renderer->render_target_views[EffectsRTV::VELOSITY],
+			renderer->render_target_views[EffectsRTV::POSITIONS],
+			renderer->render_target_views[EffectsRTV::NORMALS],
+			renderer->render_target_views[EffectsRTV::SCENE_COLOR],
 		};
 
 		renderer->GetContext()->OMSetRenderTargets(
-			3u,
+			6u,
 			render_targets,
 			renderer->GetDepthStencilView(renderer->index)
 		);

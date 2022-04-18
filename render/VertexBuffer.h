@@ -14,6 +14,7 @@
 #include <BeamVertex.h>
 #include <ParticlesVertex.h>
 #include <EffectsVertex.h>
+#include <UtilsVertex.h>
 
 class VertexBuffer : public Bindable {
 public:

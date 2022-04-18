@@ -38,13 +38,16 @@ enum EffectsRTV : uint8_t {
 	BACKBUFFER = 0,
 	SCENE,
 	SCENE_HIST, 
-	LIGHTMAP,
+	SCENE_COLOR,
 	MASK,
 	MOTION_BLUR,
 	BLOOM_1,
 	BLOOM_2,
 	FXAA,
 	EFFECT,
+	LIGHTMAP,
+	POSITIONS,
+	NORMALS,
 	VELOSITY,
 	VELOSITY_HIST,
 };
@@ -52,13 +55,16 @@ enum EffectsRTV : uint8_t {
 enum EffectsSRV : uint8_t {
 	SCENE_SRV = 0,
 	SCENE_HIST_SRV,
-	LIGHTMAP_SRV,
+	SCENE_COLOR_SRV,
 	MASK_SRV,
 	MOTION_BLUR_SRV,
 	BLOOM_1_SRV,
 	BLOOM_2_SRV,
 	FXAA_SRV,
 	EFFECT_SRV,
+	LIGHTMAP_SRV,
+	POSITIONS_SRV,
+	NORMALS_SRV,
 	VELOCITY_SRV,
 	VELOCITY_HIST_SRV,
 	DEPTH_SRV,
@@ -94,7 +100,10 @@ private:
 	ID3DUserDefinedAnnotation* perf;
 
 	ID3D11SamplerState* sampler;
+public:
 	ID3D11ShaderResourceView* texture_array_srv[1600];
+	int lamp_indexes[10];
+	int counter = 0;
 
 	ID3D11ShaderResourceView* sky_box_view;
 
@@ -121,12 +130,13 @@ public:
 
 	int index = 0;
 
-	static constexpr int render_textures_count = 13;
-	static constexpr int render_targets_count = 12;
-	static constexpr int shader_resource_views_count = 13;
+	static constexpr int render_textures_count = 16;
+	static constexpr int render_targets_count = 15;
+	static constexpr int shader_resource_views_count = 16;
 	ID3D11Texture2D* render_textures[render_textures_count];
 	ID3D11RenderTargetView* render_target_views[render_targets_count];
 	ID3D11ShaderResourceView* shader_resource_views[shader_resource_views_count];
+	ID3D11UnorderedAccessView* uav;
 	bool is_game_started = false;
 
 	~Renderer();

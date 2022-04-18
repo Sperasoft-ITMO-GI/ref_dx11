@@ -647,6 +647,14 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 
 			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 				(unsigned char*)temp, dx11_state.lightmap_textures + 0);
+
+			if (cs_lm->value) {
+				cs->Bind();
+				renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &renderer->uav, nullptr);
+				renderer->GetContext()->Dispatch(128 / 2, 128 / 2, 1);
+				ID3D11UnorderedAccessView* UAV_NULL = NULL;
+				renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &UAV_NULL, 0);
+			}
 		}
 
 		c_brush_polys++;
@@ -693,13 +701,16 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				for (int i = 0; i < nv - 2; ++i) {
 					DirectX::XMFLOAT3 p1 = vect[i + 1].position;
 					DirectX::XMFLOAT3 p2 = vect[i + 2].position;
-					DirectX::XMFLOAT3 u = { p1.x - p0.x, p1.y - p0.y, p1.z - p0.z };
-					DirectX::XMFLOAT3 vn = { p2.x - p0.x, p2.y - p0.y, p2.z - p0.z };
+					DirectX::XMVECTOR u = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p1), DirectX::XMLoadFloat3(&p0));
+					DirectX::XMVECTOR vn = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p2), DirectX::XMLoadFloat3(&p0));
 
-					DirectX::XMStoreFloat3(
-						&norms[i],
-						DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&u), DirectX::XMLoadFloat3(&vn))
-					);
+					DirectX::XMVECTOR temp;
+
+					temp = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(u, vn));
+
+					if (DirectX::XMVectorGetX(DirectX::XMVector3Length(temp)) > 0.00001)
+						DirectX::XMStoreFloat3(&norms[i], temp);
+
 				}
 
 				if (nv > 3) {
@@ -748,11 +759,60 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					vect, indexes, *cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
+
 				bsp_renderer->Add(bspd);
 
 				// Immediate draw dynamic lightmapped polygon
 				// before dynamic texture will updated
 				bsp_renderer->Render();
+
+				if (image->texnum == renderer->lamp_indexes[0] ) {
+					float origin[3] = { 0,  0,  0 };
+					float max[3] = { -10000,  -10000,  -10000 };
+					float min[3] = { 10000,  10000,  10000 };
+					for (int i = 0; i < vect.size(); ++i) {
+						if (vect[i].position.x > max[0]) {
+							max[0] = vect[i].position.x;
+						}
+						if (vect[i].position.y > max[1]) {
+							max[1] = vect[i].position.y;
+						}
+						if (vect[i].position.z > max[2]) {
+							max[2] = vect[i].position.z;
+						}
+						if (vect[i].position.x < min[0]) {
+							min[0] = vect[i].position.x;
+						}
+						if (vect[i].position.y < min[1]) {
+							min[1] = vect[i].position.y;
+						}
+						if (vect[i].position.z < min[2]) {
+							min[2] = vect[i].position.z;
+						}
+					}
+
+					origin[0] = max[0] - (max[0] - min[0]) * 0.5;
+					origin[1] = max[1] - (max[1] - min[1]) * 0.5;
+					origin[2] = max[2] - (max[2] - min[2]) * 0.5;
+
+						std::vector<UtilsVertex> uvert{
+							{{origin[0] - 10, origin[1], origin[2]}, {0.0f, 0.0f}},
+							{{origin[0] + 10, origin[1], origin[2]}, {1.0f, 0.0f}},
+							{{origin[0], origin[1] - 10, origin[2]}, {1.0f, 1.0f}},
+							{{origin[0], origin[1] + 10, origin[2]}, {0.0f, 1.0f}},
+							{{origin[0], origin[1], origin[2] - 10}, {0.0f, 1.0f}},
+							{{origin[0], origin[1], origin[2] + 10}, {0.0f, 1.0f}},
+						};
+
+						std::vector<uint16_t> uind{
+							2, 1, 0, 0, 3, 2
+						};
+
+						UtilsDefinitions udefs{
+							uvert, uind, {}, UTILS_STATIC
+						};
+						utils_renderer->Add(udefs);
+				}
 
 				//qglEnd();
 			}
@@ -787,18 +847,26 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				}
 
 				DirectX::XMFLOAT3 p0 = vect[0].position;
-				std::vector<DirectX::XMFLOAT3> norms(nv - 2);
+				std::vector<DirectX::XMFLOAT3> norms;
+				DirectX::XMFLOAT3 norm;
 				for (int i = 0; i < nv - 2; ++i) {
 					DirectX::XMFLOAT3 p1 = vect[i + 1].position;
 					DirectX::XMFLOAT3 p2 = vect[i + 2].position;
-					DirectX::XMFLOAT3 u = { p1.x - p0.x, p1.y - p0.y, p1.z - p0.z };
-					DirectX::XMFLOAT3 vn = { p2.x - p0.x, p2.y - p0.y, p2.z - p0.z };
+					DirectX::XMVECTOR u = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p1), DirectX::XMLoadFloat3(&p0));
+					DirectX::XMVECTOR vn = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p2), DirectX::XMLoadFloat3(&p0));
 
-					DirectX::XMStoreFloat3(
-						&norms[i],
-						DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&u), DirectX::XMLoadFloat3(&vn))
-					);
+					DirectX::XMVECTOR temp;
+
+					temp = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(u, vn));
+
+					if (DirectX::XMVectorGetX(DirectX::XMVector3Length(temp)) > 0.00001) {
+						DirectX::XMStoreFloat3(&norm, temp);
+						norms.push_back(norm);
+					}
+
 				}
+
+				if (norms.empty()) break;
 
 				if (nv > 3) {
 					for (int i = 0; i < norms.size(); ++i) {
@@ -810,19 +878,21 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					vect[0].normal.y /= norms.size();
 					vect[0].normal.z /= norms.size();
 
-					vect[1].normal = norms[1];
-					vect[nv - 1].normal = norms[nv - 3];
+					vect[1].normal = norms.front();
+					vect[nv - 1].normal = norms.back();
 
+					int j = 0;
 					for (int i = 2; i < nv - 1; ++i) {
-						vect[i].normal.x += norms[i - 2].x;
-						vect[i].normal.y += norms[i - 2].y;
-						vect[i].normal.z += norms[i - 2].z;
-						vect[i].normal.x += norms[i - 1].x;
-						vect[i].normal.y += norms[i - 1].y;
-						vect[i].normal.z += norms[i - 1].z;
+						vect[i].normal.x += norms[j % norms.size()].x;
+						vect[i].normal.y += norms[j % norms.size()].y;
+						vect[i].normal.z += norms[j % norms.size()].z;
+						vect[i].normal.x += norms[(j + 1) % norms.size()].x;
+						vect[i].normal.y += norms[(j + 1) % norms.size()].y;
+						vect[i].normal.z += norms[(j + 1) % norms.size()].z;
 						vect[i].normal.x /= 2;
 						vect[i].normal.y /= 2;
 						vect[i].normal.z /= 2;
+						++j;
 					}
 				}
 				else {
@@ -848,6 +918,61 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				// Immediate draw dynamic lightmapped polygon
 				// before dynamic texture will updated
 				bsp_renderer->Render();
+
+
+
+				if (image->texnum == renderer->lamp_indexes[0] ) {
+					
+					float origin[3] = { 0,  0,  0 };
+					float max[3] = { -10000,  -10000,  -10000 };
+					float min[3] = { 10000,  10000,  10000 };
+					for (int i = 0; i < vect.size(); ++i) {
+						if (vect[i].position.x > max[0]) {
+							max[0] = vect[i].position.x;
+						}
+						if (vect[i].position.y > max[1]) {
+							max[1] = vect[i].position.y;
+						}
+						if (vect[i].position.z > max[2]) {
+							max[2] = vect[i].position.z;
+						}
+						if (vect[i].position.x < min[0]) {
+							min[0] = vect[i].position.x;
+						}
+						if (vect[i].position.y < min[1]) {
+							min[1] = vect[i].position.y;
+						}
+						if (vect[i].position.z < min[2]) {
+							min[2] = vect[i].position.z;
+						}
+					}
+
+					origin[0] = max[0] - (max[0] - min[0]) * 0.5;
+					origin[1] = max[1] - (max[1] - min[1]) * 0.5;
+					origin[2] = max[2] - (max[2] - min[2]) * 0.5;
+
+						//origin[2] *= 0.65;
+
+						std::vector<UtilsVertex> uvert{
+							{{origin[0] - 10, origin[1], origin[2]}, {0.0f, 0.0f}},
+							{{origin[0] + 10, origin[1], origin[2]}, {1.0f, 0.0f}},
+							{{origin[0], origin[1] - 10, origin[2]}, {1.0f, 1.0f}},
+							{{origin[0], origin[1] + 10, origin[2]}, {0.0f, 1.0f}},
+							{{origin[0], origin[1], origin[2] - 10}, {0.0f, 1.0f}},
+							{{origin[0], origin[1], origin[2] + 10}, {0.0f, 1.0f}},
+						};
+
+						std::vector<uint16_t> uind{
+							2, 1, 0, 0, 3, 2
+						};
+
+						UtilsDefinitions udefs{
+							uvert, uind, {}, UTILS_STATIC
+						};
+						utils_renderer->Add(udefs);
+
+				}
+
 
 				//qglEnd();
 			}
@@ -897,18 +1022,26 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				}
 
 				DirectX::XMFLOAT3 p0 = vect[0].position;
-				std::vector<DirectX::XMFLOAT3> norms(nv - 2);
+				std::vector<DirectX::XMFLOAT3> norms;
+				DirectX::XMFLOAT3 norm;
 				for (int i = 0; i < nv - 2; ++i) {
 					DirectX::XMFLOAT3 p1 = vect[i + 1].position;
 					DirectX::XMFLOAT3 p2 = vect[i + 2].position;
-					DirectX::XMFLOAT3 u = { p1.x - p0.x, p1.y - p0.y, p1.z - p0.z };
-					DirectX::XMFLOAT3 vn = { p2.x - p0.x, p2.y - p0.y, p2.z - p0.z };
+					DirectX::XMVECTOR u = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p1), DirectX::XMLoadFloat3(&p0));
+					DirectX::XMVECTOR vn = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p2), DirectX::XMLoadFloat3(&p0));
 
-					DirectX::XMStoreFloat3(
-						&norms[i],
-						DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&u), DirectX::XMLoadFloat3(&vn))
-					);
+					DirectX::XMVECTOR temp;
+
+					temp = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(u, vn));
+
+					if (DirectX::XMVectorGetX(DirectX::XMVector3Length(temp)) > 0.00001) {
+						DirectX::XMStoreFloat3(&norm, temp);
+						norms.push_back(norm);
+					}
+
 				}
+
+				if (norms.empty()) break;
 
 				if (nv > 3) {
 					for (int i = 0; i < norms.size(); ++i) {
@@ -920,19 +1053,21 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					vect[0].normal.y /= norms.size();
 					vect[0].normal.z /= norms.size();
 
-					vect[1].normal = norms[1];
-					vect[nv - 1].normal = norms[nv - 3];
+					vect[1].normal = norms.front();
+					vect[nv - 1].normal = norms.back();
 
+					int j = 0;
 					for (int i = 2; i < nv - 1; ++i) {
-						vect[i].normal.x += norms[i - 2].x;
-						vect[i].normal.y += norms[i - 2].y;
-						vect[i].normal.z += norms[i - 2].z;
-						vect[i].normal.x += norms[i - 1].x;
-						vect[i].normal.y += norms[i - 1].y;
-						vect[i].normal.z += norms[i - 1].z;
+						vect[i].normal.x += norms[j % norms.size()].x;
+						vect[i].normal.y += norms[j % norms.size()].y;
+						vect[i].normal.z += norms[j % norms.size()].z;
+						vect[i].normal.x += norms[(j + 1) % norms.size()].x;
+						vect[i].normal.y += norms[(j + 1) % norms.size()].y;
+						vect[i].normal.z += norms[(j + 1) % norms.size()].z;
 						vect[i].normal.x /= 2;
 						vect[i].normal.y /= 2;
 						vect[i].normal.z /= 2;
+						++j;
 					}
 				}
 				else {
@@ -955,6 +1090,58 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				};
 
 				bsp_renderer->Add(bspd);
+
+				if (image->texnum == renderer->lamp_indexes[0] ||
+					image->texnum == renderer->lamp_indexes[1] ||
+					image->texnum == renderer->lamp_indexes[2] ||
+					image->texnum == renderer->lamp_indexes[3]) {
+					float origin[3] = { 0,  0,  0 };
+					float max[3] = { -10000,  -10000,  -10000 };
+					float min[3] = { 10000,  10000,  10000 };
+					for (int i = 0; i < vect.size(); ++i) {
+						if (vect[i].position.x > max[0]) {
+							max[0] = vect[i].position.x;
+						}
+						if (vect[i].position.y > max[1]) {
+							max[1] = vect[i].position.y;
+						}
+						if (vect[i].position.z > max[2]) {
+							max[2] = vect[i].position.z;
+						}
+						if (vect[i].position.x < min[0]) {
+							min[0] = vect[i].position.x;
+						}
+						if (vect[i].position.y < min[1]) {
+							min[1] = vect[i].position.y;
+						}
+						if (vect[i].position.z < min[2]) {
+							min[2] = vect[i].position.z;
+						}
+					}
+
+					origin[0] = max[0] - (max[0] - min[0]) * 0.5;
+					origin[1] = max[1] - (max[1] - min[1]) * 0.5;
+					origin[2] = max[2] - (max[2] - min[2]) * 0.5;
+
+						std::vector<UtilsVertex> uvert{
+							{{origin[0] - 10, origin[1], origin[2]}, {0.0f, 0.0f}},
+							{{origin[0] + 10, origin[1], origin[2]}, {1.0f, 0.0f}},
+							{{origin[0], origin[1] - 10, origin[2]}, {1.0f, 1.0f}},
+							{{origin[0], origin[1] + 10, origin[2]}, {0.0f, 1.0f}},
+							{{origin[0], origin[1], origin[2] - 10}, {0.0f, 1.0f}},
+							{{origin[0], origin[1], origin[2] + 10}, {0.0f, 1.0f}},
+						};
+
+						std::vector<uint16_t> uind{
+							2, 1, 0, 0, 3, 2
+						};
+
+						UtilsDefinitions udefs{
+							uvert, uind, {}, UTILS_STATIC
+						};
+						utils_renderer->Add(udefs);
+
+				}
 
 				//qglEnd();
 			}
@@ -988,18 +1175,26 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				}
 
 				DirectX::XMFLOAT3 p0 = vect[0].position;
-				std::vector<DirectX::XMFLOAT3> norms(nv - 2);
+				std::vector<DirectX::XMFLOAT3> norms;
+				DirectX::XMFLOAT3 norm;
 				for (int i = 0; i < nv - 2; ++i) {
 					DirectX::XMFLOAT3 p1 = vect[i + 1].position;
 					DirectX::XMFLOAT3 p2 = vect[i + 2].position;
-					DirectX::XMFLOAT3 u = { p1.x - p0.x, p1.y - p0.y, p1.z - p0.z };
-					DirectX::XMFLOAT3 vn = { p2.x - p0.x, p2.y - p0.y, p2.z - p0.z };
+					DirectX::XMVECTOR u = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p1), DirectX::XMLoadFloat3(&p0));
+					DirectX::XMVECTOR vn = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p2), DirectX::XMLoadFloat3(&p0));
 
-					DirectX::XMStoreFloat3(
-						&norms[i],
-						DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&u), DirectX::XMLoadFloat3(&vn))
-					);
+					DirectX::XMVECTOR temp;
+
+					temp = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(u, vn));
+
+					if (DirectX::XMVectorGetX(DirectX::XMVector3Length(temp)) > 0.00001) {
+						DirectX::XMStoreFloat3(&norm, temp);
+						norms.push_back(norm);
+					}
+
 				}
+
+				if (norms.empty()) break;
 
 				if (nv > 3) {
 					for (int i = 0; i < norms.size(); ++i) {
@@ -1011,19 +1206,21 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					vect[0].normal.y /= norms.size();
 					vect[0].normal.z /= norms.size();
 
-					vect[1].normal = norms[1];
-					vect[nv - 1].normal = norms[nv - 3];
+					vect[1].normal = norms.front();
+					vect[nv - 1].normal = norms.back();
 
+					int j = 0;
 					for (int i = 2; i < nv - 1; ++i) {
-						vect[i].normal.x += norms[i - 2].x;
-						vect[i].normal.y += norms[i - 2].y;
-						vect[i].normal.z += norms[i - 2].z;
-						vect[i].normal.x += norms[i - 1].x;
-						vect[i].normal.y += norms[i - 1].y;
-						vect[i].normal.z += norms[i - 1].z;
+						vect[i].normal.x += norms[j % norms.size()].x;
+						vect[i].normal.y += norms[j % norms.size()].y;
+						vect[i].normal.z += norms[j % norms.size()].z;
+						vect[i].normal.x += norms[(j + 1) % norms.size()].x;
+						vect[i].normal.y += norms[(j + 1) % norms.size()].y;
+						vect[i].normal.z += norms[(j + 1) % norms.size()].z;
 						vect[i].normal.x /= 2;
 						vect[i].normal.y /= 2;
 						vect[i].normal.z /= 2;
+						++j;
 					}
 				}
 				else {
@@ -1046,6 +1243,59 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				};
 
 				bsp_renderer->Add(bspd);
+
+				if (image->texnum == renderer->lamp_indexes[0] ||
+					image->texnum == renderer->lamp_indexes[1] ||
+					image->texnum == renderer->lamp_indexes[2] ||
+					image->texnum == renderer->lamp_indexes[3]) {
+					
+					float origin[3] = { 0,  0,  0 };
+					float max[3] = { -10000,  -10000,  -10000 };
+					float min[3] = { 10000,  10000,  10000 };
+					for (int i = 0; i < vect.size(); ++i) {
+						if (vect[i].position.x > max[0]) {
+							max[0] = vect[i].position.x;
+						}
+						if (vect[i].position.y > max[1]) {
+							max[1] = vect[i].position.y;
+						}
+						if (vect[i].position.z > max[2]) {
+							max[2] = vect[i].position.z;
+						}
+						if (vect[i].position.x < min[0]) {
+							min[0] = vect[i].position.x;
+						}
+						if (vect[i].position.y < min[1]) {
+							min[1] = vect[i].position.y;
+						}
+						if (vect[i].position.z < min[2]) {
+							min[2] = vect[i].position.z;
+						}
+					}
+
+					origin[0] = max[0] - (max[0] - min[0]) * 0.5;
+					origin[1] = max[1] - (max[1] - min[1]) * 0.5;
+					origin[2] = max[2] - (max[2] - min[2]) * 0.5;
+
+						std::vector<UtilsVertex> uvert{
+							{{origin[0] - 10, origin[1], origin[2]}, {0.0f, 0.0f}},
+							{{origin[0] + 10, origin[1], origin[2]}, {1.0f, 0.0f}},
+							{{origin[0], origin[1] - 10, origin[2]}, {1.0f, 1.0f}},
+							{{origin[0], origin[1] + 10, origin[2]}, {0.0f, 1.0f}},
+							{{origin[0], origin[1], origin[2] - 10}, {0.0f, 1.0f}},
+							{{origin[0], origin[1], origin[2] + 10}, {0.0f, 1.0f}},
+						};
+
+						std::vector<uint16_t> uind{
+							2, 1, 0, 0, 3, 2
+						};
+
+						UtilsDefinitions udefs{
+							uvert, uind, {}, UTILS_STATIC
+						};
+						utils_renderer->Add(udefs);
+
+				}
 
 				//qglEnd();
 			}
@@ -1136,10 +1386,13 @@ void R_DrawInlineBModel(MODEL* cb)
 	msurface_t* psurf;
 	dlight_t* lt;
 
+	// в lt есть ориджин динамического источника света, его нужно визуализировать
+
 	// calculate dynamic lighting for bmodel
 	if (true/*!gl_flashblend->value*/)
 	{
 		lt = r_newrefdef.dlights;
+
 		for (k = 0; k < r_newrefdef.num_dlights; k++, lt++)
 		{
 			R_MarkLights(lt, 1 << k, currentmodel->nodes + currentmodel->firstnode);

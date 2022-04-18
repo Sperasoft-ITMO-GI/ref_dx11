@@ -47,13 +47,16 @@ void R_RenderDlight(dlight_t* light)
 R_RenderDlights
 =============
 */
+float prevL[3];
+bool is_first_dlight = true;
+
 void R_RenderDlights(void)
 {
 	int		i;
 	dlight_t* l;
 
-	if (true/*!gl_flashblend->value*/)
-		return;
+	//if (true/*!gl_flashblend->value*/)
+		//return;
 
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't
 											//  advanced yet for this frame
@@ -62,10 +65,46 @@ void R_RenderDlights(void)
 	//qglShadeModel(GL_SMOOTH);
 	//qglEnable(GL_BLEND);
 	//qglBlendFunc(GL_ONE, GL_ONE);
+	
+	if (is_first_dlight) {
+		l = r_newrefdef.dlights;
+		prevL[0] = l->origin[0];
+		prevL[1] = l->origin[1];
+		prevL[2] = l->origin[2];
+		is_first_dlight = false;
+	}
+	else {
+		l = r_newrefdef.dlights;
+	}
+	
+	if (l->intensity > 70) {
 
-	l = r_newrefdef.dlights;
-	for (i = 0; i < r_newrefdef.num_dlights; i++, l++)
-		R_RenderDlight(l);
+		std::vector<UtilsVertex> uvert{
+				{{l->origin[0] - 10, l->origin[1], l->origin[2]}, {0.0f, 0.0f}},
+				{{l->origin[0] + 10, l->origin[1], l->origin[2]}, {1.0f, 0.0f}},
+				{{l->origin[0], l->origin[1] - 10, l->origin[2]}, {1.0f, 1.0f}},
+				{{l->origin[0], l->origin[1] + 10, l->origin[2]}, {0.0f, 1.0f}},
+				{{l->origin[0], l->origin[1], l->origin[2] - 10}, {0.0f, 1.0f}},
+				{{l->origin[0], l->origin[1], l->origin[2] + 10}, {0.0f, 1.0f}},
+		};
+
+		std::vector<uint16_t> uind{
+			2, 1, 0, 0, 3, 2
+		};
+
+		UtilsDefinitions udefs{
+			uvert, uind, {}, UTILS_DYNAMIC
+		};
+		utils_renderer->Add(udefs);
+
+		utils_renderer->Render();
+	}
+	prevL[0] = l->origin[0];
+	prevL[1] = l->origin[1];
+	prevL[2] = l->origin[2];
+
+	//for (i = 0; i < r_newrefdef.num_dlights; i++, l++)
+	//	R_RenderDlight(l);
 
 	//qglColor3f(1, 1, 1);
 	//qglDisable(GL_BLEND);
