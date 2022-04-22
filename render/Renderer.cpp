@@ -322,6 +322,8 @@ void Renderer::SetWindowMode(const int posX, const int posY, const int w, const 
 
 void Renderer::AddTexturetoSRV(char* name, int width, int height, int bits, unsigned char* data, int texNum, bool mipmap)
 {
+	num_texture_to_dimensions.insert({ texNum, {width, height} });
+
 	D3D11_SUBRESOURCE_DATA initData;
 	initData.pSysMem = data;
 	initData.SysMemPitch = width * (bits / 8);
@@ -362,7 +364,7 @@ void Renderer::AddTexturetoSRV(char* name, int width, int height, int bits, unsi
 
 	ID3D11Texture2D* tex = nullptr;
 
-	if (texNum == 1024) {
+	if (texNum == 1032) {
 		desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 	}
 
@@ -377,7 +379,7 @@ void Renderer::AddTexturetoSRV(char* name, int width, int height, int bits, unsi
 		DXCHECK(device->CreateTexture2D(&desc, &initData, &tex));
 	}
 
-	if (texNum == 1024)
+	if (texNum == 1032)
 	{
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uav_desc;
 		ZeroMemory(&uav_desc, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));

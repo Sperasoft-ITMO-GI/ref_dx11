@@ -122,7 +122,7 @@ void DrawGLPoly(glpoly_t* p, int texNum, int defines)
 	cb.color.w = colorBuf[3];
 
 	BSPDefinitions bspd{
-		vect, indexes, cb, defines, texNum, -1
+		vect, indexes, cb, {}, defines, texNum, -1
 	};
 
 	bsp_renderer->Add(bspd);
@@ -181,7 +181,7 @@ void DrawGLFlowingPoly(msurface_t* fa, int texNum, int defines)
 	cb.color.w = colorBuf[3];
 
 	BSPDefinitions bspd{
-		vect, indexes, cb, BSP_ALPHA, texNum, -1
+		vect, indexes, cb, {}, BSP_ALPHA, texNum, -1
 	};
 
 	bsp_renderer->Add(bspd);
@@ -236,7 +236,7 @@ void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset, int texNum)
 			SmartTriangulation(&indexes, p->numverts, 0);
 
 			BSPDefinitions bspd{
-				vect, indexes, cb, BSP_ALPHA, texNum, -1
+				vect, indexes, cb, {}, BSP_ALPHA, texNum, -1
 			};
 
 			bsp_renderer->Add(bspd);
@@ -276,7 +276,7 @@ void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset, int texNum)
 			SmartTriangulation(&indexes, p->numverts, 0);
 
 			BSPDefinitions bspd{
-				vect, indexes, cb, BSP_ALPHA, texNum, -1
+				vect, indexes, cb, {}, BSP_ALPHA, texNum, -1
 			};
 
 			bsp_renderer->Add(bspd);
@@ -635,6 +635,14 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 				(unsigned char*)temp, dx11_state.lightmap_textures + surf->lightmaptexturenum);
 
+			//if (cs_lm->value) {
+			//	cs->Bind();
+			//	renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &renderer->uav, nullptr);
+			//	renderer->GetContext()->Dispatch(4, 4, 1);
+			//	ID3D11UnorderedAccessView* UAV_NULL = NULL;
+			//	renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &UAV_NULL, 0);
+			//}
+
 		}
 		else
 		{
@@ -648,13 +656,17 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 				(unsigned char*)temp, dx11_state.lightmap_textures + 0);
 
-			if (cs_lm->value) {
-				cs->Bind();
-				renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &renderer->uav, nullptr);
-				renderer->GetContext()->Dispatch(128 / 2, 128 / 2, 1);
-				ID3D11UnorderedAccessView* UAV_NULL = NULL;
-				renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &UAV_NULL, 0);
-			}
+
+
+		}
+
+
+		if (cs_lm->value) {
+			cs->Bind();
+			renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &renderer->uav, nullptr);
+			renderer->GetContext()->Dispatch(16, 16, 1);
+			ID3D11UnorderedAccessView* UAV_NULL = NULL;
+			renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &UAV_NULL, 0);
 		}
 
 		c_brush_polys++;
@@ -754,13 +766,41 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				cb->color.w = colorBuf[3];
 
 				// BSP_LIGHTMAPPEDPOLY
+				DirectX::XMFLOAT2 maxuv{ 1000.0f, 1000.0f };
+				for (const auto& vert : vect) {
+					if (vert.texture_coord.x < maxuv.x) {
+						maxuv.x = vert.texture_coord.x;
+					}
+
+					if (vert.texture_coord.y < maxuv.y) {
+						maxuv.y = vert.texture_coord.y;
+					}
+				}
+				mbuffer.orthogonal = DirectX::XMMatrixTranspose(
+					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128.0f,
+						128.0f, 0.0f,  0.0f, 1000.0f));
+				//cbBuffer.Update(mbuffer);
+				//cbBuffer.Bind<MatrixBuffer>(buffer.slot);
 
 				BSPDefinitions bspd{
-					vect, indexes, *cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
 
-				bsp_renderer->Add(bspd);
+				bsp_renderer->Add(bspd);				
+				
+				BSPDefinitions bspd2{
+					vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+
+				bsp_renderer->Add2d(bspd2);
+
+				BSPDefinitions bspd22{
+	vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add2d2(bspd22);
 
 				// Immediate draw dynamic lightmapped polygon
 				// before dynamic texture will updated
@@ -771,10 +811,10 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					float max[3] = { -10000,  -10000,  -10000 };
 					float min[3] = { 10000,  10000,  10000 };
 					for (int i = 0; i < vect.size(); ++i) {
-						if (vect[i].position.x > max[0]) {
+						if (vect[i].position.x < max[0]) {
 							max[0] = vect[i].position.x;
 						}
-						if (vect[i].position.y > max[1]) {
+						if (vect[i].position.y < max[1]) {
 							max[1] = vect[i].position.y;
 						}
 						if (vect[i].position.z > max[2]) {
@@ -909,11 +949,40 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				cb->color.z = colorBuf[2];
 				cb->color.w = colorBuf[3];
 
+				DirectX::XMFLOAT2 maxuv{ 1000.0f, 1000.0f };
+				for (const auto& vert : vect) {
+					if (vert.texture_coord.x < maxuv.x) {
+						maxuv.x = vert.texture_coord.x;
+					}
+
+					if (vert.texture_coord.y < maxuv.y) {
+						maxuv.y = vert.texture_coord.y;
+					}
+				}
+
+				mbuffer.orthogonal = DirectX::XMMatrixTranspose(
+					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128.0f,
+						 128.0f, 0.0f, 0.0f, 1000.0f));
+				//cbBuffer.Update(mbuffer);
+				//cbBuffer.Bind<MatrixBuffer>(buffer.slot);
+
 				BSPDefinitions bspd{
-					vect, indexes, *cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
-				bsp_renderer->Add(bspd);
+				bsp_renderer->Add(bspd);				
+				
+				BSPDefinitions bspd2{
+					vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add2d(bspd2);
+
+				BSPDefinitions bspd22{
+	vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add2d2(bspd22);
 
 				// Immediate draw dynamic lightmapped polygon
 				// before dynamic texture will updated
@@ -927,10 +996,10 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					float max[3] = { -10000,  -10000,  -10000 };
 					float min[3] = { 10000,  10000,  10000 };
 					for (int i = 0; i < vect.size(); ++i) {
-						if (vect[i].position.x > max[0]) {
+						if (vect[i].position.x < max[0]) {
 							max[0] = vect[i].position.x;
 						}
-						if (vect[i].position.y > max[1]) {
+						if (vect[i].position.y < max[1]) {
 							max[1] = vect[i].position.y;
 						}
 						if (vect[i].position.z > max[2]) {
@@ -982,6 +1051,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 	}
 	else
 	{
+
 		c_brush_polys++;
 
 		//GL_MBind(GL_TEXTURE0_SGIS, image->texnum);
@@ -1085,11 +1155,39 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				cb->color.z = colorBuf[2];
 				cb->color.w = colorBuf[3];
 
+				DirectX::XMFLOAT2 maxuv{ 1000.0f, 1000.0f };
+				for (const auto& vert : vect) {
+					if (vert.texture_coord.x < maxuv.x) {
+						maxuv.x = vert.texture_coord.x;
+					}
+
+					if (vert.texture_coord.y < maxuv.y) {
+						maxuv.y = vert.texture_coord.y;
+					}
+				}
+				mbuffer.orthogonal = DirectX::XMMatrixTranspose(
+					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128.0f,
+						128.0f, 0.0f,  0.0f, 1000.0f));
+				//cbBuffer.Update(mbuffer);
+				//cbBuffer.Bind<MatrixBuffer>(buffer.slot);
+
 				BSPDefinitions bspd{
-					vect, indexes, *cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
-				bsp_renderer->Add(bspd);
+				bsp_renderer->Add(bspd);				
+				
+				BSPDefinitions bspd2{
+					vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add2d(bspd2);
+
+				BSPDefinitions bspd22{
+	vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add2d2(bspd22);
 
 				if (image->texnum == renderer->lamp_indexes[0] ||
 					image->texnum == renderer->lamp_indexes[1] ||
@@ -1099,10 +1197,10 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					float max[3] = { -10000,  -10000,  -10000 };
 					float min[3] = { 10000,  10000,  10000 };
 					for (int i = 0; i < vect.size(); ++i) {
-						if (vect[i].position.x > max[0]) {
+						if (vect[i].position.x < max[0]) {
 							max[0] = vect[i].position.x;
 						}
-						if (vect[i].position.y > max[1]) {
+						if (vect[i].position.y < max[1]) {
 							max[1] = vect[i].position.y;
 						}
 						if (vect[i].position.z > max[2]) {
@@ -1238,11 +1336,39 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				cb->color.z = colorBuf[2];
 				cb->color.w = colorBuf[3];
 
+				DirectX::XMFLOAT2 maxuv{ 1000.0f, 1000.0f };
+				for (const auto& vert : vect) {
+					if (vert.texture_coord.x < maxuv.x) {
+						maxuv.x = vert.texture_coord.x;
+					}
+
+					if (vert.texture_coord.y < maxuv.y) {
+						maxuv.y = vert.texture_coord.y;
+					}
+				}
+				mbuffer.orthogonal = DirectX::XMMatrixTranspose(
+					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128.0f,
+						128.0f, 0.0f,  0.0f, 1000.0f));
+				//cbBuffer.Update(mbuffer);
+				//cbBuffer.Bind<MatrixBuffer>(buffer.slot);
+
 				BSPDefinitions bspd{
-					vect, indexes, *cb, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+					vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 				};
 
-				bsp_renderer->Add(bspd);
+				bsp_renderer->Add(bspd);				
+				
+				BSPDefinitions bspd2{
+					vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add2d(bspd2);
+
+				BSPDefinitions bspd22{
+					vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
+				};
+
+				bsp_renderer->Add2d2(bspd22);
 
 				if (image->texnum == renderer->lamp_indexes[0] ||
 					image->texnum == renderer->lamp_indexes[1] ||
@@ -1253,10 +1379,10 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					float max[3] = { -10000,  -10000,  -10000 };
 					float min[3] = { 10000,  10000,  10000 };
 					for (int i = 0; i < vect.size(); ++i) {
-						if (vect[i].position.x > max[0]) {
+						if (vect[i].position.x < max[0]) {
 							max[0] = vect[i].position.x;
 						}
-						if (vect[i].position.y > max[1]) {
+						if (vect[i].position.y < max[1]) {
 							max[1] = vect[i].position.y;
 						}
 						if (vect[i].position.z > max[2]) {

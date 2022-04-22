@@ -88,7 +88,7 @@ CAMERA cam = {};
 ConstantBuffer<CAMERA> cbCamera;
 DirectionalLight directional_light;
 ConstantBuffer<DirectionalLight> cbDirectionalLight;
-MatrixBuffer buffer;
+MatrixBuffer mbuffer;
 ConstantBuffer<MatrixBuffer> cbBuffer;
 
 dx11config_t dx11_config;
@@ -183,6 +183,11 @@ void CompileShaders()
 		utils_renderer->ClearTempFactory();
 	else
 		utils_renderer->BindNewFactory();
+
+	ID3DBlob* blob = CompileShader(L"ref_dx11\\shaders\\LightmapCS.hlsl", NULL, "CSMain", "cs_5_0");
+	cs->~ComputeShader();
+	if (blob != nullptr)
+		cs->Create(blob);
 }
 
 
@@ -321,7 +326,7 @@ void R_DrawSpriteModel(entity_t* e)
 	indexes.push_back(2);
 
 	BSPDefinitions bspd{
-		vect, indexes, cb, BSP_ALPHA, currentmodel->skins[e->frame]->texnum, -1
+		vect, indexes, cb, {}, BSP_ALPHA, currentmodel->skins[e->frame]->texnum, -1
 	};
 
 	bsp_renderer->Add(bspd);
@@ -834,6 +839,10 @@ void R_SetupDX(void)
 	cbDirectionalLight.Update(directional_light);
 	cbDirectionalLight.Bind<DirectionalLight>(light.slot);
 
+	
+	//cbBuffer.Update(mbuffer);
+	//cbBuffer.Bind<MatrixBuffer>(buffer.slot);
+
 	bsp_renderer->InitCB();
 	sky_renderer->InitCB();
 	beam_renderer->InitCB();
@@ -1278,6 +1287,10 @@ qboolean R_Init(void* hinstance, void* hWnd)
 	cbDirectionalLight.Create(directional_light);
 	cbDirectionalLight.Bind<DirectionalLight>(light.slot);
 
+	mbuffer.orthogonal = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128, 128, 0.0f, 0.0f, 1000.0f));
+	cbBuffer.Create(mbuffer);
+	cbBuffer.Bind<MatrixBuffer>(buffer.slot);
+
 	ID3DBlob* blob = CompileShader(L"ref_dx11\\shaders\\LightmapCS.hlsl", NULL, "CSMain", "cs_5_0");
 	if (blob != nullptr)
 		cs->Create(blob);
@@ -1386,6 +1399,10 @@ void DX11_EndFrame(void)
 	if (!is_first) {
 		END_EVENT();
 
+		BEGIN_EVENT(L"Color_texture");
+		utils_renderer->RenderQuad();
+		END_EVENT();
+
 		BEGIN_EVENT(L"Model renderer");
 		mod_renderer->Render();
 		END_EVENT();
@@ -1404,6 +1421,12 @@ void DX11_EndFrame(void)
 
 		BEGIN_EVENT(L"BSP renderer (No dynamic lightmap)");
 		bsp_renderer->Render();
+		END_EVENT();		
+		
+		BEGIN_EVENT(L"BSP GBuffer ");
+		bsp_renderer->is_gbuffer = true;
+		bsp_renderer->Render();
+		bsp_renderer->is_gbuffer = false;
 		END_EVENT();
 
 		BEGIN_EVENT(L"Effects renderer");

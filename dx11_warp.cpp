@@ -241,7 +241,7 @@ void EmitWaterPolys(msurface_t* fa)
 		cb.color.w = colorBuf[3];
 
 		BSPDefinitions bspd{
-			vect, indexes, cb, BSP_WATER, fa->texinfo->image->texnum, -1
+			vect, indexes, cb, {}, BSP_WATER, fa->texinfo->image->texnum, -1
 		};
 
 		bsp_renderer->Add(bspd);

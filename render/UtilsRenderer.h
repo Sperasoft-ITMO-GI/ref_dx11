@@ -9,10 +9,12 @@
 #include <Renderer.h>
 #include <IStateProvider.h>
 #include <UtilsPoly.h>
+#include <EffectsQuad.h>
 
 // There should be defines
 #define UTILS_STATIC  0x001
 #define UTILS_DYNAMIC 0x002
+#define UTILS_QUAD    0x004
 
 
 struct UtilsDefinitions {
@@ -32,6 +34,9 @@ public:
 	void InitCB();
 
 	void Render();
+
+	void RenderQuad();
+
 
 	void Add(const UtilsDefinitions& polygon);
 
@@ -53,8 +58,9 @@ private:
 	PipelineFactory* factory;
 	PipelineFactory* factory_temp;
 	UtilsPoly* p;
+	EffectsQuad* quad;
 	std::vector<UtilsDefinitions> Utils_defs;
 	std::vector<UtilsDefinitions> temp;
-
+	ConstantBuffer<MatrixBuffer> cbuffer;
 	int currentState;
 };

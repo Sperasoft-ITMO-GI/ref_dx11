@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <tuple>
+#include <unordered_map>
 
 #include <WndDxIncludes.h>
 #include <Utils.h>
@@ -107,6 +108,7 @@ public:
 
 	ID3D11ShaderResourceView* sky_box_view;
 
+	std::unordered_map<int, std::pair<int, int>> num_texture_to_dimensions;
 	//DirectX::XMMATRIX orthogonal;
 	//DirectX::XMMATRIX perspective;
 	//DirectX::XMMATRIX model_view;
@@ -137,6 +139,11 @@ public:
 	ID3D11RenderTargetView* render_target_views[render_targets_count];
 	ID3D11ShaderResourceView* shader_resource_views[shader_resource_views_count];
 	ID3D11UnorderedAccessView* uav;
+	
+	ID3D11Texture2D* test_tex;
+	ID3D11RenderTargetView* test_rtv;
+	ID3D11ShaderResourceView* test_srv;
+
 	bool is_game_started = false;
 
 	~Renderer();

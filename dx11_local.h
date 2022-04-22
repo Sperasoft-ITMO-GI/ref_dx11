@@ -68,6 +68,9 @@ extern EffectsRenderer*   effects_renderer;
 extern UtilsRenderer*     utils_renderer;
 extern ComputeShader* cs;
 
+extern MatrixBuffer mbuffer;
+extern ConstantBuffer<MatrixBuffer> cbBuffer;
+
 extern bool multiTexture;
 
 /*
