@@ -81,6 +81,19 @@ void UtilsRenderer::InitCB() {
 	p->CreateCB(cb);
 	quad->CreateCB(cb);
 	cbuffer.Create(mb);
+
+	SetPipelineState(factory->GetState(UTILS_QUAD));
+
+	renderer->GetContext()->OMSetRenderTargets(
+		1u,
+		&renderer->test_rtv,
+		nullptr
+	);
+	MatrixBuffer mbuffer;
+	mbuffer.orthogonal = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128, 128, 0.0f, 0.0f, 1000.0f));
+	cbuffer.Update(mbuffer);
+	cbuffer.Bind<MatrixBuffer>(buffer.slot);
+	//quad->DrawStatic();
 }
 
 void UtilsRenderer::Render() {
@@ -159,18 +172,7 @@ void UtilsRenderer::Render() {
 void UtilsRenderer::RenderQuad()
 {
 	Renderer* renderer = Renderer::GetInstance();
-	SetPipelineState(factory->GetState(UTILS_QUAD));
 
-	renderer->GetContext()->OMSetRenderTargets(
-		1u,
-		&renderer->test_rtv,
-		nullptr
-	);
-	MatrixBuffer mbuffer;
-	mbuffer.orthogonal = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128, 128, 0.0f, 0.0f, 1000.0f));
-	cbuffer.Update(mbuffer);
-	cbuffer.Bind<MatrixBuffer>(buffer.slot);
-	quad->DrawStatic();
 }
 
 void UtilsRenderer::Add(const UtilsDefinitions& polygon) {

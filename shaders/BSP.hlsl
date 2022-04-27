@@ -54,27 +54,12 @@ VSOut VSMain(VSIn IN)
     VSOut OUT;
     
 #ifdef TEX
-    OUT.pos = mul(float4(IN.texCoord, 0, 1),buffer.orthogonal);
-    //OUT.pos.x += 0.1f;
-    //OUT.pos.y -= 0.3f;
-    OUT.norm = IN.norm;//mul(float4(IN.norm.xyz, 0), buffer.orthogonal);
+    OUT.pos = mul(transpose(buffer.orthogonal), float4(IN.lightmapCoord.xy, 0, 1));
 #else
-    float deltaWidth = 1.0f / camera.resolution.x;
-    float deltaHeight = 1.0f / camera.resolution.y;
-    uint numSamples = 10;
-    uint index = camera.total_frames % numSamples;
-    float2 halton = CreateHaltonNumber(index + 1, float2(2, 3));
-    float2 jitter = float2(halton.x * deltaWidth, halton.y * deltaHeight);
-    
-    float haltonScale = 1.0f;
-    matrix jitterMat = IDENTITY_MATRIX;
-    jitterMat[3][0] += jitter.x * haltonScale;
-    jitterMat[3][1] += jitter.y * haltonScale;
-    
     float4x4 proj = mul(mul(camera.perspective, camera.view), model.mod);
     float4x4 prevProj = mul(mul(camera.perspective, camera.prev_view), model.mod);
-    OUT.pos = mul(jitterMat, mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f)));
-    OUT.prevPos = mul(prevProj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
+    OUT.pos = mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
+    OUT.prevPos = float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f);
     OUT.newPos = mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
     OUT.lightmapCoord = IN.lightmapCoord;
     OUT.norm = mul(camera.perspective, float4(IN.norm.xyz, 0));

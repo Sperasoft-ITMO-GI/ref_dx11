@@ -1399,9 +1399,9 @@ void DX11_EndFrame(void)
 	if (!is_first) {
 		END_EVENT();
 
-		BEGIN_EVENT(L"Color_texture");
-		utils_renderer->RenderQuad();
-		END_EVENT();
+		//BEGIN_EVENT(L"Color_texture");
+		//utils_renderer->RenderQuad();
+		//END_EVENT();
 
 		BEGIN_EVENT(L"Model renderer");
 		mod_renderer->Render();

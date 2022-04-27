@@ -777,8 +777,8 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					}
 				}
 				mbuffer.orthogonal = DirectX::XMMatrixTranspose(
-					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128.0f,
-						128.0f, 0.0f,  0.0f, 1000.0f));
+					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 1.0f,
+						0.0f, 1.0f, 0.0f, 1000.0f));
 				//cbBuffer.Update(mbuffer);
 				//cbBuffer.Bind<MatrixBuffer>(buffer.slot);
 
@@ -961,8 +961,8 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 				}
 
 				mbuffer.orthogonal = DirectX::XMMatrixTranspose(
-					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128.0f,
-						 128.0f, 0.0f, 0.0f, 1000.0f));
+					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 1.0f,
+						0.0f, 1.0f, 0.0f, 1000.0f));
 				//cbBuffer.Update(mbuffer);
 				//cbBuffer.Bind<MatrixBuffer>(buffer.slot);
 
@@ -1166,8 +1166,8 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					}
 				}
 				mbuffer.orthogonal = DirectX::XMMatrixTranspose(
-					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128.0f,
-						128.0f, 0.0f,  0.0f, 1000.0f));
+					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 1.0f,
+						0.0f, 1.0f, 0.0f, 1000.0f));
 				//cbBuffer.Update(mbuffer);
 				//cbBuffer.Bind<MatrixBuffer>(buffer.slot);
 
@@ -1347,8 +1347,8 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					}
 				}
 				mbuffer.orthogonal = DirectX::XMMatrixTranspose(
-					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 128.0f,
-						128.0f, 0.0f,  0.0f, 1000.0f));
+					DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 1.0f,
+						0.0f, 1.0f,  0.0f, 1000.0f));
 				//cbBuffer.Update(mbuffer);
 				//cbBuffer.Bind<MatrixBuffer>(buffer.slot);
 
@@ -1668,14 +1668,26 @@ void R_DrawBrushModel(entity_t* e)
 R_RecursiveWorldNode
 ================
 */
-void R_RecursiveWorldNode(mnode_t* node)
-{
+int maxlmtex = -1;
+void R_RecursiveWorldNode(mnode_t* node) {
 	int			c, side, sidebit;
 	cplane_t* plane;
 	msurface_t* surf, ** mark;
 	mleaf_t* pleaf;
 	float		dot;
 	image_t* image;
+
+	// Debug this branches
+
+	//for (c = node->numsurfaces, surf = r_worldmodel->surfaces + node->firstsurface; c; c--, surf++)
+	//{
+	//	MODEL cb;
+	//	cb.mod = DirectX::XMMatrixIdentity();
+	//	if (surf->lightmaptexturenum > maxlmtex)
+	//		maxlmtex = surf->lightmaptexturenum;
+	//	if (surf->lightmaptexturenum == 1)
+	//		GL_RenderLightmappedPoly(surf, &cb);
+	//}
 
 	if (node->contents == CONTENTS_SOLID)
 		return;		// solid
@@ -1684,6 +1696,8 @@ void R_RecursiveWorldNode(mnode_t* node)
 		return;
 	if (R_CullBox(node->minmaxs, node->minmaxs + 3))
 		return;
+
+
 
 	// if a leaf node, draw stuff
 	if (node->contents != -1)
@@ -1769,9 +1783,9 @@ void R_RecursiveWorldNode(mnode_t* node)
 		{
 			if (multiTexture && !(surf->flags & SURF_DRAWTURB))
 			{
-				MODEL cb;
-				cb.mod = DirectX::XMMatrixIdentity();
-				GL_RenderLightmappedPoly(surf, &cb);
+				//MODEL cb;
+				//cb.mod = DirectX::XMMatrixIdentity();
+				//GL_RenderLightmappedPoly(surf, &cb);
 			}
 			else
 			{
@@ -1799,11 +1813,35 @@ void R_DrawWorld(void)
 {
 	entity_t	ent;
 
+	int c;
+	mnode_t* node;
+	msurface_s* surf;
+	r_worldmodel->nodes;
+
 	if (!r_drawworld->value)
 		return;
 
 	if (r_newrefdef.rdflags & RDF_NOWORLDMODEL)
 		return;
+
+	for (c = 0; c < r_worldmodel->numsurfaces; ++c)
+	{
+		surf = r_worldmodel->surfaces + c;
+
+		// auto cycle the world frame for texture animation
+		memset(&ent, 0, sizeof(ent));
+		ent.frame = (int)(r_newrefdef.time * 2);
+		currententity = &ent;
+
+		MODEL cb;
+		cb.mod = DirectX::XMMatrixIdentity();
+		if (surf->lightmaptexturenum > maxlmtex)
+			maxlmtex = surf->lightmaptexturenum;
+		if (surf->lightmaptexturenum != 0)
+			GL_RenderLightmappedPoly(surf, &cb);
+	}
+
+
 
 	currentmodel = r_worldmodel;
 

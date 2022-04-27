@@ -127,7 +127,7 @@ void BSPRenderer::Render() {
 		renderer->GetContext()->ClearRenderTargetView(views[0], DirectX::Colors::Black);
 		renderer->GetContext()->ClearRenderTargetView(views[1], DirectX::Colors::Black);
 		renderer->GetContext()->ClearRenderTargetView(views[2], DirectX::Colors::Black);
-
+		//renderer->GetContext()->ClearRenderTargetView(renderer->test_rtv, DirectX::Colors::Black);
 		if (renderer->index == 0) {
 			renderer->GetContext()->OMSetRenderTargets(
 				1u,
@@ -144,6 +144,16 @@ void BSPRenderer::Render() {
 		}
 
 		currentState = 0;
+		
+		D3D11_VIEWPORT viewport;
+		viewport.TopLeftX = 0.0f;
+		viewport.TopLeftY = 0.0f;
+		viewport.Width = 128.0f;
+		viewport.Height = 128.0f;
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+
+		renderer->GetContext()->RSSetViewports(1, &viewport);
 
 		for (auto& poly : bsp_defs2d) {
 
@@ -164,6 +174,15 @@ void BSPRenderer::Render() {
 			p->DrawIndexed();
 		}
 		bsp_defs2d.clear();
+
+		viewport.TopLeftX = 0.0f;
+		viewport.TopLeftY = 0.0f;
+		viewport.Width = std::get<0>(renderer->GetWindowParameters());
+		viewport.Height = std::get<1>(renderer->GetWindowParameters());;
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+
+		renderer->GetContext()->RSSetViewports(1, &viewport);
 
 		renderer->GetContext()->ClearRenderTargetView(renderer->render_target_views[SCENE_COLOR], DirectX::Colors::Black);
 		ID3D11ShaderResourceView* null_srv[1] = { nullptr };
@@ -322,14 +341,23 @@ void BSPRenderer::ModelPSProvider::PatchPipelineState(PipelineState* state, int 
 		state->bs = states->blend_states.at(BlendState::NOBS);
 	}
 
+	if (defines & BSP_TEX)
+	{
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
+		state->dss = states->depth_stencil_states.at(DepthStencilState::NEVER);
+	}
+	else {
+		state->rs = states->rasterization_states.at(RasterizationState::CULL_NONE);
+		state->dss = states->depth_stencil_states.at(DepthStencilState::LESS_EQUAL);
+	}
 	//if (defines & BSP_TEX)
 	//{
 	//	state->bs = states->blend_states.at(BlendState::NOBS);
 	//	state->dss = states->depth_stencil_states.at(DepthStencilState::NEVER);
 	//}
 
-	state->rs = states->rasterization_states.at(RasterizationState::CULL_FRONT);
-	state->dss = states->depth_stencil_states.at(DepthStencilState::LESS_EQUAL);
+	
+	
 	state->layout = MakeLayout(state->vs->GetBlob(), states->input_layouts.at(Layout::BSP_POLYGON));
 	state->topology = states->topology.at(Topology::TRIANGLE_LISTS);
 }
