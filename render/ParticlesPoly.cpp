@@ -63,7 +63,7 @@ void ParticlesPoly::UpdateDynamicVB(std::vector<ParticlesVertex> vertexes)
 	vertex_buffer.Update(vertexes);
 }
 
-void ParticlesPoly::UpdateDynamicIB(std::vector<uint16_t> indexes)
+void ParticlesPoly::UpdateDynamicIB(std::vector<UINT> indexes)
 {
 	index_buffer.Update(indexes);
 }

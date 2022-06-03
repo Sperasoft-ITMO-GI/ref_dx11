@@ -42,6 +42,12 @@ extern cvar_t* cs_lm;
 extern cvar_t* positions;
 extern cvar_t* normals;
 extern cvar_t* albedo;
+extern cvar_t* lightmap_index;
+extern cvar_t* single_point_light_x;
+extern cvar_t* single_point_light_y;
+extern cvar_t* single_point_light_z;
+
+extern CAMERA cam;
 
 extern cvar_t* vid_fullscreen;
 extern cvar_t* vid_gamma;

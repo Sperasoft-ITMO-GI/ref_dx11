@@ -60,7 +60,7 @@ PSOut PSMain(VSOut IN)
    
     result.color = texColor * IN.col * model.color;
     
-    result.color += saturate(dot(light.direction, IN.norm) * light.color) * light.intensity;
+    //result.color += saturate(dot(light.direction, IN.norm) * light.color) * light.intensity;
     result.mask = 0;
 
     float2 a = (IN.pos.xy / IN.pos.w) * 0.5 + 0.5;

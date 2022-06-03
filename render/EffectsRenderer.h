@@ -62,6 +62,13 @@ private:
 	//ID3D11ShaderResourceView* resource_view;
 
 	int currentState;
+
+	void RenderColorPostEffects(Renderer* renderer);
+	void RenderMotionBlur(Renderer* renderer);
+	void RenderBloom(Renderer* renderer);
+	void RenderTAA(Renderer* renderer);
+	void RenderFXAA(Renderer* renderer);
+	void RenderToBackbuffer(Renderer* renderer);
 public:
 	bool is_render = false;
 	bool fxaa = false;

@@ -81,3 +81,8 @@ PipelineState* PipelineFactory::GetState(int defs, bool* error)
 		return ps;
 	}
 }
+
+IStateProvider* PipelineFactory::GetStateProvider()
+{
+	return provider;
+}

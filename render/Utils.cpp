@@ -130,7 +130,7 @@ DXGI_RATIONAL QueryRefreshRate(UINT screenWidth, UINT screenHeight, BOOL vsync) 
 	return refreshRate;
 };
 
-void SmartTriangulation(std::vector<uint16_t>* ind, int num, int offset)
+void SmartTriangulation(std::vector<UINT>* ind, int num, int offset)
 {
 	for (int i = offset + 1; i < (num - 1) + offset; i++)
 	{
@@ -140,7 +140,7 @@ void SmartTriangulation(std::vector<uint16_t>* ind, int num, int offset)
 	}
 }
 
-void SmartTriangulationClockwise(std::vector<uint16_t>* ind, int num, int offset)
+void SmartTriangulationClockwise(std::vector<UINT>* ind, int num, int offset)
 {
 	for (int i = offset + 1; i < (num - 1) + offset; i++)
 	{
@@ -150,7 +150,7 @@ void SmartTriangulationClockwise(std::vector<uint16_t>* ind, int num, int offset
 	}
 }
 
-void TriangulationTriangleStripToListClockwise(std::vector<uint16_t>* ind, int num, int offset)
+void TriangulationTriangleStripToListClockwise(std::vector<UINT>* ind, int num, int offset)
 {
 	for (int i = 0; i < (num - 2); i++)
 	{
@@ -169,7 +169,7 @@ void TriangulationTriangleStripToListClockwise(std::vector<uint16_t>* ind, int n
 	}
 }
 
-void TriangulationTriangleStripToList(std::vector<uint16_t>* ind, int num, int offset)
+void TriangulationTriangleStripToList(std::vector<UINT>* ind, int num, int offset)
 {
 	for (int i = 0; i < (num - 2); i++)
 	{

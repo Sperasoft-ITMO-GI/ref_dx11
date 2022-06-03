@@ -66,7 +66,7 @@ void BeamPoly::UpdateDynamicVB(std::vector<BeamVertex> vertexes)
 	vertex_buffer.Update(vertexes);
 }
 
-void BeamPoly::UpdateDynamicIB(std::vector<uint16_t> indexes)
+void BeamPoly::UpdateDynamicIB(std::vector<UINT> indexes)
 {
 	index_buffer.Update(indexes);
 }

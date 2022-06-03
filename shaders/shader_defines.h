@@ -92,6 +92,15 @@ struct DirectionalLight
 	float  intensity;
 };
 
+struct LightSources
+{
+	float4 point_light;
+	unsigned int sources_count;
+	float3 source[255];
+	unsigned int dummy[2];
+	//float4 color;
+};
+
 struct MatrixBuffer
 {
 	float4x4 orthogonal;
@@ -102,8 +111,12 @@ STRUCTURE(1, UI_BUFFER, ui_buffer)
 STRUCTURE(1, MODEL, model)
 STRUCTURE(2, DirectionalLight, light)
 STRUCTURE(3, MatrixBuffer, buffer)
+STRUCTURE(4, LightSources, light_sources_buf)
 TEXTURE_2D(0, float4, colorTexture)
 TEXTURE_2D(1, float4, lightmapTexture)
+TEXTURE_2D(2, float4, positionTexture)
+TEXTURE_2D(3, float4, normalTexture)
+TEXTURE_2D(4, float4, albedoTexture)
 TEXTURE_2D(2, float4, bloomTexture)
 TEXTURE_2D(3, float4, effectTexture)
 TEXTURE_2D(4, float4, fxaaTexture)

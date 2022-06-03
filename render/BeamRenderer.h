@@ -15,7 +15,7 @@
 
 struct BeamDefinitions {
 	std::vector<BeamVertex> vert;
-	std::vector<uint16_t> ind;
+	std::vector<UINT> ind;
 	MODEL cb;
 	int flags;
 };

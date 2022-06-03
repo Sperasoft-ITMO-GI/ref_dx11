@@ -25,7 +25,7 @@ public:
 
 	void UpdateCB(const MODEL& cbp);
 	void UpdateDynamicVB(std::vector<ParticlesVertex> vertexes);
-	void UpdateDynamicIB(std::vector<uint16_t> indexes);
+	void UpdateDynamicIB(std::vector<UINT> indexes);
 
 private:
 	VertexBuffer vertex_buffer;

@@ -13,6 +13,8 @@ public:
 
 	PipelineState* GetState(int defs, bool* error = nullptr);
 
+	IStateProvider* GetStateProvider();
+
 private:
 	std::wstring shader_path;
 	IStateProvider* provider;

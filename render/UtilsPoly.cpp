@@ -66,7 +66,7 @@ void UtilsPoly::UpdateDynamicVB(std::vector<UtilsVertex> vertexes)
 	vertex_buffer.Update(vertexes);
 }
 
-void UtilsPoly::UpdateDynamicIB(std::vector<uint16_t> indexes)
+void UtilsPoly::UpdateDynamicIB(std::vector<UINT> indexes)
 {
 	index_buffer.Update(indexes);
 }

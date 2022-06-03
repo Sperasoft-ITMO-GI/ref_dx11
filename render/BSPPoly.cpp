@@ -29,14 +29,16 @@ void BSPPoly::Draw() {
 	renderer->GetContext()->Draw(vertex_buffer.GetCount(), 0u);
 }
 
-void BSPPoly::DrawIndexed() {
+void BSPPoly::DrawIndexed(UINT indexCount, const UINT startIndexLocation, const INT baseVertexLocation) {
 	Renderer* renderer = Renderer::GetInstance();
 
+	if (indexCount == 0)
+		indexCount = index_buffer.GetCount();
 	vertex_buffer.Bind();
 	index_buffer.Bind();
 	constant_buffer.Bind<MODEL>(1);
 
-	renderer->GetContext()->DrawIndexed(index_buffer.GetCount(), 0u, 0u);
+	renderer->GetContext()->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
 }
 
 void BSPPoly::CreateCB(const MODEL& cbp) {
@@ -63,7 +65,13 @@ void BSPPoly::UpdateDynamicVB(std::vector<BSPVertex> vertexes)
 	vertex_buffer.Update(vertexes);
 }
 
-void BSPPoly::UpdateDynamicIB(std::vector<uint16_t> indexes)
+void BSPPoly::UpdateDynamicIB(std::vector<UINT> indexes)
 {
 	index_buffer.Update(indexes);
+}
+
+void BSPPoly::Bind()
+{
+	vertex_buffer.Bind();
+	index_buffer.Bind();
 }

@@ -154,7 +154,7 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp, int texNum, Direct
 
 	ModVertex vert = {};
 	std::vector<ModVertex> vect;
-	std::vector<uint16_t> indexes;
+	std::vector<UINT> indexes;
 
 	auto normal_counter = 0;
 	std::vector<DirectX::XMFLOAT3> norms(1000);
@@ -168,121 +168,120 @@ void GL_DrawAliasFrameLerp(dmdl_t* paliashdr, float backlerp, int texNum, Direct
 	DirectX::XMVECTOR u	;
 	DirectX::XMVECTOR vn;
 	DirectX::XMVECTOR temp;
-	{LOG_DURATION("model: ")
-		while (1)
+	
+	while (1)
+	{
+
+		// get the vertex count and primitive type
+		count = *order++;
+		if (!count)
+			break;		// done
+
+		bool triangleFan = true;
+
+		if (count < 0)
 		{
-
-			// get the vertex count and primitive type
-			count = *order++;
-			if (!count)
-				break;		// done
-
-			bool triangleFan = true;
-
-			if (count < 0)
-			{
-				count = -count;
-				triangleFan = true;
-			}
-			else
-			{
-				triangleFan = false;
-			}
-
-			int numVerts = count;
-
-			if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE))
-			{
-				do
-				{
-					index_xyz = order[2];
-					order += 3;
-
-					vert.color.x = shadelight[0];
-					vert.color.y = shadelight[1];
-					vert.color.z = shadelight[2];
-					vert.color.w = alpha;
-
-					vert.position.x = s_lerped[index_xyz][0];
-					vert.position.y = s_lerped[index_xyz][1];
-					vert.position.z = s_lerped[index_xyz][2];
-
-					vect.push_back(vert);
-
-				} while (--count);
-			}
-			else
-			{
-				do
-				{
-					// texture coordinates come from the draw list
-					vert.texture_coord.x = ((float*)order)[0];
-					vert.texture_coord.y = ((float*)order)[1];
-
-					index_xyz = order[2];
-					order += 3;
-
-					// normals and vertexes come from the frame list
-					l = shadedots[verts[index_xyz].lightnormalindex];
-
-					vert.color.x = l * shadelight[0];
-					vert.color.y = l * shadelight[1];
-					vert.color.z = l * shadelight[2];
-					vert.color.w = alpha;
-
-					vert.position.x = s_lerped[index_xyz][0];
-					vert.position.y = s_lerped[index_xyz][1];
-					vert.position.z = s_lerped[index_xyz][2];
-
-					vect.push_back(vert);
-				} while (--count);
-			}
-
-			if (triangleFan)
-			{
-				SmartTriangulationClockwise(&indexes, numVerts, vertffset);
-			}
-			else
-			{
-				TriangulationTriangleStripToListClockwise(&indexes, numVerts, vertffset);
-			}
-
-			vertffset += numVerts;
-
-			for (int i = 0; i < indexes.size(); i += 3) {
-				p0 = vect[indexes[i]].position;
-				p1 = vect[indexes[i + 1]].position;
-				p2 = vect[indexes[i + 2]].position;
-				u = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p1), DirectX::XMLoadFloat3(&p0));
-				vn = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p2), DirectX::XMLoadFloat3(&p0));
-				temp = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(u, vn));
-
-				if (DirectX::XMVectorGetX(DirectX::XMVector3Length(temp)) > 0.000001)
-					DirectX::XMStoreFloat3(&norms[normal_counter++], temp);
-
-				vect[indexes[i]].normal.x += norms[normal_counter - 1].x;
-				vect[indexes[i]].normal.y += norms[normal_counter - 1].y;
-				vect[indexes[i]].normal.z += norms[normal_counter - 1].z;
-				vect[indexes[i + 1]].normal.x += norms[normal_counter - 1].x;
-				vect[indexes[i + 1]].normal.y += norms[normal_counter - 1].y;
-				vect[indexes[i + 1]].normal.z += norms[normal_counter - 1].z;
-				vect[indexes[i + 2]].normal.x += norms[normal_counter - 1].x;
-				vect[indexes[i + 2]].normal.y += norms[normal_counter - 1].y;
-				vect[indexes[i + 2]].normal.z += norms[normal_counter - 1].z;
-				++counter[indexes[i]];
-				++counter[indexes[i + 1]];
-				++counter[indexes[i + 2]];
-			}
-
-			for (int i = 0; i < vect.size(); ++i) {
-				vect[i].normal.x /= counter[i];
-				vect[i].normal.y /= counter[i];
-				vect[i].normal.z /= counter[i];
-				DirectX::XMStoreFloat3(&vect[i].normal, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&vect[i].normal)));
-			}
-
-			normal_counter = 0;
+			count = -count;
+			triangleFan = true;
 		}
+		else
+		{
+			triangleFan = false;
+		}
+
+		int numVerts = count;
+
+		if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE))
+		{
+			do
+			{
+				index_xyz = order[2];
+				order += 3;
+
+				vert.color.x = shadelight[0];
+				vert.color.y = shadelight[1];
+				vert.color.z = shadelight[2];
+				vert.color.w = alpha;
+
+				vert.position.x = s_lerped[index_xyz][0];
+				vert.position.y = s_lerped[index_xyz][1];
+				vert.position.z = s_lerped[index_xyz][2];
+
+				vect.push_back(vert);
+
+			} while (--count);
+		}
+		else
+		{
+			do
+			{
+				// texture coordinates come from the draw list
+				vert.texture_coord.x = ((float*)order)[0];
+				vert.texture_coord.y = ((float*)order)[1];
+
+				index_xyz = order[2];
+				order += 3;
+
+				// normals and vertexes come from the frame list
+				l = shadedots[verts[index_xyz].lightnormalindex];
+
+				vert.color.x = l * shadelight[0];
+				vert.color.y = l * shadelight[1];
+				vert.color.z = l * shadelight[2];
+				vert.color.w = alpha;
+
+				vert.position.x = s_lerped[index_xyz][0];
+				vert.position.y = s_lerped[index_xyz][1];
+				vert.position.z = s_lerped[index_xyz][2];
+
+				vect.push_back(vert);
+			} while (--count);
+		}
+
+		if (triangleFan)
+		{
+			SmartTriangulationClockwise(&indexes, numVerts, vertffset);
+		}
+		else
+		{
+			TriangulationTriangleStripToListClockwise(&indexes, numVerts, vertffset);
+		}
+
+		vertffset += numVerts;
+
+		/*for (int i = 0; i < indexes.size(); i += 3) {
+			p0 = vect[indexes[i]].position;
+			p1 = vect[indexes[i + 1]].position;
+			p2 = vect[indexes[i + 2]].position;
+			u = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p1), DirectX::XMLoadFloat3(&p0));
+			vn = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&p2), DirectX::XMLoadFloat3(&p0));
+			temp = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(u, vn));
+
+			if (DirectX::XMVectorGetX(DirectX::XMVector3Length(temp)) > 0.000001)
+				DirectX::XMStoreFloat3(&norms[normal_counter++], temp);
+
+			vect[indexes[i]].normal.x += norms[normal_counter - 1].x;
+			vect[indexes[i]].normal.y += norms[normal_counter - 1].y;
+			vect[indexes[i]].normal.z += norms[normal_counter - 1].z;
+			vect[indexes[i + 1]].normal.x += norms[normal_counter - 1].x;
+			vect[indexes[i + 1]].normal.y += norms[normal_counter - 1].y;
+			vect[indexes[i + 1]].normal.z += norms[normal_counter - 1].z;
+			vect[indexes[i + 2]].normal.x += norms[normal_counter - 1].x;
+			vect[indexes[i + 2]].normal.y += norms[normal_counter - 1].y;
+			vect[indexes[i + 2]].normal.z += norms[normal_counter - 1].z;
+			++counter[indexes[i]];
+			++counter[indexes[i + 1]];
+			++counter[indexes[i + 2]];
+		}
+
+		for (int i = 0; i < vect.size(); ++i) {
+			vect[i].normal.x /= counter[i];
+			vect[i].normal.y /= counter[i];
+			vect[i].normal.z /= counter[i];
+			DirectX::XMStoreFloat3(&vect[i].normal, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&vect[i].normal)));
+		}
+
+		normal_counter = 0;*/
 	}
 	MODEL cb;
 	cb.mod = modelMat;

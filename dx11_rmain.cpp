@@ -79,6 +79,10 @@ cvar_t* cs_lm;
 cvar_t* positions;
 cvar_t* normals;
 cvar_t* albedo;
+cvar_t* lightmap_index;
+cvar_t* single_point_light_x;
+cvar_t* single_point_light_y;
+cvar_t* single_point_light_z;
 
 cvar_t* vid_fullscreen;
 cvar_t* vid_gamma;
@@ -138,8 +142,20 @@ void CompileShaders()
 		bsp_renderer->ClearTempFactory();
 	else if (!bsp_renderer->CompileWithDefines(BSP_WATER))
 		bsp_renderer->ClearTempFactory();
-	else
+	else if (!bsp_renderer->CompileWithDefines(BSP_TEX))
+		bsp_renderer->ClearTempFactory();
+	else if (!bsp_renderer->CompileWithDefines(BSP_TEX_WIREFRAME))
+		bsp_renderer->ClearTempFactory();	
+	else if (!bsp_renderer->CompileWithDefines(BSP_TEX_LIGHTMAP))
+		bsp_renderer->ClearTempFactory();
+	else if (!bsp_renderer->CompileWithDefines(BSP_TEX_LIGHTMAPWIRE))
+		bsp_renderer->ClearTempFactory();
+	else 
 		bsp_renderer->BindNewFactory();
+	bsp_renderer->is_first = true;
+	bsp_renderer->is_lightmap = false;
+	bsp_renderer->GetPSProvider()->is_first_lm_pass = true;
+	bsp_renderer->ClearLightMaps();
 
 	// SKY_Renderer
 	sky_renderer->InitNewFactory(L"ref_dx11\\shaders\\Sky.hlsl");
@@ -315,7 +331,7 @@ void R_DrawSpriteModel(entity_t* e)
 	//qglVertex3fv(point);
 	vect.push_back({ {point[0], point[1], point[2]}, {},  {1, 1}, {0, 0} });
 
-	std::vector<uint16_t> indexes;
+	std::vector<UINT> indexes;
 
 	indexes.push_back(0);
 	indexes.push_back(2);
@@ -808,6 +824,14 @@ void R_SetupDX(void)
 	cam.view = XMMatrixIdentity();
 	cam.view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
 
+#if defined(DEBUG) || defined(_DEBUG)  
+	printf("Camera coords: x = %f, y = %f, z = %f\n", r_newrefdef.vieworg[0], r_newrefdef.vieworg[1], r_newrefdef.vieworg[2]);
+	single_point_light_x->value = r_newrefdef.vieworg[0];
+	single_point_light_y->value = r_newrefdef.vieworg[1];
+	single_point_light_z->value = r_newrefdef.vieworg[2];
+#endif
+
+
 	cam.view *= XMMatrixRotationZ(XMConvertToRadians(-r_newrefdef.viewangles[1]));
 	cam.view *= XMMatrixRotationY(XMConvertToRadians(-r_newrefdef.viewangles[0]));
 	cam.view *= XMMatrixRotationX(XMConvertToRadians(-r_newrefdef.viewangles[2]));
@@ -1104,20 +1128,24 @@ void R_Register(void)
 	// our stuff
 	dx11_mode = ri.Cvar_Get("dx11_mode", "3", CVAR_ARCHIVE);
 	taa = ri.Cvar_Get("taa", "1", 0);
-	is_directional_light = ri.Cvar_Get("dirlight", "0", 0);
+	is_directional_light = ri.Cvar_Get("dirlight", "1", 0);
 	light_color_r = ri.Cvar_Get("lightcolorr", "0.96862745098", 0);
 	light_color_g = ri.Cvar_Get("lightcolorg", "0.36862745098", 0);
 	light_color_b = ri.Cvar_Get("lightcolorb", "0.14509803921", 0);
 	light_color_a = ri.Cvar_Get("lightcolora", "0.0", 0);
-	light_direction_x = ri.Cvar_Get("lightdirx", "1", 0);
-	light_direction_y = ri.Cvar_Get("lightdiry", "0.5", 0);
-	light_direction_z = ri.Cvar_Get("lightdirz", "-0.45", 0);
+	light_direction_x = ri.Cvar_Get("lightdirx", "0.0", 0);
+	light_direction_y = ri.Cvar_Get("lightdiry", "0.0", 0);
+	light_direction_z = ri.Cvar_Get("lightdirz", "-1", 0);
 	light_intensity = ri.Cvar_Get("lightintensity", "0.5", 0);
 	light_sources = ri.Cvar_Get("lightsources", "0", 0);
 	cs_lm = ri.Cvar_Get("cslm", "0", 0);
 	positions = ri.Cvar_Get("positions", "0", 0);
 	normals   = ri.Cvar_Get("normals", "0", 0);
 	albedo    = ri.Cvar_Get("albedo", "0", 0);
+	lightmap_index = ri.Cvar_Get("lmindex", "0", 0);
+	single_point_light_x = ri.Cvar_Get("plightx", "0", 0);
+	single_point_light_y = ri.Cvar_Get("plighty", "0", 0);
+	single_point_light_z = ri.Cvar_Get("plightz", "0", 0);
 
 	vid_fullscreen = ri.Cvar_Get("vid_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = ri.Cvar_Get("vid_gamma", "1.0", CVAR_ARCHIVE);
@@ -1385,6 +1413,10 @@ void R_BeginFrame(float camera_separation)
 
 	// clear
 	renderer->Clear();	
+
+	bsp_renderer->lightmap_index = lightmap_index->value;
+	bsp_renderer->point_light_buf = DirectX::XMFLOAT4(single_point_light_x->value, 
+		single_point_light_y->value, single_point_light_z->value, 0);
 }
 
 /*
@@ -1398,10 +1430,6 @@ void DX11_EndFrame(void)
 {
 	if (!is_first) {
 		END_EVENT();
-
-		//BEGIN_EVENT(L"Color_texture");
-		//utils_renderer->RenderQuad();
-		//END_EVENT();
 
 		BEGIN_EVENT(L"Model renderer");
 		mod_renderer->Render();
@@ -1423,11 +1451,6 @@ void DX11_EndFrame(void)
 		bsp_renderer->Render();
 		END_EVENT();		
 		
-		BEGIN_EVENT(L"BSP GBuffer ");
-		bsp_renderer->is_gbuffer = true;
-		bsp_renderer->Render();
-		bsp_renderer->is_gbuffer = false;
-		END_EVENT();
 
 		BEGIN_EVENT(L"Effects renderer");
 		effects_renderer->fxaa = taa->value;
@@ -1435,7 +1458,7 @@ void DX11_EndFrame(void)
 		effects_renderer->Render();
 		END_EVENT();
 
-		if (light_sources->value) {
+		if (light_sources->value && !bsp_renderer->is_first) {
 			BEGIN_EVENT(L"Light source");
 			utils_renderer->Render();
 			END_EVENT();
@@ -1517,7 +1540,7 @@ void R_DrawBeam(entity_t* e)
 	}
 
 	using namespace DirectX;
-	std::vector<uint16_t> indexes;
+	std::vector<UINT> indexes;
 	std::vector<BeamVertex> verts;
 	BeamVertex vert;
 	for (int i = 0; i < NUM_BEAM_SEGS; ++i) {

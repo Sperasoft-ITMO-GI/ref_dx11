@@ -16,7 +16,7 @@
 
 struct ModDefinitions {
 	std::vector<ModVertex> vert;
-	std::vector<uint16_t> ind;
+	std::vector<UINT> ind;
 	MODEL cb;
 	int flags;
 	int texture_index;

@@ -46,9 +46,10 @@ enum EffectsRTV : uint8_t {
 	BLOOM_2,
 	FXAA,
 	EFFECT,
-	LIGHTMAP,
 	POSITIONS,
 	NORMALS,
+	ALBEDO,
+	LIGHTMAP,
 	VELOSITY,
 	VELOSITY_HIST,
 };
@@ -63,9 +64,10 @@ enum EffectsSRV : uint8_t {
 	BLOOM_2_SRV,
 	FXAA_SRV,
 	EFFECT_SRV,
-	LIGHTMAP_SRV,
 	POSITIONS_SRV,
 	NORMALS_SRV,
+	ALBEDO_SRV,
+	LIGHTMAP_SRV,
 	VELOCITY_SRV,
 	VELOCITY_HIST_SRV,
 	DEPTH_SRV,
@@ -104,6 +106,7 @@ private:
 public:
 	ID3D11ShaderResourceView* texture_array_srv[1600];
 	int lamp_indexes[10];
+	int garbage_textures[10];
 	int counter = 0;
 
 	ID3D11ShaderResourceView* sky_box_view;
@@ -132,9 +135,9 @@ public:
 
 	int index = 0;
 
-	static constexpr int render_textures_count = 16;
-	static constexpr int render_targets_count = 15;
-	static constexpr int shader_resource_views_count = 16;
+	static constexpr int render_textures_count = 17;
+	static constexpr int render_targets_count = 16;
+	static constexpr int shader_resource_views_count = 17;
 	ID3D11Texture2D* render_textures[render_textures_count];
 	ID3D11RenderTargetView* render_target_views[render_targets_count];
 	ID3D11ShaderResourceView* shader_resource_views[shader_resource_views_count];

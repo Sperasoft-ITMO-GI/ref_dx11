@@ -229,7 +229,7 @@ void EmitWaterPolys(msurface_t* fa)
 			vect.push_back(vert);
 		}
 
-		std::vector<uint16_t> indexes;
+		std::vector<UINT> indexes;
 
 		SmartTriangulation(&indexes, p->numverts, 0);
 

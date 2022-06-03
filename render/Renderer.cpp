@@ -130,7 +130,19 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		texture_desc.CPUAccessFlags = 0;
 		texture_desc.MiscFlags = 0;
 
-		for (int i = 0; i < render_textures_count - 7; ++i) {
+		for (int i = 0; i < render_textures_count - 4; ++i) {
+			if (i == POSITIONS_SRV) {
+				texture_desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			}
+			else if (i == NORMALS_SRV) {
+				texture_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			}
+			else if (i == LIGHTMAP_SRV) {
+				texture_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			}
+			else {
+				texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			}
 			DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[i]));
 		}
 
@@ -143,7 +155,23 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		render_target_view_desc.Texture2D.MipSlice = 0;
 
-		for (int i = 1; i < render_targets_count - 4; ++i) {
+		for (int i = 1; i < render_targets_count - 2; ++i) {
+			if (i == POSITIONS) {
+				texture_desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+				render_target_view_desc.Format = texture_desc.Format;
+			}
+			else if (i == NORMALS){
+				texture_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+				render_target_view_desc.Format = texture_desc.Format;
+			}
+			else if (i == LIGHTMAP) {
+				texture_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+				render_target_view_desc.Format = texture_desc.Format;
+			}
+			else {
+				texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				render_target_view_desc.Format = texture_desc.Format;
+			}
 			DXCHECK(device->CreateRenderTargetView(render_textures[i - 1], &render_target_view_desc, &render_target_views[i]));
 		}
 
@@ -154,7 +182,23 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		shader_resource_view_desc.Texture2D.MostDetailedMip = 0;
 		shader_resource_view_desc.Texture2D.MipLevels = 1;
 
-		for (int i = 0; i < shader_resource_views_count - 6; ++i) {
+		for (int i = 0; i < shader_resource_views_count - 5; ++i) {
+			if (i == POSITIONS_SRV) {
+				texture_desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+				shader_resource_view_desc.Format = texture_desc.Format;
+			}
+			else if (i == NORMALS_SRV) {
+				texture_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+				shader_resource_view_desc.Format = texture_desc.Format;
+			}
+			else if (i == LIGHTMAP_SRV) {
+				texture_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+				shader_resource_view_desc.Format = texture_desc.Format;
+			}
+			else {
+				texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				shader_resource_view_desc.Format = texture_desc.Format;
+			}
 			DXCHECK(device->CreateShaderResourceView(
 				render_textures[i],
 				&shader_resource_view_desc,
@@ -180,30 +224,6 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 			render_textures[EffectsSRV::VELOCITY_HIST_SRV],
 			&shader_resource_view_desc,
 			&shader_resource_views[EffectsSRV::VELOCITY_HIST_SRV])
-		);
-
-		texture_desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		render_target_view_desc.Format = texture_desc.Format;
-		shader_resource_view_desc.Format = texture_desc.Format;
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[POSITIONS_SRV]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::POSITIONS_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::POSITIONS]));
-		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::POSITIONS_SRV],
-			&shader_resource_view_desc,
-			&shader_resource_views[EffectsSRV::POSITIONS_SRV])
-		);
-
-		texture_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		render_target_view_desc.Format = texture_desc.Format;
-		shader_resource_view_desc.Format = texture_desc.Format;
-		DXCHECK(device->CreateTexture2D(&texture_desc, nullptr, &render_textures[NORMALS_SRV]));
-		DXCHECK(device->CreateRenderTargetView(render_textures[EffectsSRV::NORMALS_SRV],
-			&render_target_view_desc, &render_target_views[EffectsRTV::NORMALS]));
-		DXCHECK(device->CreateShaderResourceView(
-			render_textures[EffectsSRV::NORMALS_SRV],
-			&shader_resource_view_desc,
-			&shader_resource_views[EffectsSRV::NORMALS_SRV])
 		);
 
 		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
@@ -280,7 +300,7 @@ bool Renderer::Initialize(const HINSTANCE instance, const WNDPROC wndproc) {
 		D3D11_SAMPLER_DESC sampler_desc;
 		ZeroMemory(&sampler_desc, sizeof(D3D11_SAMPLER_DESC));
 
-		sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
+		sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC; //D3D11_FILTER_MIN_MAG_MIP_POINT;
 		sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
 		sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
 		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -414,6 +434,19 @@ void Renderer::AddTexturetoSRV(char* name, int width, int height, int bits, unsi
 	curr_name = "textures/e1u1/baselt_b.wal";
 	if (!strcmp(curr_name, name)) {
 		lamp_indexes[3] = texNum;
+	}	
+	
+	curr_name = "textures/e1u1/trigger.wal";
+	if (!strcmp(curr_name, name)) {
+		garbage_textures[0] = texNum;
+	}
+	curr_name = "textures/e1u1/origin.wal";
+	if (!strcmp(curr_name, name)) {
+		garbage_textures[1] = texNum;
+	}	
+	curr_name = "textures/e1u1/hint.wal";
+	if (!strcmp(curr_name, name)) {
+		garbage_textures[2] = texNum;
 	}
 
 	if (mipmap)
@@ -674,10 +707,11 @@ void Renderer::Clear() {
 		context->ClearRenderTargetView(render_target_views[BLOOM_2], DirectX::Colors::Black);
 		context->ClearRenderTargetView(render_target_views[FXAA], DirectX::Colors::Black);
 		context->ClearRenderTargetView(render_target_views[EFFECT], DirectX::Colors::Black);
-		context->ClearRenderTargetView(render_target_views[VELOCITY_SRV], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[VELOSITY], DirectX::Colors::Black);
 		//context->ClearRenderTargetView(render_target_views[SCENE_COLOR_SRV], DirectX::Colors::Black);
-		context->ClearRenderTargetView(render_target_views[POSITIONS_SRV], DirectX::Colors::Black);
-		context->ClearRenderTargetView(render_target_views[NORMALS_SRV], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[POSITIONS], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[NORMALS], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[ALBEDO], DirectX::Colors::Black);
 		//context->ClearDepthStencilView(depth_stencil_view[1], D3D11_CLEAR_DEPTH, 1.0f, 0u);
 	}
 	else {
@@ -689,10 +723,11 @@ void Renderer::Clear() {
 		context->ClearRenderTargetView(render_target_views[BLOOM_2], DirectX::Colors::Black);
 		context->ClearRenderTargetView(render_target_views[FXAA], DirectX::Colors::Black);
 		context->ClearRenderTargetView(render_target_views[EFFECT], DirectX::Colors::Black);
-		context->ClearRenderTargetView(render_target_views[VELOCITY_SRV], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[VELOSITY], DirectX::Colors::Black);
 		//context->ClearRenderTargetView(render_target_views[SCENE_COLOR_SRV], DirectX::Colors::Black);
-		context->ClearRenderTargetView(render_target_views[POSITIONS_SRV], DirectX::Colors::Black);
-		context->ClearRenderTargetView(render_target_views[NORMALS_SRV], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[POSITIONS], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[NORMALS], DirectX::Colors::Black);
+		context->ClearRenderTargetView(render_target_views[ALBEDO], DirectX::Colors::Black);
 		//context->ClearDepthStencilView(depth_stencil_view[0], D3D11_CLEAR_DEPTH, 1.0f, 0u);
 	}
 

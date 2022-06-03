@@ -3,7 +3,7 @@
 IndexBuffer::IndexBuffer() : count(0), buffer(nullptr) {
 }
 
-IndexBuffer::IndexBuffer(std::vector<uint16_t> indexes) : count(indexes.size()) {
+IndexBuffer::IndexBuffer(std::vector<UINT> indexes) : count(indexes.size()) {
 	Renderer* renderer = Renderer::GetInstance();
 
 	D3D11_BUFFER_DESC index_buffer_desc{};
@@ -26,7 +26,7 @@ IndexBuffer::~IndexBuffer() {
 		buffer->Release();
 }
 
-void IndexBuffer::Create(std::vector<uint16_t> indexes) {
+void IndexBuffer::Create(std::vector<UINT> indexes) {
 	count = indexes.size();
 	if (!buffer) {
 		Renderer* renderer = Renderer::GetInstance();
@@ -68,7 +68,7 @@ void IndexBuffer::CreateDynamic(const UINT size) {
 	}
 }
 
-void IndexBuffer::Update(std::vector<uint16_t> indexes) {
+void IndexBuffer::Update(std::vector<UINT> indexes) {
 	Renderer* renderer = Renderer::GetInstance();
 	ID3D11DeviceContext* context = renderer->GetContext();
 
@@ -84,9 +84,9 @@ void IndexBuffer::Update(std::vector<uint16_t> indexes) {
 void IndexBuffer::Bind() {
 	Renderer* renderer = Renderer::GetInstance();
 	const UINT offset = 0u;
-	renderer->GetContext()->IASetIndexBuffer(buffer, DXGI_FORMAT_R16_UINT, offset);
+	renderer->GetContext()->IASetIndexBuffer(buffer, DXGI_FORMAT_R32_UINT, offset);
 }
 
-uint16_t IndexBuffer::GetCount() {
+UINT IndexBuffer::GetCount() {
 	return count;
 }

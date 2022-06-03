@@ -17,7 +17,7 @@ public:
 	~BSPPoly();
 
 	void Draw();
-	void DrawIndexed();
+	void DrawIndexed(UINT indexCount = 0, const UINT startIndexLocation = 0U, const INT baseVertexLocation = 0);
 
 	void CreateCB(const MODEL& cbp);
 	void CreateDynamicVB(UINT size);
@@ -25,7 +25,9 @@ public:
 
 	void UpdateCB(const MODEL& cbp);
 	void UpdateDynamicVB(std::vector<BSPVertex> vertexes);
-	void UpdateDynamicIB(std::vector<uint16_t> indexes);
+	void UpdateDynamicIB(std::vector<UINT> indexes);
+
+	void Bind();
 
 private:
 	VertexBuffer vertex_buffer;

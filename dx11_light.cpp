@@ -79,7 +79,7 @@ void R_RenderDlights(void)
 	
 	if (l->intensity > 70) {
 
-		std::vector<UtilsVertex> uvert{
+ 		std::vector<UtilsVertex> uvert{
 				{{l->origin[0] - 10, l->origin[1], l->origin[2]}, {0.0f, 0.0f}},
 				{{l->origin[0] + 10, l->origin[1], l->origin[2]}, {1.0f, 0.0f}},
 				{{l->origin[0], l->origin[1] - 10, l->origin[2]}, {1.0f, 1.0f}},
@@ -88,7 +88,7 @@ void R_RenderDlights(void)
 				{{l->origin[0], l->origin[1], l->origin[2] + 10}, {0.0f, 1.0f}},
 		};
 
-		std::vector<uint16_t> uind{
+		std::vector<UINT> uind{
 			2, 1, 0, 0, 3, 2
 		};
 

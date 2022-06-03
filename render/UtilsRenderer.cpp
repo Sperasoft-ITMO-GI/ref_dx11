@@ -148,23 +148,23 @@ void UtilsRenderer::Render() {
 			}
 		}
 
-		for (auto& poly : Utils_defs) {
+		//for (auto& poly : Utils_defs) {
 
-			if (currentState != poly.flags)
+			if (currentState != Utils_defs[0].flags)
 			{
-				if (poly.flags & UTILS_STATIC) {
+				if (Utils_defs[0].flags & UTILS_STATIC) {
 					SetPipelineState(factory->GetState(UTILS_STATIC));
 					currentState = UTILS_STATIC;
 				}
 			}
 
-			p->UpdateDynamicVB(poly.vert);
-			p->UpdateDynamicIB(poly.ind);
-			p->UpdateCB(poly.cb);
+			p->UpdateDynamicVB(Utils_defs[0].vert);
+			p->UpdateDynamicIB(Utils_defs[0].ind);
+			p->UpdateCB(Utils_defs[0].cb);
 			p->Draw();
-		}
+		//}
 
-		Utils_defs.clear();
+		//Utils_defs.clear();
 		temp.clear();
 	}
 }

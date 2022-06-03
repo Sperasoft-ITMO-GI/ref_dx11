@@ -62,7 +62,7 @@ void ModPoly::UpdateDynamicVB(std::vector<ModVertex> vertexes)
 	vertex_buffer.Update(vertexes);
 }
 
-void ModPoly::UpdateDynamicIB(std::vector<uint16_t> indexes)
+void ModPoly::UpdateDynamicIB(std::vector<UINT> indexes)
 {
 	index_buffer.Update(indexes);
 }
