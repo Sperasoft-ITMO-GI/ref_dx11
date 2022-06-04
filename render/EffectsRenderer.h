@@ -13,11 +13,12 @@
 #define EFFECTS_SCENE            0x002
 #define EFFECTS_GLOW             0x004
 #define EFFECTS_HORIZONTAL_BLUR  0x008
-#define EFFECTS_VERTICAL_BLUR    0x016
-#define EFFECTS_INTENSITY        0x032
-#define EFFECTS_FXAA             0x064
-#define EFFECTS_MOTION_BLUR      0x128
-#define EFFECTS_TAA              0x256
+#define EFFECTS_VERTICAL_BLUR    0x010
+#define EFFECTS_INTENSITY        0x020
+#define EFFECTS_FXAA             0x040
+#define EFFECTS_MOTION_BLUR      0x080
+#define EFFECTS_TAA              0x100
+#define EFFECTS_LIGHT            0x200
 
 class EffectsRenderer {
 public:
@@ -45,6 +46,8 @@ public:
 	void ClearRenderTargetViews();
 
 	void ChangeFlags(float pos, float norm, float alb);
+
+	void RenderLight(Renderer* renderer);
 
 private:
 	class EffectsPSProvider : public IStateProvider {

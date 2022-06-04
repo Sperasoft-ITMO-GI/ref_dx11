@@ -841,6 +841,7 @@ void R_SetupDX(void)
 
 	//renderer->SetModelViewMatrix(cam.view);
 	cam.view_projection_inverse = XMMatrixInverse(nullptr, XMMatrixMultiply(cam.perspective, cam.view));
+	//cam.view_projection_inverse = XMMatrixInverse(nullptr, cam.perspective);
 
 	cam.fps = fps;
 	cam.total_frames = frame_count;
@@ -1414,6 +1415,7 @@ void R_BeginFrame(float camera_separation)
 	// clear
 	renderer->Clear();	
 
+	bsp_renderer->is_lighting = true;
 	bsp_renderer->lightmap_index = lightmap_index->value;
 	bsp_renderer->point_light_buf = DirectX::XMFLOAT4(single_point_light_x->value, 
 		single_point_light_y->value, single_point_light_z->value, 0);
@@ -1431,6 +1433,16 @@ void DX11_EndFrame(void)
 	if (!is_first) {
 		END_EVENT();
 
+		BEGIN_EVENT(L"BSP renderer (No dynamic lightmap)");
+		bsp_renderer->Render();
+		END_EVENT();
+
+		if (bsp_renderer->is_lighting) {
+			renderer->GetContext()->PSSetSamplers(0, 1, &bsp_renderer->samplers[1]);
+			bsp_renderer->light_sources_buffer.Bind<LightSources>(light_sources_buf.slot);
+			effects_renderer->RenderLight(renderer);
+		}
+
 		BEGIN_EVENT(L"Model renderer");
 		mod_renderer->Render();
 		END_EVENT();
@@ -1446,11 +1458,6 @@ void DX11_EndFrame(void)
 		BEGIN_EVENT(L"Particles renderer");
 		particles_renderer->Render();
 		END_EVENT();
-
-		BEGIN_EVENT(L"BSP renderer (No dynamic lightmap)");
-		bsp_renderer->Render();
-		END_EVENT();		
-		
 
 		BEGIN_EVENT(L"Effects renderer");
 		effects_renderer->fxaa = taa->value;

@@ -36,6 +36,10 @@ static D3D_SHADER_MACRO taaMac[] = {
 	"TAA", "1", NULL, NULL
 };
 
+static D3D_SHADER_MACRO lightMac[] = {
+	"LIGHT", "1", NULL, NULL
+};
+
 static ShaderOptions defOpt{
 	defMac,
 	PS_SHADER_ENTRY | VS_SHADER_ENTRY
@@ -81,6 +85,11 @@ static ShaderOptions taaOpt{
 	PS_SHADER_ENTRY | VS_SHADER_ENTRY
 };
 
+static ShaderOptions lightOpt{
+	lightMac,
+	PS_SHADER_ENTRY | VS_SHADER_ENTRY
+};
+
 static std::unordered_map<int, ShaderOptions> macro{
 	{EFFECTS_DEFAULT, defOpt},
 	{EFFECTS_SCENE, sceneOpt},
@@ -91,6 +100,7 @@ static std::unordered_map<int, ShaderOptions> macro{
 	{EFFECTS_FXAA, fxaaOpt},
 	{EFFECTS_MOTION_BLUR, mbOpt},
 	{EFFECTS_TAA, taaOpt},
+	{EFFECTS_LIGHT, lightOpt},
 };
 
 EffectsRenderer::~EffectsRenderer() {
@@ -238,6 +248,7 @@ void EffectsRenderer::RenderFXAA(Renderer* renderer)
 		renderer->GetContext()->PSSetShaderResources(prevdepthTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::DEPTH_HIST_SRV]);
 		renderer->GetContext()->PSSetShaderResources(velocityTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::VELOCITY_SRV]);
 	}
+
 	eq->DrawStatic();
 	END_EVENT();
 }
@@ -255,10 +266,23 @@ void EffectsRenderer::RenderToBackbuffer(Renderer* renderer)
 	else if (albedo)
 		renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::ALBEDO_SRV]);
 	else
-		renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::FXAA_SRV]);
+		renderer->GetContext()->PSSetShaderResources(colorTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::SCENE_SRV]);
 
 	renderer->GetContext()->PSSetShaderResources(bloomTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::BLOOM_2_SRV]);
 	renderer->GetContext()->PSSetShaderResources(effectTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::EFFECT_SRV]);
+	eq->DrawStatic();
+	END_EVENT();
+}
+
+void EffectsRenderer::RenderLight(Renderer* renderer)
+{
+	BEGIN_EVENT(L"Basic Light");
+	SetPipelineState(factory->GetState(EFFECTS_LIGHT));
+	renderer->GetContext()->OMSetRenderTargets(1u, &renderer->render_target_views[EffectsRTV::SCENE], nullptr);
+	renderer->GetContext()->PSSetShaderResources(positionTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::POSITIONS_SRV]);
+	renderer->GetContext()->PSSetShaderResources(normalTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::NORMALS_SRV]);
+	renderer->GetContext()->PSSetShaderResources(albedoTexture.slot, 1u, &renderer->shader_resource_views[EffectsSRV::SCENE_COLOR_SRV]);
+	
 	eq->DrawStatic();
 	END_EVENT();
 }
@@ -290,7 +314,7 @@ void EffectsRenderer::Render() {
 	Renderer* renderer = Renderer::GetInstance();
 
 	if (is_render) {
-		RenderColorPostEffects(renderer);
+		//RenderColorPostEffects(renderer);
 	}
 
 	if (!positions && !normals && !albedo) {

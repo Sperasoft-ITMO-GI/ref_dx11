@@ -88,7 +88,7 @@ public:
 		D3D11_MAPPED_SUBRESOURCE mapped_subresource;
 		ZeroMemory(&mapped_subresource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 		DXCHECK(context->Map(buffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapped_subresource));
-		CopyMemory(mapped_subresource.pData, &transforms, sizeof(T));
+		CopyMemory(mapped_subresource.pData, &transforms, sizeof(transforms));
 		context->Unmap(buffer, 0u);
 	}
 

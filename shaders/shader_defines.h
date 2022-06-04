@@ -94,10 +94,10 @@ struct DirectionalLight
 
 struct LightSources
 {
-	float4 point_light;
-	unsigned int sources_count;
-	float3 source[255];
-	unsigned int dummy[2];
+	//float4 point_light;
+	//unsigned int sources_count;
+	float4 source[128];
+	//unsigned int dummy[2];
 	//float4 color;
 };
 

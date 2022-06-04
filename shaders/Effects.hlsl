@@ -437,6 +437,25 @@ float2 LoadVelocity(float2 screenPos)
 }
 #endif
 
+float4 CalculatePointLight(float3 lightPos, float3 pos, float3 normal)
+{
+    float3 lightDir;
+    float3 diffuse;
+    float dist;
+    float att;
+    
+    float radius = 50;
+    float kc = 0.0f;
+    float kl = 1 / radius;
+    float kq = 1 / (radius * radius);
+    
+    lightDir = pos - lightPos;
+    dist = length(lightDir);
+    att = 1.0f / (kc + kl * dist + kq * dist * dist);
+    diffuse = max(dot(normal, normalize(lightDir)), 0.0f) * att;
+    return float4(diffuse, 0);
+}
+
 float4 PSMain(VSOut IN) : SV_Target
 {
     float4 result = 0;
@@ -683,6 +702,42 @@ float4 PSMain(VSOut IN) : SV_Target
 	
     uint num = 10;
     return float4(ycbcr_to_rgb(lerp(1.0 -  1.0 / num, current, history)), 1.0);
+#endif
+    
+#ifdef LIGHT
+    //// Get the depth buffer value at this pixel.    
+    //float zOverW = depthTexture.Sample(Sampler, IN.texCoord); 
+    //// H is the viewport position at this pixel in the range -1 to 1.    
+    //float4 H = float4(IN.texCoord.x * 2 - 1, (1 - IN.texCoord.y) * 2 - 1, zOverW, 1); 
+    //// Transform by the view-projection inverse.    
+    //float4 D = mul( H , camera.view_projection_inverse); 
+    //// Divide by w to get the world position.    
+    //float4 worldPos = D / D.w;  
+    
+    float4 positions = positionTexture.Sample(Sampler, IN.texCoord);
+    float4 normals = normalTexture.Sample(Sampler, IN.texCoord);
+    float4 albedo = albedoTexture.Sample(Sampler, IN.texCoord);
+    
+    //float4 pl = light_sources_buf.point_light;
+    //result.light += CalculatePointLight(pl.xyz, positions.xyz, normals.xyz);
+    //result.light += CalculatePointLight(pl.xyz - float3(0, 400, 0), positions.xyz, normals.xyz);
+    
+    for (int i = 0; i < 110/*light_sources_buf.sources_count*/; ++i)
+    {
+        //result += CalculatePointLight(light_sources_buf.source[38].xyz, positions.xyz, normals.xyz);
+        //result += CalculatePointLight(light_sources_buf.source[47].xyz, positions.xyz, normals.xyz);
+        //result += CalculatePointLight(light_sources_buf.source[59].xyz, positions.xyz, normals.xyz);
+        if (i % 3 == 0)
+            result += CalculatePointLight(light_sources_buf.source[i].xyz, positions.xyz, normals.xyz) * float4(1, 0, 0, 0);
+        if (i % 3 == 1)
+            result += CalculatePointLight(light_sources_buf.source[i].xyz, positions.xyz, normals.xyz) * float4(0, 1, 0, 0);
+        if (i % 3 == 2)
+            result += CalculatePointLight(light_sources_buf.source[i].xyz, positions.xyz, normals.xyz) * float4(0, 0, 1, 0);
+    
+        
+        //result += CalculatePointLight(float3(232, 0, 56), positions.xyz, normals.xyz); //252 8, 56
+    }
+    result *= albedo;
 #endif
     
 #ifdef SCENE

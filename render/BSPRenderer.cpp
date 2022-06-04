@@ -203,98 +203,104 @@ void BSPRenderer::Render() {
 
 	if (is_first) {
 		LightSources ls;
-		ls.point_light = point_light_buf;
-		ls.sources_count = light_source_index;
+		//ls.point_light = point_light_buf;
+		//ls.sources_count = light_source_index;
 		for (int i = 0; i < light_source_index; ++i) {
-			ls.source[i] = light_sources[i];
+			ls.source[i].x = light_sources[i].x;
+			ls.source[i].y = light_sources[i].y;
+			ls.source[i].z = light_sources[i].z;
 		}
 		light_sources_buffer.Update(ls);
 
-		currentState = 0;
+		if (!is_lighting) {
+			currentState = 0;
 
-		renderer->GetContext()->PSSetSamplers(0, 1, &samplers[0]);
-		renderer->GetContext()->RSSetViewports(1, &viewports[0]);
+			renderer->GetContext()->PSSetSamplers(0, 1, &samplers[0]);
+			renderer->GetContext()->RSSetViewports(1, &viewports[0]);
 
-		for (auto& poly : bsp_defs2d) {
+			for (auto& poly : bsp_defs2d) {
 
-			ID3D11RenderTargetView* render_targets[3] = {
-				pos_rtv[poly.lightmap_index],
-				norm_rtv[poly.lightmap_index],
-				alb_rtv[poly.lightmap_index]
-			};
-			renderer->GetContext()->OMSetRenderTargets(
-				3u,
-				render_targets,
-				nullptr
-			);
+				ID3D11RenderTargetView* render_targets[3] = {
+					pos_rtv[poly.lightmap_index],
+					norm_rtv[poly.lightmap_index],
+					alb_rtv[poly.lightmap_index]
+				};
+				renderer->GetContext()->OMSetRenderTargets(
+					3u,
+					render_targets,
+					nullptr
+				);
 
-			if (currentState != poly.flags)
-			{
-				if (poly.flags & BSP_TEX) {
-					SetPipelineState(factory->GetState(BSP_TEX));
-					currentState = BSP_TEX;
+				if (currentState != poly.flags)
+				{
+					if (poly.flags & BSP_TEX) {
+						SetPipelineState(factory->GetState(BSP_TEX));
+						currentState = BSP_TEX;
+					}
+					if (poly.flags & BSP_TEX_WIREFRAME) {
+						SetPipelineState(factory->GetState(BSP_TEX_WIREFRAME));
+						currentState = BSP_TEX_WIREFRAME;
+					}
 				}
-				if (poly.flags & BSP_TEX_WIREFRAME){
-					SetPipelineState(factory->GetState(BSP_TEX_WIREFRAME));
-					currentState = BSP_TEX_WIREFRAME;
-				}
+
+				renderer->Bind(poly.texture_index, colorTexture.slot);
+				renderer->Bind(poly.lightmap_index, lightmapTexture.slot);
+
+				p->UpdateDynamicVB(poly.vert);
+				p->UpdateDynamicIB(poly.ind);
+				p->UpdateCB(poly.cb);
+				mat_buf.Update(poly.mb);
+
+				mat_buf.Bind<MatrixBuffer>(buffer.slot);
+				p->DrawIndexed();
 			}
 
-			renderer->Bind(poly.texture_index, colorTexture.slot);
-			renderer->Bind(poly.lightmap_index, lightmapTexture.slot);
-
-			p->UpdateDynamicVB(poly.vert);
-			p->UpdateDynamicIB(poly.ind);
-			p->UpdateCB(poly.cb);
-			mat_buf.Update(poly.mb);
-
-			mat_buf.Bind<MatrixBuffer>(buffer.slot);
-			p->DrawIndexed();
+			bsp_defs2d.clear();
 		}
-
-		bsp_defs2d.clear();
 		is_first = false;
 	}
 	else if (is_lightmap) {
-		currentState = 0;
+		if (!is_lighting) {
+			currentState = 0;
 
-		renderer->GetContext()->PSSetSamplers(0, 1, &samplers[0]);
-		renderer->GetContext()->RSSetViewports(1, &viewports[0]);
+			renderer->GetContext()->PSSetSamplers(0, 1, &samplers[0]);
+			renderer->GetContext()->RSSetViewports(1, &viewports[0]);
 
-		for (auto& poly : bsp_defs2d) {
-			renderer->GetContext()->OMSetRenderTargets(
-				1u,
-				&lightmap_rtv[poly.lightmap_index],
-				nullptr
-			);
+			for (auto& poly : bsp_defs2d) {
+				renderer->GetContext()->OMSetRenderTargets(
+					1u,
+					&lightmap_rtv[poly.lightmap_index],
+					nullptr
+				);
 
-			if (currentState != poly.flags)
-			{
-				if (poly.flags & BSP_TEX_LIGHTMAP) {
-					SetPipelineState(factory->GetState(BSP_TEX_LIGHTMAP));
-					currentState = BSP_TEX_LIGHTMAP;
+				if (currentState != poly.flags)
+				{
+					if (poly.flags & BSP_TEX_LIGHTMAP) {
+						SetPipelineState(factory->GetState(BSP_TEX_LIGHTMAP));
+						currentState = BSP_TEX_LIGHTMAP;
+					}
+					if (poly.flags & BSP_TEX_LIGHTMAPWIRE) {
+						SetPipelineState(factory->GetState(BSP_TEX_LIGHTMAPWIRE));
+						currentState = BSP_TEX_LIGHTMAPWIRE;
+					}
 				}
-				if (poly.flags & BSP_TEX_LIGHTMAPWIRE) {
-					SetPipelineState(factory->GetState(BSP_TEX_LIGHTMAPWIRE));
-					currentState = BSP_TEX_LIGHTMAPWIRE;
-				}
+
+				renderer->GetContext()->PSSetShaderResources(positionTexture.slot, 1, &pos_srv[poly.lightmap_index]);
+				renderer->GetContext()->PSSetShaderResources(normalTexture.slot, 1, &norm_srv[poly.lightmap_index]);
+				renderer->GetContext()->PSSetShaderResources(albedoTexture.slot, 1, &alb_srv[poly.lightmap_index]);
+
+				p->UpdateDynamicVB(poly.vert);
+				p->UpdateDynamicIB(poly.ind);
+				p->UpdateCB(poly.cb);
+				mat_buf.Update(poly.mb);
+
+				mat_buf.Bind<MatrixBuffer>(buffer.slot);
+				light_sources_buffer.Bind<LightSources>(light_sources_buf.slot);
+				p->DrawIndexed();
 			}
 
-			renderer->GetContext()->PSSetShaderResources(positionTexture.slot, 1, &pos_srv[poly.lightmap_index]);
-			renderer->GetContext()->PSSetShaderResources(normalTexture.slot, 1, &norm_srv[poly.lightmap_index]);
-			renderer->GetContext()->PSSetShaderResources(albedoTexture.slot, 1, &alb_srv[poly.lightmap_index]);
-
-			p->UpdateDynamicVB(poly.vert);
-			p->UpdateDynamicIB(poly.ind);
-			p->UpdateCB(poly.cb);
-			mat_buf.Update(poly.mb);
-
-			mat_buf.Bind<MatrixBuffer>(buffer.slot);
-			light_sources_buffer.Bind<LightSources>(light_sources_buf.slot);
-			p->DrawIndexed();
+			bsp_defs2d.clear();
 		}
-
-		bsp_defs2d.clear();
 		is_lightmap = false;
 		light_source_index = 0;
 	}
@@ -363,7 +369,7 @@ void BSPRenderer::Render() {
 			}
 
 			renderer->Bind(poly.texture_index, colorTexture.slot);
-			if (poly.lightmap_index > 1024) {
+			if (poly.lightmap_index > 1024 && !is_lighting) {
 				int index = poly.lightmap_index - 1024;
 				renderer->GetContext()->PSSetShaderResources(positionTexture.slot, 1, &pos_srv[index]);
 				renderer->GetContext()->PSSetShaderResources(normalTexture.slot, 1, &norm_srv[index]);

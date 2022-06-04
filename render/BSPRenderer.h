@@ -73,7 +73,7 @@ private:
 	std::vector<BSPPoly> polygons;
 	BSPPoly* p;
 	ConstantBuffer<MatrixBuffer> mat_buf;
-	ConstantBuffer<LightSources> light_sources_buffer;
+
 	BSPDefinitions level;
 	std::vector<BSPDefinitions> bsp_defs;
 	std::vector<BSPDefinitions> bsp_defs2d;
@@ -94,18 +94,21 @@ private:
 	ID3D11ShaderResourceView* lightmap_srv[32];
 
 	D3D11_VIEWPORT viewports[2];
-	ID3D11SamplerState* samplers[2];
+	
 
 public:
-
+	ID3D11SamplerState* samplers[2];
 	ModelPSProvider* GetPSProvider();
 
 	bool is_first = true;
 	bool is_lightmap = false;
 	bool is_gbuffer = false;
+	bool is_lighting = false;
 	int lightmap_index = 0;
 
 	std::array<DirectX::XMFLOAT3, 1000> light_sources;
 	int light_source_index = 0;
 	DirectX::XMFLOAT4 point_light_buf;
+
+	ConstantBuffer<LightSources> light_sources_buffer;
 };

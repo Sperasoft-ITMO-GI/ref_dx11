@@ -44,6 +44,7 @@ struct VSOut
     float4 pos : SV_Position;
     float4 prevPos : POSITION0;
     float4 newPos : POSITION1;
+    float4 worldPos : POSITION2;
     float2 lightmapCoord : LMTEXCOORD;
     float3 norm : NORMAL;  
 #endif
@@ -69,7 +70,7 @@ VSOut VSMain(VSIn IN)
     //if (IN.norm.x > 0)
     //    IN.norm.x *= -1;
     //if (IN.norm.y > 0)
-    //    IN.norm.y *= -1;  
+        //IN.norm.y *= -1;  
     //if (IN.norm.z > 0)
     //    IN.norm.z *= -1;
 
@@ -89,7 +90,8 @@ VSOut VSMain(VSIn IN)
     OUT.prevPos = float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f);
     OUT.newPos = mul(proj, float4(IN.pos.x, IN.pos.y, IN.pos.z, 1.0f));
     OUT.lightmapCoord = IN.lightmapCoord;
-    OUT.norm = mul(camera.perspective, float4(IN.norm.xyz, 0));
+    OUT.norm = IN.norm.xyz;// mul(camera.perspective, float4(IN.norm.xyz, 0));
+    OUT.worldPos = float4(IN.pos, 1);
 #endif
 
     OUT.texCoord = IN.texCoord;
@@ -130,7 +132,7 @@ float4 CalculatePointLight(float3 lightPos, float3 pos, float3 normal)
     float dist;
     float att;
     
-    float radius = 250;
+    float radius = 150;
     float kc = 1.0f;
     float kl = 1 / radius;
     float kq = 1 / (radius * radius);
@@ -159,7 +161,7 @@ PSOut PSMain(VSOut IN)
 #ifdef LIGHTMAPPEDPOLY
     lightmap = lightmapTexture.Sample(Sampler, IN.lightmapCoord);
     result.lightmap = lightmap;
-    texColor *= lightmap;
+    //texColor *= lightmap;
 #endif
 
     result.color = texColor * model.color;
@@ -170,8 +172,16 @@ PSOut PSMain(VSOut IN)
     float2 b = (IN.prevPos.xy / IN.prevPos.w) * 0.5 + 0.5;
     result.velosity = a - b;
 #ifdef LIGHTMAPPEDPOLY
-    result.positions = positionTexture.Sample(Sampler, IN.lightmapCoord);
-    result.normals = normalTexture.Sample(Sampler, IN.lightmapCoord);
+    result.positions = IN.worldPos;//positionTexture.Sample(Sampler, IN.lightmapCoord);
+    
+    //if (IN.norm.x > 0)
+    //    IN.norm.x *= -1;
+    //if (IN.norm.y > 0)
+    //    IN.norm.y *= -1;  
+    //if (IN.norm.z > 0)
+    //    IN.norm.z *= -1;
+    
+    result.normals = float4(normalize(IN.norm), 0);//normalTexture.Sample(Sampler, IN.lightmapCoord);
     result.albedo3d = albedoTexture.Sample(Sampler, IN.lightmapCoord);
 #endif
 #endif
@@ -193,16 +203,21 @@ PSOut PSMain(VSOut IN)
     //float4 pl = light_sources_buf.point_light;
     //result.light += CalculatePointLight(pl.xyz, positions.xyz, normals.xyz);
     //result.light += CalculatePointLight(pl.xyz - float3(0, 400, 0), positions.xyz, normals.xyz);
-
-    for (int i = 0; i < light_sources_buf.sources_count; ++i)
+   
+    for (int i = 0; i < 110; ++i)
     {
-        result.light += CalculatePointLight(light_sources_buf.source[i].xyz, positions.xyz, normals.xyz);
+        if (i % 3 == 0)
+            result.light += CalculatePointLight(light_sources_buf.source[i].xyz, positions.xyz, normals.xyz) * float4(1, 0, 0, 0);
+        if (i % 3 == 1)
+            result.light += CalculatePointLight(light_sources_buf.source[i].xyz, positions.xyz, normals.xyz) * float4(0, 1, 0, 0);
+        if (i % 3 == 2)
+            result.light += CalculatePointLight(light_sources_buf.source[i].xyz, positions.xyz, normals.xyz) * float4(0, 0, 1, 0);
     }
     //diffuse += max(dot(normals.xyz, normalize(light.direction)), 0.0f);
     //diffuse *= albedo.rgb * 5;
     //result.light = float4(diffuse * 0.5, 1);
     
-    result.light *= albedo;// * 0.7;
+    result.light *= albedo;
 
 #endif
 

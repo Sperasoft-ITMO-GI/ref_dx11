@@ -628,6 +628,8 @@ void CalculateNormals(std::vector<BSPVertex>& vect) {
 			vert.normal = normal;
 		}
 	}
+
+
 }
 
 static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
@@ -674,8 +676,8 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 
 			lmtex = surf->lightmaptexturenum;
 
-			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
-				(unsigned char*)temp, dx11_state.lightmap_textures + surf->lightmaptexturenum);
+			//renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
+			//	(unsigned char*)temp, dx11_state.lightmap_textures + surf->lightmaptexturenum);
 
 			//if (cs_lm->value) {
 			//	cs->Bind();
@@ -695,21 +697,21 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 
 			lmtex = 0;
 
-			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
-				(unsigned char*)temp, dx11_state.lightmap_textures + 0);
-
-
+			//renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
+			//	(unsigned char*)temp, dx11_state.lightmap_textures + 0);
 
 		}
 
 
-		if (cs_lm->value) {
-			cs->Bind();
-			renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &renderer->uav, nullptr);
-			renderer->GetContext()->Dispatch(16, 16, 1);
-			ID3D11UnorderedAccessView* UAV_NULL = NULL;
-			renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &UAV_NULL, 0);
-		}
+		//if (cs_lm->value) {
+		//	cs->Bind();
+		//	renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &renderer->uav, nullptr);
+		//	renderer->GetContext()->Dispatch(16, 16, 1);
+		//	ID3D11UnorderedAccessView* UAV_NULL = NULL;
+		//	renderer->GetContext()->CSSetUnorderedAccessViews(0, 1, &UAV_NULL, 0);
+		//}
+
+
 
 		c_brush_polys++;
 
@@ -810,9 +812,9 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 							}
 						}
 
-						origin[0] = max[0] - (max[0] - min[0]) * 0.5;
-						origin[1] = max[1] - (max[1] - min[1]) * 0.5;
-						origin[2] = max[2] - (max[2] - min[2]) * 0.5;
+						origin[0] = max[0] - (max[0] - min[0]) * 0.5 - vect[0].normal.x * 20;
+						origin[1] = max[1] - (max[1] - min[1]) * 0.5 - vect[0].normal.y * 20;
+						origin[2] = max[2] - (max[2] - min[2]) * 0.5 - vect[0].normal.z * 20;
 
 						DirectX::XMFLOAT3 point(origin);
 						bsp_renderer->light_sources[bsp_renderer->light_source_index++] = point;
@@ -849,15 +851,15 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					bsp_renderer->Add2d(bspd2);
 				}
 				else {
-
+					CalculateNormals(vect);
 					BSPDefinitions bspd{
 						vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 					};
 
 					bsp_renderer->Add(bspd);
 
-					// Immediate draw dynamic lightmapped polygon
-					// before dynamic texture will updated
+						// Immediate draw dynamic lightmapped polygon
+						// before dynamic texture will updated
 					bsp_renderer->Render();
 				}
 
@@ -950,9 +952,9 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 							}
 						}
 
-						origin[0] = max[0] - (max[0] - min[0]) * 0.5;
-						origin[1] = max[1] - (max[1] - min[1]) * 0.5;
-						origin[2] = max[2] - (max[2] - min[2]) * 0.5;
+						origin[0] = max[0] - (max[0] - min[0]) * 0.5 - vect[0].normal.x * 20;
+						origin[1] = max[1] - (max[1] - min[1]) * 0.5 - vect[0].normal.y * 20;
+						origin[2] = max[2] - (max[2] - min[2]) * 0.5 - vect[0].normal.z * 20;
 
 						DirectX::XMFLOAT3 point(origin);
 						bsp_renderer->light_sources[bsp_renderer->light_source_index++] = point;
@@ -988,16 +990,17 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					bsp_renderer->Add2d(bspd2);
 				}
 				else {
-
+					CalculateNormals(vect);
 					BSPDefinitions bspd{
 						vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 					};
 
 					bsp_renderer->Add(bspd);
 
-					// Immediate draw dynamic lightmapped polygon
-					// before dynamic texture will updated
+						// Immediate draw dynamic lightmapped polygon
+						// before dynamic texture will updated
 					bsp_renderer->Render();
+	
 				}
 
 				//qglEnd();
@@ -1106,9 +1109,9 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 							}
 						}
 
-						origin[0] = max[0] - (max[0] - min[0]) * 0.5;
-						origin[1] = max[1] - (max[1] - min[1]) * 0.5;
-						origin[2] = max[2] - (max[2] - min[2]) * 0.5;
+						origin[0] = max[0] - (max[0] - min[0]) * 0.5 - vect[0].normal.x * 20;
+						origin[1] = max[1] - (max[1] - min[1]) * 0.5 - vect[0].normal.y * 20;
+						origin[2] = max[2] - (max[2] - min[2]) * 0.5 - vect[0].normal.z * 20;
 
 						DirectX::XMFLOAT3 point(origin);
 						bsp_renderer->light_sources[bsp_renderer->light_source_index++] = point;
@@ -1144,7 +1147,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					bsp_renderer->Add2d(bspd2);
 				}
 				else {
-
+					CalculateNormals(vect);
 					BSPDefinitions bspd{
 						vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 					};
@@ -1198,9 +1201,9 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 						1.0f, 0.0f,  0.0f, 1000.0f));
 				//cbBuffer.Update(mbuffer);
 				//cbBuffer.Bind<MatrixBuffer>(buffer.slot);
-				CalculateNormals(vect);
+				
 				if (bsp_renderer->is_first) {
-					
+					CalculateNormals(vect);
 
 					BSPDefinitions bspd2{
 						vect, indexes, *cb, mbuffer, BSP_TEX, image->texnum, lmtex
@@ -1241,9 +1244,9 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 							}
 						}
 
-						origin[0] = max[0] - (max[0] - min[0]) * 0.5;
-						origin[1] = max[1] - (max[1] - min[1]) * 0.5;
-						origin[2] = max[2] - (max[2] - min[2]) * 0.5;
+						origin[0] = max[0] - (max[0] - min[0]) * 0.5 - vect[0].normal.x * 20;
+						origin[1] = max[1] - (max[1] - min[1]) * 0.5 - vect[0].normal.y * 20;
+						origin[2] = max[2] - (max[2] - min[2]) * 0.5 - vect[0].normal.z * 20;
 
 						DirectX::XMFLOAT3 point(origin);
 						bsp_renderer->light_sources[bsp_renderer->light_source_index++] = point;
@@ -1280,7 +1283,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, MODEL* cb)
 					bsp_renderer->Add2d(bspd2);
 				}
 				else {
-
+					CalculateNormals(vect);
 					BSPDefinitions bspd{
 						vect, indexes, *cb, mbuffer, BSP_LIGHTMAPPEDPOLY, image->texnum, dx11_state.lightmap_textures + lmtex
 					};
@@ -1717,9 +1720,7 @@ void R_DrawWorld(void)
 
 	//		MODEL cb;
 	//		cb.mod = DirectX::XMMatrixIdentity();
-	//		if (surf->lightmaptexturenum > maxlmtex)
-	//			maxlmtex = surf->lightmaptexturenum;
-	//		if ((surf->lightmaptexturenum != 0) && (surf->lightmaptexturenum == 12))
+	//		if (surf->lightmaptexturenum != 0)
 	//			GL_RenderLightmappedPoly(surf, &cb);
 	//	}
 	//}
